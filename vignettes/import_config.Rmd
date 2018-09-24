@@ -1,0 +1,179 @@
+---
+title: "Import data configuration tools"
+author: "Mark Zwart"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    css: graydon.css
+    df_print: paged
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+* [Introduction](#introduction)
+* [Column configuration of data sources](#col_config)
+    - [Scenario 1: First time source](#scenario1)
+    - [Scenario 2: You changed column specs file](#scenario2)
+    - [Scenario 3: Changed source file is supplied](#scenario3)
+* [The case of the missing write_csv2() function from readr](#write_csv2)
+
+```{r setup, include = FALSE}
+library(magrittr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+
+file_col_specs <- "~/uk_companies_columns.csv"
+if (file.exists(file_col_specs)) file.remove(file_col_specs) # Delete previous col specs file
+rm(file_col_specs)
+```
+
+# Introduction
+
+The import configuration tools are a collection of functions that help you importing your data sources. 
+
+First let's load the package:
+```{r}
+library(graydon.package)
+```
+
+## <a name="col_config"></a>Column configuration of data sources
+
+Whenever you need to import data in R, you'll probably want to rename columns so they adhere to the conventions. This can be a pain when maintaining your code, especially when you get consecutive versions of the data, where versions might slightly vary in the number of provided columns. The function `apply_column_config` helps with this process by making it easy to rename columnsand in- or exclude columns from the data, by creating a column configuration csv with the following columns:
+
+- *original_name* - this contains the data file's original column names. Do *not* edit this column. 
+- *data_type* - this specifies what the data type of the column is on first import. Do *not* edit this column.
+- *new_name* - this is the desired column name. The `apply_column_config` function will supply this for you with best guesses, but feel free to edit this afterwards.
+- *include* - this specifies whether you want to keep this column with a logical value (`TRUE`/`FALSE`). Initially it is assumed you want to include all columns, but you can edit this.
+- *date_added* - this is the time the original column name was first encountered in the data file. Do *not* edit this column.
+
+How this all works is best explained by giving examples of scenario's
+
+### <a name="scenario1"></a>Scenario 1: First time source
+
+When applying the `apply_column_config` on a data source for the first time, it will create a corresponding source configuration .CSV in the same directory as the data source. The file will have the same base name, but is extended with `_columns` and the extension `.csv`. The source table column names will also be directly renamed to the new standard.
+
+In this example the source data has already been pre-loaded in memory in the tbl_companies_uk data frame. The data source contains the following columns before processing
+```{r, echo=FALSE}
+data.frame(`Column names` = names(tbl_companies_uk)) %>% 
+  knitr::kable()
+```
+
+The data frame was pre-loaded in memory, but for the example's sake, let's assume it has been loaded from the file `~/uk_companies.tsv`. We're going to apply the `apply_column_config` the to data frame that was loaded as is (that is, without manipulation), and supplying it's original file source `~/uk_companies.tsv`. You can see that a message is printed saying it created a column spec file with the location `~/uk_companies_columns.csv`.
+```{r, message=FALSE, warning=FALSE}
+tbl_companies_uk <- apply_column_config(df_source = tbl_companies_uk, 
+                                        filename_source = "~/uk_companies.tsv") 
+```
+If we now look at the column names again we see that the function allready did some guess work in cleaning the columns for us.
+```{r, echo=FALSE}
+data.frame(`Column names` = names(tbl_companies_uk)) %>% 
+  knitr::kable()
+```
+
+The newly created, corresponding column configuration file now looks like this:
+```{r, echo=FALSE}
+read.csv2("~/uk_companies_columns.csv") %>% 
+  knitr::kable()
+```
+
+Note how the column names have changed. All column names were converted to lower case letters, non-alphanumeric characters have been replaced with underscores and wherever the word code or date has been detected, corresponding prefixes have been added.
+
+### <a name="scenario2"></a>Scenario 2: You changed column specs file
+
+Although the automatically created column names might be an improvement, it is probably not optimal. Also you might want to have some columns excluded, which is not the default. You can change this yourself by editing the column config file yourself by changing the content of the *new_name* and *include* columns respectively.
+
+Let's assume we want to change the column name of `GDB_ORG_YUID` to `id_graydon` and you want to exclude the column `GB_CRO_REGISTRATION_NUMBER`, and the adress related lines; so you adjust the *new_name* and *include* columns respectively.
+```{r, echo=FALSE}
+tbl_config <- read.csv2("~/uk_companies_columns.csv", stringsAsFactors = FALSE)
+
+# Change new column name
+
+idx_row <- (tbl_config$original_name == "GDB_ORG_YUID") 
+idx_column <- which(names(tbl_config) == "new_name")
+tbl_config[idx_row, idx_column] <- "id_graydon"
+# Change column inclusion
+idx_row <- (tbl_config$original_name %in% c("GB_CRO_REGISTRATION_NUMBER",
+                                            "ADDRESS_LINE_1_RA",
+                                            "ADDRESS_LINE_2_RA",
+                                            "ADDRESS_LINE_3_RA",
+                                            "ADDRESS_LINE_4_RA",
+                                            "ADDRESS_LINE_5_RA",
+                                            "POSTCODE_RA",
+                                            "S_EN_STREET_RA",
+                                            "S_FR_CITY_RA"))
+idx_column <- which(names(tbl_config) == "include")
+tbl_config[idx_row, idx_column] <- "FALSE"
+
+write.csv2(tbl_config, "~/uk_companies_columns.csv", row.names = FALSE)
+
+rm(idx_row, idx_column)
+
+tbl_config %>% 
+  dplyr::filter(original_name %in% c("GDB_ORG_YUID", 
+                                     "GB_CRO_REGISTRATION_NUMBER",
+                                     "ADDRESS_LINE_1_RA",
+                                     "ADDRESS_LINE_2_RA",
+                                     "ADDRESS_LINE_3_RA",
+                                     "ADDRESS_LINE_4_RA",
+                                     "ADDRESS_LINE_5_RA",
+                                     "POSTCODE_RA",
+                                     "S_EN_STREET_RA",
+                                     "S_FR_CITY_RA")) %>% 
+  knitr::kable()
+```
+
+```{r Reset table, echo=FALSE, include=FALSE}
+rm(tbl_config, tbl_companies_uk)
+```
+
+
+Now that the file contents has changed you can reapply it after reloading the source table:
+```{r, message=FALSE, warning=FALSE}
+tbl_companies_uk <- apply_column_config(df_source = tbl_companies_uk, 
+                                        filename_source = "~/uk_companies.tsv") 
+```
+The message `"Current column spec file fits current source ~/uk_companies_columns.csv"` tells you the column spec file could be applied to the source data frame. Below you can see the resulting columns of the data frame:
+```{r, echo=FALSE}
+data.frame(`Column names` = names(tbl_companies_uk)) %>% 
+  knitr::kable()
+```
+```{r, echo=FALSE, include=FALSE}
+rm(tbl_companies_uk)
+```
+
+
+### <a name="scenario3"></a>Scenario 3: Changed source file is supplied
+
+During an analysis you sometimes get an updated or corrected version of data; and it can happen that new columns are added and/or some are removed. When applying the function `apply_column_config`, it tries to keept most of original file specs, and adding/removing the newly added/removed columns. For example, the previous UK market file was redelivered without the address columns, but with two newly added columns: a two digit activity code `ACTIVITY_CODE_2` and `IS_ACTIVE_STATUS`.
+
+```{r, echo=FALSE, include=FALSE}
+# Remove address columns
+tbl_companies_uk %<>% 
+  dplyr::select(-c("ADDRESS_LINE_1_RA", "ADDRESS_LINE_2_RA", "ADDRESS_LINE_3_RA", "ADDRESS_LINE_4_RA",
+                   "ADDRESS_LINE_5_RA", "POSTCODE_RA", "S_EN_STREET_RA", "S_FR_CITY_RA"))
+
+# Add new columns
+tbl_companies_uk$ACTIVITY_CODE_2 <- stringr::str_sub(tbl_companies_uk$ACTIVITY_CODE, 1, 2)
+tbl_companies_uk$IS_ACTIVE_STATUS <- tbl_companies_uk$IS_ACTIVE_STATUS_CODE == "Y"
+```
+When you apply the `apply_column_config` function to this new data source, it will return the message that the column spec file has been updated to reflect the new data source.
+```{r, message=FALSE, warning=FALSE}
+tbl_companies_uk <- apply_column_config(df_source = tbl_companies_uk, 
+                                        filename_source = "~/uk_companies.tsv") 
+```
+As you can see the columns reflect the new data source and also the edits on column names of previous column specs are included.
+```{r, echo=FALSE}
+data.frame(`Column names` = names(tbl_companies_uk)) %>% 
+  knitr::kable()
+```
+
+### <a name="write_csv2">The case of the missing write_csv2() function from readr
+
+Somehow from the developers from [readr library](https://readr.tidyverse.org/) thought it was a cool idea to write the _read_csv2_ function for reading European style CSV-files (with ';' as a field- and ',' as a decimal delimiter), but they forgot to write the _write_csv2_ counterpart. The syntax is simple:
+```{r}
+write_csv2(tbl_companies_uk, path="~/uk_companies_columns.csv")
+```
+

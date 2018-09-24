@@ -1,0 +1,70 @@
+---
+title: "ggplot2 tools"
+author: "Mark Zwart"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(ggplot2)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+ggplot2 tools helps you to quickly create ggplots according to Graydon's style specifications.
+
+First let's load the package:
+```{r}
+library(graydon.package)
+```
+
+## Graydon colouring aesthetics and grid background
+
+```{r, warning=FALSE}
+ggplot(mtcars,
+       aes(x = qsec, y = hp, col = as.factor(carb))) +
+  geom_point() +
+  guides(fill = FALSE, col = FALSE) +
+  scale_color_graydon() +
+  theme_graydon("grid")
+```
+
+## Graydon fill aesthetic and horizontal gridlines only
+
+```{r, message=FALSE, warning=FALSE}
+ggplot(mtcars,
+       aes(x = gear, y = qsec, fill = factor(carb))) +
+  geom_col() +
+  guides(fill = FALSE, col = FALSE) +
+  scale_fill_graydon() +
+  theme_graydon("horizontal")
+```
+## Graydon fill aesthetic and vertical gridlines only
+```{r, message=FALSE, warning=FALSE}
+ggplot(mtcars,
+       aes(x = gear, y = qsec, fill = factor(cyl))) +
+  geom_col() +
+  guides(fill = FALSE, col = FALSE) +
+  coord_flip() +
+  scale_fill_graydon() +
+  theme_graydon("vertical")
+```
+
+## Graydon gradient aesthetics and no background
+```{r, message=FALSE}
+ggplot(mtcars, aes(x = hp, y = wt, fill = qsec, col = qsec)) +
+  geom_jitter(size = 15, shape = 22) +
+  guides(fill = FALSE, col = FALSE) +
+  scale_color_gradient(low = col_graydon[8], high = col_graydon[4]) +
+  scale_fill_gradient(low = col_graydon[2], high = col_graydon[1]) +
+  theme_graydon("blank")
+```
+

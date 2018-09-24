@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Mark Zwart" />
+
+<meta name="date" content="2018-09-24" />
+
+<title>ggplot2 tools</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">ggplot2 tools</h1>
+<h4 class="author"><em>Mark Zwart</em></h4>
+<h4 class="date"><em>2018-09-24</em></h4>
+
+
+
+<div id="introduction" class="section level2">
+<h2>Introduction</h2>
+<p>ggplot2 tools helps you to quickly create ggplots according to Graydon’s style specifications.</p>
+<p>First let’s load the package:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(graydon.package)</code></pre></div>
+</div>
+<div id="graydon-colouring-aesthetics-and-grid-background" class="section level2">
+<h2>Graydon colouring aesthetics and grid background</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(mtcars,
+       <span class="kw">aes</span>(<span class="dt">x =</span> qsec, <span class="dt">y =</span> hp, <span class="dt">col =</span> <span class="kw">as.factor</span>(carb))) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_point</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="ot">FALSE</span>, <span class="dt">col =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_color_graydon</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_graydon</span>(<span class="st">&quot;grid&quot;</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="graydon-fill-aesthetic-and-horizontal-gridlines-only" class="section level2">
+<h2>Graydon fill aesthetic and horizontal gridlines only</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(mtcars,
+       <span class="kw">aes</span>(<span class="dt">x =</span> gear, <span class="dt">y =</span> qsec, <span class="dt">fill =</span> <span class="kw">factor</span>(carb))) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_col</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="ot">FALSE</span>, <span class="dt">col =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_fill_graydon</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_graydon</span>(<span class="st">&quot;horizontal&quot;</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --> ## Graydon fill aesthetic and vertical gridlines only</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(mtcars,
+       <span class="kw">aes</span>(<span class="dt">x =</span> gear, <span class="dt">y =</span> qsec, <span class="dt">fill =</span> <span class="kw">factor</span>(cyl))) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_col</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="ot">FALSE</span>, <span class="dt">col =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">coord_flip</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_fill_graydon</span>() <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_graydon</span>(<span class="st">&quot;vertical&quot;</span>)</code></pre></div>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+</div>
+<div id="graydon-gradient-aesthetics-and-no-background" class="section level2">
+<h2>Graydon gradient aesthetics and no background</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">ggplot</span>(mtcars, <span class="kw">aes</span>(<span class="dt">x =</span> hp, <span class="dt">y =</span> wt, <span class="dt">fill =</span> qsec, <span class="dt">col =</span> qsec)) <span class="op">+</span>
+<span class="st">  </span><span class="kw">geom_jitter</span>(<span class="dt">size =</span> <span class="dv">15</span>, <span class="dt">shape =</span> <span class="dv">22</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">guides</span>(<span class="dt">fill =</span> <span class="ot">FALSE</span>, <span class="dt">col =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_color_gradient</span>(<span class="dt">low =</span> col_graydon[<span class="dv">8</span>], <span class="dt">high =</span> col_graydon[<span class="dv">4</span>]) <span class="op">+</span>
+<span class="st">  </span><span class="kw">scale_fill_gradient</span>(<span class="dt">low =</span> col_graydon[<span class="dv">2</span>], <span class="dt">high =</span> col_graydon[<span class="dv">1</span>]) <span class="op">+</span>
+<span class="st">  </span><span class="kw">theme_graydon</span>(<span class="st">&quot;blank&quot;</span>)</code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAqFBMVEUAAAAAVF0DAwQVFxsWGR0bHiQjKTInLjcpMTsqMTwrND8sNEAwOUYxO0g0P003Q1I6RlY6Rlc/TF5CUWRDUmZEU2ZIWW5RZHxRZH1YbYhab4tacItddJFsYEtxYEl0YUl+YkV/YkWLZEGLsN6SZT+UZT6fZzqgZzmjaDioaDasaTSuaTO0ajG1ajC3ai+4ai+8ai3BayrObCPVbR7XbR3pbgvrbgj///+0K1XrAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAD00lEQVR4nO3cWVfaUBRAYTto1arVWhxqZy2d58H//89aqAVCbrKPkAmz93Mu69zvicU6Ye3SSltre4CuJxAkECQQJBAkENQ5oAdvZ9t9H2m3xnkEggSCBII6A7R/lUAF7b/5l0AFCQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBE2AMgk06T9QNoEmCQQJBAkEFQDFqnGujgPl2m96LoEggSCBIIGg7gAFa3quzgB1NYEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBoDaA2t8Ov0atALX+fsE1EggSCBIIEggSCBIIEggSCBIIEggSCBIIahjofrAU0J1g1U7cNNDHUGmgn6EEEkggBjr42/xZgWaAhsOhQAIlEggSCBIIEggSCBIIEggSCBIIEgjqDtBt6uq5/gL9gq6eE6g1oM1UAk3b/JJIoGkCQf0FehKrx0BPMx0VtJOql0Cv0u18SCSQQAIJJJBAAgkkkEACCSRQC0DBeguUa2dYVB6o0jXgGwi0/j3Uep1Aj4P1F+hZqCqBDgpDoLVgTQGdp1sS6F1Rewz0O1RzQLeSCVQv0F5hAo2BPqXaTl1JIIEEEkgggQQSSCCBmgBaaMu120DzLQUUbYWA8rMLJJBAAgkk0LJARVuuAl31MF1yDTjfdrIbBZTt/OVMx0vNhrN3GOhRrOOlZsPZuwx0ESkPdDdYf4F+hBJIIIEEEkgggQQSSCCBbhZQWQsA5X62WHWg0roHtMyWa7RVBmqk6wDNJBAkECQQJFCqs2kCpTqbfmkUKJVAkECQQJBAkECQQJBAZQ0GA4HKGlxcCFSWQJBAkEDQQkAb858iUA+ATgoTaNzJi6IEGidQpkWBYuWBqtxybaQg0L1gI7yzb5NyQKtXFOhrKIEEEmgugSCBIIEggSCBoDqANqa1cKOKqwOohWvUl0CQQFAOKP0SvECT0n+kINAkgbIJBAkEVQw0XoFt4x61VTHQoI071JpAkECQQJBAkECQQJBAkEBQxUBtXKHeBIIEggSCBIJmgQ5HCZRtFuj1KIGyCQQJBAkECQRFgfJtxWrtZhUVBMp1dLn1OZJAAgk0SaBEAkECQQJBAkECQQJBAkF5oGC9BTp9Hun0UiCBxgkECQQJBAkE5YFi9ReopMPMSYEEGiUQJBAkECQQJBAkECQQJBAkECQQlNtyLStzsodAlkggSCBIIEggSCBIIEggSCBIIEgg6A/8ktjW0we63QAAAABJRU5ErkJggg==" /><!-- --></p>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>
