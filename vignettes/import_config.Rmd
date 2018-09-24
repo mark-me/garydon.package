@@ -7,7 +7,7 @@ output:
     css: graydon.css
     df_print: paged
 vignette: >
-  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteIndexEntry{Functions to ease the process of importing data}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

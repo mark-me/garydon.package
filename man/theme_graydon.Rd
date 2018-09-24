@@ -15,6 +15,6 @@ The first time it is used it will create a column specification file
 allows you to create and or read a file which you can use to control a data file import
 }
 \examples{
-get_columns_file(df, filename_source)
+theme_graydon("grid")
 }
 \keyword{ggplot2}
