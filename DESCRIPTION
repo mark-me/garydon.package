@@ -16,8 +16,11 @@ Imports:
     ggplot2,
     ggthemes,
     magrittr,
-    readr, 
-    stringr
+    readr,
+    rgdal,
+    rgeos,
+    stringr,
+    tmap
 Suggests: knitr,
     rmarkdown,
     testthat
