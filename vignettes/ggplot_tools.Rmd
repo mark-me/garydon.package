@@ -2,7 +2,10 @@
 title: "ggplot2 tools"
 author: "Mark Zwart"
 date: "`r Sys.Date()`"
-output: rmarkdown::html_vignette
+output: 
+  rmarkdown::html_vignette:
+    css: graydon.css
+    df_print: paged
 vignette: >
   %\VignetteIndexEntry{Graydon specific ggplot2 functions for theming}
   %\VignetteEngine{knitr::rmarkdown}

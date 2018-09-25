@@ -1,0 +1,109 @@
+---
+title: "Geomap tools"
+author: "Mark Zwart"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    css: graydon.css
+    df_print: paged
+vignette: >
+  %\VignetteIndexEntry{Geographic mapping tools}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(tmap)
+library(dplyr)
+library(magrittr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+Geographic mapping can be done with the _[tmap](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html)_ library or the _[ggplot2](http://zevross.com/blog/2014/07/16/mapping-in-r-using-the-ggplot2-package/)_ library. The _tmap_ libary offers the most specialized functions for using maps, and you can even make interactive maps with it pretty simply. The functions and data in the pacakge allow you to work with both quickly. 
+
+The geographic map tools allows you to use pre-existing country maps with different administrative regions.The pre-existing maps are available for the three countries with increasing granularity: 
+
+| The Netherlands | Belgium         | The United Kingdom | 
+| ----            | ----            | ----               | 
+| [sp_nl_country](https://en.wikipedia.org/wiki/Netherlands)   | [sp_be_country](https://en.wikipedia.org/wiki/Belgium)   | [sp_uk_state](https://en.wikipedia.org/wiki/United_Kingdom)        |
+| [sp_nl_province](https://en.wikipedia.org/wiki/Provinces_of_the_Netherlands)  | [sp_be_gewest](https://en.wikipedia.org/wiki/Communities,_regions_and_language_areas_of_Belgium)  | [sp_uk_country](https://en.wikipedia.org/wiki/Countries_of_the_United_Kingdom)      |
+| [sp_nl_corop](https://en.wikipedia.org/wiki/COROP)     | [sp_be_province](https://en.wikipedia.org/wiki/Provinces_of_Belgium)    | [sp_uk_lieutenancy](https://en.wikipedia.org/wiki/Lieutenancy_area)  |
+| [sp_nl_gemeente](https://en.wikipedia.org/wiki/List_of_municipalities_of_the_Netherlands)  |                 |                    |
+| [sp_nl_postcode](https://en.wikipedia.org/wiki/Postal_codes_in_the_Netherlands)  |                 |                    |
+
+First let's load the package:
+```{r}
+library(graydon.package)
+```
+
+## Turning company data into map data
+
+We can turn a regular data frame into a spatial object by using the `create_spatial_df` object:
+```{r, warning=FALSE}
+sp_companies_uk <- create_spatial_df(tbl_companies_uk, lon = "LONGITUDE_RA", lat = "LATITUDE_RA")
+```
+
+We can add the spatial data in a tmap plot by adding it to the layer with boundary data:
+```{r, message=FALSE}
+library(tmap)
+
+tmap_mode("plot")
+
+# Creating the Lieutenancy borders 
+tm_shape(sp_uk_lieutenancy, name = "Lieutenancy borders") +
+  tm_layout(frame = FALSE) +
+  tm_fill(col = col_graydon[4],
+          title = "Lieutenancy",
+          alpha = .8,
+          legend.show = TRUE)  +
+  tm_borders(col = "white",
+             alpha = 0.2) +
+# Adding the company dots  
+tm_shape(sp_companies_uk, name = "Companies") +
+  tm_layout(aes.color = c(fill = col_graydon[1],
+                          borders = col_graydon[1], 
+                          symbols = col_graydon[1]),
+            frame = FALSE) +
+  tm_dots(col = col_graydon[2],
+          size = 0.01,
+          alpha = 0.7,
+          legend.show = FALSE) 
+```
+
+## Creating a choropleth map
+
+[Choropleth maps](https://en.wikipedia.org/wiki/Choropleth_map) are ideal for visualizing how measurements vary across a geographic area or showing the level of variability within a region by using geographic boundaries.
+
+The previous example shows how the companies are translated to dots on the map. To make a summary per region, we'd want to know which dot 'belongs' to which region. We can get the overlaps using the `match_sp` function. The newly acquired data-frame is the original data frame `tbl_companies_uk`, which was used to create the `sp_companies_uk` object, the only difference being the first column `id_merge`.
+```{r, message=FALSE, warning=FALSE}
+tbl_merge <- match_sp(sp_companies_uk, sp_uk_lieutenancy)
+```
+This `id_merge` column is the key which you can aggregate the data on, so you can get the preferred statistic. In this case I'll just demonstrate a simple count. The id_merge has to be converted to character, for joining the data back on the map.
+```{r}
+tbl_companies_region <- tbl_merge %>% 
+  mutate(id_merge = as.character(id_merge)) %>% 
+  group_by(id_merge) %>% 
+  summarise(qty_companies = n())
+```
+Then we can add the aggregated data to the map by joining it to the data frame object inside the spatial object `@data`:
+```{r}
+sp_uk_lieutenancy@data %<>%
+  left_join(tbl_companies_region, by = "id_merge")
+```
+Now all the data is added, we can start to create the choropleth map:
+```{r}
+tm_shape(sp_uk_lieutenancy, name = "Lieutenancy borders") +
+  tm_layout(aes.palette = list(seq = c(col_graydon_low, col_graydon_high)), frame = FALSE) +
+  tm_fill(col = "qty_companies",
+          title = "Lieutenancy",
+          alpha = .8,
+          legend.show = TRUE)  +
+  tm_borders(col = "white",
+             alpha = 0.2)
+```
+The spread in this graph is nog too good, which is why the number of colors are skewd. This can be improved by creating n-tiles of the values, but that is outside of the scope of this vignette.
