@@ -88,27 +88,27 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </thead>
 <tbody>
 <tr class="odd">
-<td>sp_nl_country</td>
-<td>sp_be_country</td>
-<td>sp_uk_state</td>
+<td><a href="https://en.wikipedia.org/wiki/Netherlands">sp_nl_country</a></td>
+<td><a href="https://en.wikipedia.org/wiki/Belgium">sp_be_country</a></td>
+<td><a href="https://en.wikipedia.org/wiki/United_Kingdom">sp_uk_state</a></td>
 </tr>
 <tr class="even">
-<td>sp_nl_province</td>
-<td>sp_be_province</td>
-<td>sp_uk_country</td>
+<td><a href="https://en.wikipedia.org/wiki/Provinces_of_the_Netherlands">sp_nl_province</a></td>
+<td><a href="https://en.wikipedia.org/wiki/Communities,_regions_and_language_areas_of_Belgium">sp_be_gewest</a></td>
+<td><a href="https://en.wikipedia.org/wiki/Countries_of_the_United_Kingdom">sp_uk_country</a></td>
 </tr>
 <tr class="odd">
-<td>sp_nl_corop</td>
-<td>sp_be_gewest</td>
-<td>sp_uk_lieutenancy</td>
+<td><a href="https://en.wikipedia.org/wiki/COROP">sp_nl_corop</a></td>
+<td><a href="https://en.wikipedia.org/wiki/Provinces_of_Belgium">sp_be_province</a></td>
+<td><a href="https://en.wikipedia.org/wiki/Lieutenancy_area">sp_uk_lieutenancy</a></td>
 </tr>
 <tr class="even">
-<td>sp_nl_gemeente</td>
+<td><a href="https://en.wikipedia.org/wiki/List_of_municipalities_of_the_Netherlands">sp_nl_gemeente</a></td>
 <td></td>
 <td></td>
 </tr>
 <tr class="odd">
-<td>sp_nl_postcode</td>
+<td><a href="https://en.wikipedia.org/wiki/Postal_codes_in_the_Netherlands">sp_nl_postcode</a></td>
 <td></td>
 <td></td>
 </tr>
@@ -121,10 +121,34 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <h2>Turning company data into map data</h2>
 <p>We can turn a regular data frame into a spatial object by using the <code>create_spatial_df</code> object:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">sp_companies_uk &lt;-<span class="st"> </span><span class="kw">create_spatial_df</span>(tbl_companies_uk, <span class="dt">lon =</span> <span class="st">&quot;LONGITUDE_RA&quot;</span>, <span class="dt">lat =</span> <span class="st">&quot;LATITUDE_RA&quot;</span>)</code></pre></div>
-<p>We can user the spatial data in a tmap plot</p>
+<p>We can add the spatial data in a tmap plot by adding it to the layer with boundary data:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(tmap)
+<span class="kw">tmap_mode</span>(<span class="st">&quot;plot&quot;</span>)
+
+  <span class="kw">tm_shape</span>(sp_uk_lieutenancy, <span class="dt">name =</span> <span class="st">&quot;Lieutenancy borders&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">tm_layout</span>(<span class="dt">frame =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">tm_fill</span>(<span class="dt">col =</span> col_graydon[<span class="dv">4</span>],
+          <span class="dt">title =</span> <span class="st">&quot;Lieutenancy&quot;</span>,
+          <span class="dt">alpha =</span> .<span class="dv">8</span>,
+          <span class="dt">legend.show =</span> <span class="ot">TRUE</span>)  <span class="op">+</span>
+<span class="st">  </span><span class="kw">tm_borders</span>(<span class="dt">col =</span> <span class="st">&quot;white&quot;</span>,
+             <span class="dt">alpha =</span> <span class="fl">0.2</span>) <span class="op">+</span>
+<span class="st">    </span><span class="kw">tm_shape</span>(sp_companies_uk, <span class="dt">name =</span> <span class="st">&quot;Companies&quot;</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">tm_layout</span>(<span class="dt">aes.color =</span> <span class="kw">c</span>(<span class="dt">fill =</span> col_graydon[<span class="dv">1</span>],
+                          <span class="dt">borders =</span> col_graydon[<span class="dv">1</span>], 
+                          <span class="dt">symbols =</span> col_graydon[<span class="dv">1</span>]),
+            <span class="dt">frame =</span> <span class="ot">FALSE</span>) <span class="op">+</span>
+<span class="st">  </span><span class="kw">tm_dots</span>(<span class="dt">col =</span> col_graydon[<span class="dv">2</span>],
+          <span class="dt">size =</span> <span class="fl">0.01</span>,
+          <span class="dt">alpha =</span> <span class="fl">0.7</span>,
+          <span class="dt">legend.show =</span> <span class="ot">FALSE</span>) </code></pre></div>
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAASFBMVEWiwOW1zerE1+7Q3/HVh0vZ5fTbi0zfjk3jkE7kdhzmdx3neB3pcA7pcQ7peB3qbwrqcQ7rbgjrbgnrbwrscg/tex/xmlP////G2a11AAAACXBIWXMAAA7DAAAOwwHHb6hkAAAVLklEQVR4nO2djXajPA5AsePPHoNZAmnC+7/p6sc2hibDNIFgUrS70zRtt/QeWZZkSS76Q/4qxdYPkLscgGbkADQjB6AZOQDNyAFoRg5AM3IAmpED0IwcgGbkADQjB6AZOQDNyAFoRg5AM3IAmpED0IwcgGbkADQjB6AZOQDNyAFoRg5AM3IAmpED0Ix8HCCx8P/f5wFamNABaEY+C5AQS/M5AM3JhwEqDkAPBdGI4tjFHokAOAhoafkUQAIBLb6++s8BtIr9QfkcQECoODToLwJrrFhBiT4GEBqhQ4MeCuE5AP1F1lKgjwGEeY7l44z+EwANUFZwEz8B0CBrrLBPArTKCvskQIcGzckB6O+yygr7JECHBm0iB6AZOQDNyAFoRg5AM3IAmpED0IwcgGbkADQjB6AZ2TegVYKLsewb0Btkn4A4cH+D/uwVEMFZJ70xlb0CehOenQLC7POb+OwQUCyzew+iHQJa5wT1kewQUL9SqdR92SWgdU7A7sv+APVcbHcY6QfifcS3PffuAL3R/JDsEBDWQh826C9yaFBWcgCakd0BemcchpI1oOmGBXC0Xqmi/pHkDEjwhsWOD0lRKAX/vPMhcgL0TV+wct77zVwH7eWdD5UVoCkh6i3g/43kdy4x0pXJO8Ci4P+N5J2PlQ0gMbUt4pvi/GZATGPyXg58MgHEyjJ9Mwc+uQDivzwxvmK6c22DJwdAQvgFNkqCwTt3Nejtj5cDIPHvFuj9j5cBIL+PT9/OYX31WQDiXsGxl5iH/UHZHJDwIcXEPb4HaJPn2xzQfT53bNAmD5cDILZC31MYEx16b6J1kO0BxV5Tkb5FB6gRzq8G1E+CVPaLRn7iW6sVJrI9oO/2mXVn5CmKtx43p7I9oG+K8SiM3+ThtgZ0Vy3u8FE38egnbrdVn3BrDRqFX+Hjd+XRAZDQikZNCUnfTmn8VR9wU0BjyxJs0Xc+4dvwo1KF0sBQ+oT12vVUGwOKfx0NIPMPMyVEX0m2NWBUIKC3+EjbLrFBgQZAdDI4VSDSryIFJGR4ta793tpIhw9+hl3Po7bGgPr+64vekiIAkiARkFIrPuHWGhRf+BOw+yaorvndqETpAvstgEhVhM8l3veEBKiNCHzC8lp3hWUDqODyXtq6H7qK0igfmMlC2V8FqE+3tMcnYqA1wi+xqECrLrDNASW/npya6O88IBTsdGKD1Cd70pM8qw9KHxz4eDtUFLyD+U/lyjFsRoC4jqPg/OJDQuBDJ+ojhV5XgbYGdOetqZs44SPkaIsX9rruI24drE6F02XfA1a2yfj2mI8wn6xBSbWhSGKyeyuM46+TTO0Pe9QrP+PGgNJPBqfx0fqS408J2trPuCWgSe5LRC/oESI5vBDh9doPmZcNIkf6TkkZmRspeH1JimYDobUfaVMNuv/mPf1htRK4h0UFkx8P6IHEw/qUz7DM4kv5Dj75ARrcIBFTGyOVkumL9Z8nL0BDmKFU4DM12RGQMOuGqSxZAeI6BlIhdYuKFNGwszjs9SufZ7BkA+hbbjEMGZ8CGnb4tzx7LoDCKZcIBa+SdnUpT5M9zdr3+UAouQBCoVN6z0fEqP07IF5lKyfKgmQBKPjQrBSwvqSIZa6pUxjMNOUTV06UBckBUJq5p5yiTCJWWnVyhEjIuivXDlKD5ABoEOH3sSEg8//GGN45VLOv5j3q02cHyJve0OeTOIsJoF6+sVgoH0BUxiJ8w+XUCUpXWC/fOQAmH0BaD5OBBufn+ymGf+stXmKfE6BEYjwWUx9oqIc9jHf53zpgScSMh4imiA21/2gUutTWvudx8gMU+cSeVS/6j6TVVVl0ga4rn2YEyRIQu4zsFSWhmCko+nhLEB8lK0D+3Ln3JWWsRIGQ0kbL9yTJUskOkAgHP7TASqu0CFa5/grRSP+gPnYFyQpQH86ffcld0Zel0rDHw7oyJ1mVdAoWHaa1T51JcgPkDzb6G3tF+gYktJGqVEJilhHCsq79umrxLlcoK0C+r4XIwMpCJQGzo+vqpAx8YhCLsV3bnXUR3KO1V1pGgHwqseeKaVQW3uhVde7auna85etKlU01RCK/B5B3C/vY3hLafgrVtW3bOI4xJBCzsNZOhfSGfN3HyghQMVSSi1AVTG+aS9e1F4oyJJ2vFgyHHYCVyzsyAjQ0joWVhoCkPBWqKhvns2YnjDnSmnLzwb0aqbB76KtcC+80ak16AzywfDO2IKQHHVgZvOZzZQMIxWvQMIv0phU40KA2BEepyGYoAsbK4DWfKSdAQ9E0xhhcW3fTtkp1Ro4BoXO0xg3Pg+QEKIgHVPIn+g8BupM5G3IgKxLKE1DSG3WjWEzKOwXSaVfUag+TIyCN+YzQXncti/QAUQ50Rkf1q6lQjoDKNFmIMQexOAU/cVCf4g0qlCGgURcqBGMESPrt/SSHCqoiKbpf7WlyBJT8udjDy2wYkPR+kcczHLj+iiV2Z8CC733yJPiDjDtaWnS/1kPlBOiOiABCeiRhZYmiGJeUr/UE2QC6m9oRIsWS7u9iuuOv9Vw5ABKhnOwbo7CU7gEa3l214j4DQJhGDbt4MfkK4TlNAJFRTnYzbhNf6elyAMR7Ex26T7/yrb85vDrJ9FBRucauNMNj6755XlwybOOT9pZCjHaqCEj6TS2+37Vt/YmAwrkgA5JjFRJCyqn5ieVCiEqrwsccdds2K53Vbw6o8OuIYMikA3XaepiaYqMw36GRjQfUKR/9Ly1bT39hrw9e/MemOJ0GM9TaB0CKzwxF6RR3iPtGRK2sa+pVnnHr6S+UYC4Ga5yYoaBeRR8KXvFQlc85KF8Wi4jkH2PqplrlGbcFVHAbmEgAJb4QnwHRDi4iuag2OP6ffw7WprXlBwIKFay8uKgflfrBhm+gf3xZZ3gv5FspwicrDsCsqyqzykNuBYhrOMg0n0KmhxToVIy+qY+pfJJrKUbu0GCd1Eq+4maAeHlI6WNRPP4qpsGGGH1AuZYBDbYkTPoUVslMbweIhgTwGiviByn5UP7hj8VyKudU6isir1VuZdvOBg1eYEhl8K6PzfEPfyiJv8gFSgGVXVcur0ObARJFkhhEMj7okFjU8ejvvOmJ66j8G9JUBtxpV2i9MKNtAIm0whcViXEJitLl4+uf9AiQ3+tpsRqr9PlS0t626KNuASi4yDFdGNYZ+0XyQcM4/WgxFVa+ggqujKF1u6ix3gaQ/9uGVA9jOnFg/7eZQFNCoQxGaZFkRhZ82E2W2LC2JHUX0ivKbNARxl+3sSmgbypF7y73rBsZ6djNQyiS7A6Hrn8xI+MmXxF8xmQm3rKEtvSD4l+SnC3fSbze/8EJIPYboyw3dmlrQEX8hJ0gMXuFYQjtxysM47GEkfta6kG3cxRF5BMzr381z/HnCJF3xRM/UbkEkFqsLm/DaH5oK+ijRv1L3TN3JY7HDCEglc6eFGKhJH4GpxokQ3bsH77V/8B0B0sASXCtl1GifAD5VtV/+V6M6nUSiH0T7Kxf6JAjF0A/lGuJ21dyeNh1aKfrxhAftVxl504BDTbLe0Btiy/aloINWmsL/aJdArrdon02GuJVXSmaeSKaRpyKZc+idwno+qWDVaY2oLKrsal8yNwmHsSrsktAbVtTGhoAWQu7vW1BOmV85tYXeC6jQjsFVGI+0VnbdQCIuoHa1prCOiUHr3qR37VTQGiVQW/qzoE31LStg0+BjWsUzxZqsDtokZbNXQICG6QAStc1rijLAhTINW1nK5ruimtL1+1FLBNv7BLQrW3B+IDKNE1xrgVokAVAzkmui+FJX+gJLBBu7BLQFYg4+E8FutMZ4VrHhlkKzLzqwUYvsMh2CUhfzs7ZpiHb3BiqE6oqyVM9JG9iJ7lMK+IuAYnzmYwOAWoVnRbhBmbRZodTNrlM1/guAV2bsmywZgp0qLMFpf4BEGxejtPbIcm9wO/aJaCubWzd1Ngu3ja+wQVMkl9aPvVPpUev/64dAJom0W6wibWAo0HvB14Z3NkVutKFgtf6T6jxlEt403sA5H3iMDHoVqNpVlXTlRGQ1PgWJ4JMmhl6+bfnDyiOdLtioS+q07VU3eVWGoEzT/wEQXCJSlv4ieVDjvH1OV77AESnybrU4Ofg0BcAg7f4GdSVs+PjIlNdzp5ViFbBmXy9hyN/QD2Fnz05gAVOgYEIQlLtC0WkzoVOcWfDaf+lUwxogbzZDgCJIl77iMXjdDx0dnSOwbkxum0MtYXPEYU8N77Mc4Hznx0A8pW/bHsFHb6qc+WPVJXVOGAI4nirVKkZULRACxyx7gEQnccPgAosdqGAApUGJy/A15xTtgzVr8lB/cuHG7sBVCQVDsJaBmR1SaOEMAizTpNRSgEtMHN6H4CKuHvzngaAGIAu6wrbWgxt6a5zKum/A2q/I5rnsx00LRCv+0o0ZZSmqEtXmBhi9cLIzCoZ8ajw8y/UnOUPiI7gsYBM8Lw3+mhKJER7G56CAZPmUkDkUSlrjOWMftjj/cDKJzFlD4iHLd30UBILJsdQHwIsKt/tg4AaA/+lqMOqcDQWehmCPEEod0B+GFWs/yV9MnEuhfZTcsqKvOt0DEogMrq35OeEcgcUJGkdE/EeWl0a31LnzgZMd4lVHWpU9SGEjnv+U4dlewGEgyeDeaaSWGsFbOuGjw+VMrbUtqpsuIo1drcmVYxPnUjvEJAKBsg2ziifRwRtgliMrgSI82LodTHC83NCewHEFXqhOZPXmG4uBiyyBe9HiVOBCdi2oF5fdAFSG+XDjqZxP76PYzeAirRiE8MOWFnaqBJ8n/bsHBLpPCCrjMEDIBylk3a/OAL0w/rOXQKiRBD8ycYYAgT+DwBSoEEVAdJgeZwNI4eGNUar7Ifh614A9X24BgmPvrQJLwU2+bQtEAF1UlXlo3lwhgw3ow0G+zkrvRtA8S4bBGRi3lkQn+5Mhsk1EGlQDlaZE4es2vgatGilfziGej+AhvbCdByDKDsC5LrGGtjOIHz1IT0nXo1Ct0kOV/3+tD54T4CGwRQDHyFqiDE6DYpU2Qq3OS6499E+bP2Yxg6eJW2DP/u9ewEkkv4DPynG/72uFudGXdpKxkwQOkr8yjqlCYzWYLfC5W4/kd0AYn3xO5LGadK6ZC/QNhCI0QbPWGzXKDlYZiliTV7xcz57ASSSViDMQ9NGVaoAyHf7QCBGdXlO+um42L5hwJl0No5r+ExAaQ8naYXhMnJBcZiQzvHxBpDoGrLiFKOqrlMCC4XtZwMaxsAE2xyyzgxIRkBY9grO8gl2eyPYBE3vsf04QGlTz9Cn6F9wMVlwi06sX5WB/d63Qw8/Ff2gH/7+3AGJoAAyyYTJ8AcbTZrDRxuYjqUKM0eJfOmn6MR12TTFjzf57AHxvWJcvJp4irh67LAxVRW6kcacHaysytKIbnQVTaVpWp4k78h19onhFTkDKq+U5DjBnx6GIqcaRCMbUIlwiZG/7GrY/ivLX8erXWRp6SvsPl6fmQOXMSBRlsmB2MgInTwoIGcqw2aJ+8lpFgM5khrNt3Xemrsa/nmmKjhfQPGCzHA5VDI40c9VwoEUXcuhhaFb68hV/PMHXCPa33TFdXnFuW3kcyWLuQIKe1ccEZNciUDGCHTFGolZRJ5nhgbZWsMRvO1qg06iu/gjMkf1Hs8QyhVQz9HFuJ5uAETowPTYxgZ0tK1Rogis0fly7tpGubMMcP+x3fObZAyoBy+HEvDh0l4qxjudTvKPCoYoZuLxRdexB6nLGtPTTaNsuCUJ+PxDx/k9yRcQnmhBLKGkCOOq0BOiCR+YPBz2sggIHR1UoXPjXNd28B0V2Gh495XpXRkD6sVNCz9aMhwXUlE9bG9GBW8o2CQvSkvVOAFGx4H+oKXG4OyF6oV8AdH0/5hBFiW5NwJDU1ARMjX++Av16hRyzwrijM6euUkBNjjsTsCb7Z7+O3MGNAzxgOXWfIFNkifwbv6nbHfGQhi+MWG4bp1vIrHUHOWlw03OvlLMmTWgIFj3Ut4QELp8bafPFpw+ifWJZL9tNdQlGgDUnLuAp61olvLzlWa7AOTlZihoaFsDr68d1dbT/l6dlSTR1lpq4Oi8Bl0cMLy07fOVZrsCpOlayLa9Ytk9/v1Ym+AceNRK/Ffw3O22UtWljksM068vNf3sCVCPi0050getEQZOWEKPmdwli/0tYHMgbg8a1HXd5Xy2/QuIdgYIEGFPyw3z9fLcgbEOcYjkBIiy4B9GG30pFX7SG56u+MwF2rsDRHIrrRInCLma0gVXUeLZjtAlNot7PnhqCDarkVVNg6jLJ4aW7xOQkLbEKR3KRECUb8T0PDX8dminLydwpMBdNLjf0RnIB9Yo3hdBPuRoCBXt89YBm040DTiLrtZgvH0TB+fvn/GGdgOIcehbuAo7lJAprz9nLC7D0AL29a6Dr+I/chhKxd//89+7E0BaCx4WpLVmvRkDoqMxwoDjbynmgA1eyaZTCZ5nOhP2AigZ8j9NDKUvhgnK6lKL06l2vvqO0kbPdCbsBJAYl5gNpEg1mgZLp5UKFS+0oVnLF9VrX1um7FPu9D4ABWsc0xq+JgoPdsaAcL/SlLAPtZ6hgqp/bpDHDgDR0MSwkvzpIf3JRhfk6VB3QuUa7KnjE1X8Mo3KUdTpMrkT50eyB0DJNVBhnfG8dn9dAArOOWlw4ElYh1jjwYA4Z/3sb88fkJiOS5S0yfuLM/07hYEQ7exU04TYw1p/5cYTFR2p5A9o3I0SgCQHQv5zAATesxNkfWDTb1ve8AHVK211OwQEygPRQ6zLxFWE3wGBFsSlGuI0+Iau69u2oh+8Xa+fDUgkZjkAstEUgzHu2k5rZ/Wtv7YdRiHA4+urp5uSfkFTr+ALE9JJv0U4hKYzDQhM2+pWX78NQSF5eUhX/oCKYrhIzEv4AgES18vXLcRqy//+3AGJqQedbNja14b77ywWvQ0hSOaAvAOtVVSh5Is3GjsxEPuwu33+QWK6R/sxCwvOqv9XyRnQkA+TwQrVB6BEEgco9vS+/SGyBjSYZq5jXe9W+ceSMaCkf+VWl1zie2hQIuQs38i5ud3oJsz17gR/LPkCEgxoeONWvhR1Pim5Arr5XqfkLYEVHm+XPAGJXkNMvtj1M69IjoD8geBSV4e8JlkC4quN8ni0PJ5iLHzH8wZO4T3JERDJC3WXi0oeT3FP8lCgjAFlIgegGTkAzcgBaEYOQDNyAJqRA9CMHIBm5AA0IwegGTkAzcgBaEYOQDNyAJqR/wN7lwZtJWDWZQAAAABJRU5ErkJggg==" /><!-- --></p>
 </div>
 <div id="creating-a-choropleth-map" class="section level2">
 <h2>Creating a choropleth map</h2>
+<p><a href="https://en.wikipedia.org/wiki/Choropleth_map">Choropleth maps</a> are ideal for visualizing how measurements vary across a geographic area or showing the level of variability within a region by using geographic boundaries.</p>
+<p>The previous example shows how the companies are translated to dots on the map. To make a summary per region, we’d want to know which dot ‘belongs’ to which region. We can get the overlaps using the <code>match_sp</code> function.</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tbl_merge &lt;-<span class="st"> </span><span class="kw">match_sp</span>(sp_companies_uk, sp_uk_lieutenancy)</code></pre></div>
 </div>
 
 

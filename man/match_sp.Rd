@@ -17,6 +17,6 @@ match_sp(sp_from, sp_to)
 Find key for merging Spatial* objects
 }
 \examples{
-match_sp(sp_companies_uk, sp_uk_lieutenancy)
+tbl_merge <- match_sp(sp_companies_uk, sp_uk_lieutenancy)
 }
 \keyword{maps}

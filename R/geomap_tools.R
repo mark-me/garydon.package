@@ -24,15 +24,15 @@ create_spatial_df <- function(df, lon = "LONGITUDE_RA", lat = "lat") {
 #' @keywords maps
 #' @export
 #' @examples
-#' match_sp(sp_companies_uk, sp_uk_lieutenancy)
+#' tbl_merge <- match_sp(sp_companies_uk, sp_uk_lieutenancy)
 match_sp <- function(sp_from, sp_to) {
 
   # Set both spatial objects to same projection
-  sp_from <- rgdal::spTransform(sp_from, sp_to@proj4string)
+  sp_from <- sp::spTransform(sp_from, sp_to@proj4string)
   # Create an identifier for combining data
   sp_to@data$id_merge <- rownames(sp_to@data)
   # Find the overlay between the two spatial objects
-  df_merge <- rgeos::over(sp_from, sp_to)
+  df_merge <- sp::over(sp_from, sp_to)
   # Add the overlay two the original data
   df_merge <- cbind(id_merge = df_merge$id_merge,
                     sp_from@data)
