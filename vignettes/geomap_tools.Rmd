@@ -1,0 +1,82 @@
+---
+title: "Geomap tools"
+author: "Mark Zwart"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    css: graydon.css
+    df_print: paged
+vignette: >
+  %\VignetteIndexEntry{Geographic mapping tools}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(tmap)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+## Introduction
+
+Geographic mapping can be done with the _[tmap](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html)_ library or the _[ggplot2](http://zevross.com/blog/2014/07/16/mapping-in-r-using-the-ggplot2-package/)_ library. The _tmap_ libary offers the most specialized functions for using maps, and you can even make interactive maps with it pretty simply. The functions and data in the pacakge allow you to work with borh quickly. 
+
+The geographic map tools allows you to use pre-existing country maps with different administrative regions.The pre-existing maps are available for the three countries with increasing granularity: 
+
+| The Netherlands | Belgium         | The United Kingdom | 
+| ----            | ----            | ----               | 
+| sp_nl_country   | sp_be_country   | sp_uk_state        |
+| sp_nl_province  | sp_be_province  | sp_uk_country      |
+| sp_nl_corop     | sp_be_gewest    | sp_uk_lieutenancy  |
+| sp_nl_gemeente  |                 |                    |
+| sp_nl_postcode  |                 |                    |
+
+First let's load the package:
+```{r}
+library(graydon.package)
+```
+
+## Turning company data into map data
+
+We can turn a regular data frame into a spatial object by using the `create_spatial_df` object:
+```{r, warning=FALSE}
+sp_companies_uk <- create_spatial_df(tbl_companies_uk, lon = "LONGITUDE_RA", lat = "LATITUDE_RA")
+```
+
+We can user the spatial data in a tmap plot:
+```{r}
+library(tmap)
+#map_mode("view")
+
+tm_shape(sp_companies_uk, name = "Companies") +
+  tm_layout(aes.palette = list(seq = c(col_graydon_low, col_graydon_high), 
+                               div = col_graydon, 
+                               cat = col_graydon), 
+            frame = FALSE) +
+  tm_fill("qty_customers_class", 
+          title = "# Customers",
+          alpha = .8,
+          legend.show = TRUE,
+          popup.vars = c("Location :" = "NAME_2",
+                         "# Customers :" = "qty_customers",
+                         "? Total revenue :" = "amt_revenue_sum",
+                         "? Median revenue :" = "amt_revenue_median"))  +
+  tm_borders(col = "white",
+             alpha = 0.2)  +
+  tm_shape(sp_branches, name = "Branches") +
+  tm_layout(aes.color = c(fill = col_client[1], borders = col_client[1], symbols = col_client[1])) +
+  tm_dots(col = "#00573C",
+          size = 0.01,
+          alpha = 0.7,
+          legend.show = FALSE)
+```
+
+
+## Creating a choropleth map
+
+```{r, message=FALSE, warning=FALSE}
+
+```
