@@ -24,7 +24,7 @@ knitr::opts_chunk$set(
 
 ## Introduction
 
-Geographic mapping can be done with the _[tmap](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html)_ library or the _[ggplot2](http://zevross.com/blog/2014/07/16/mapping-in-r-using-the-ggplot2-package/)_ library. The _tmap_ libary offers the most specialized functions for using maps, and you can even make interactive maps with it pretty simply. The functions and data in the pacakge allow you to work with borh quickly. 
+Geographic mapping can be done with the _[tmap](https://cran.r-project.org/web/packages/tmap/vignettes/tmap-getstarted.html)_ library or the _[ggplot2](http://zevross.com/blog/2014/07/16/mapping-in-r-using-the-ggplot2-package/)_ library. The _tmap_ libary offers the most specialized functions for using maps, and you can even make interactive maps with it pretty simply. The functions and data in the pacakge allow you to work with both quickly. 
 
 The geographic map tools allows you to use pre-existing country maps with different administrative regions.The pre-existing maps are available for the three countries with increasing granularity: 
 
