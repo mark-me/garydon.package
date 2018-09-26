@@ -16,22 +16,18 @@
 #' tbl_companies_uk_anon <- anonymize_tbl(tbl_companies_uk,
 #'                                        vec_col_names = c("LONGITUDE_RA",
 #'                                                          "LATITUDE_RA",
-#'                                                          "ESTABLISHMENT_DATE")
+#'                                                          "ESTABLISHMENT_DATE"))
 anonymize_tbl <- function(tbl_in, vec_col_names, perc_dev = 0.2) {
 
   set.seed(42)
   # Creating more rows by repeating random 20% of the rows
-  qty_random_extra <- round(nrow(tbl_in) * 1 + perc_dev, 0)
-  tbl_in_random <- tbl_in[sample(qty_random_extra), ] # Drawing random 20% of original data
-  tbl_sample <- rbind(tbl_in, tbl_in_random)          # Adding random sample to original data
-  rm(qty_random_extra, tbl_in_random)
+  qty_random_sample <- round(nrow(tbl_in) * (1 + perc_dev), 0)
+  tbl_sample <- tbl_in[sample(qty_random_sample), ]
 
   # Selecting a random subset of those
-  qty_sample_lower <- round(nrow(tbl_in) * 1 - perc_dev, 0)                   # Lower limit of random rows picked
-  qty_sample_upper <- round(nrow(tbl_in) * 1 + perc_dev, 0)                   # Upper limit of random rows picked
-  qty_random_sample <- round(runif(1, qty_sample_lower, qty_sample_upper), 0) # Number of new randomized sample rows
-  tbl_sample <- tbl_in[sample(qty_random_sample), ]                           # Drawing of sample
-  rm(qty_sample_lower, qty_sample_upper, qty_random_sample)
+  qty_random_sample <- round(nrow(tbl_sample) / 1.2, 0)                       # Number of new randomized sample rows
+  tbl_sample <- tbl_sample[sample(qty_random_sample), ]                       # Drawing of sample
+  rm(qty_random_sample)
 
   # Randomizing column values
   for(col_name in vec_col_names){

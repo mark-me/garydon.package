@@ -2,25 +2,6 @@
 extrafont::font_import(pattern = "Roboto", prompt = FALSE)
 extrafont::loadfonts(device="win")
 
-#' #' A vector with the Graydon color palette
-#' #' @export
-#' col_graydon <- c("#00545D", "#EB6E08", "#858587",
-#'                  "#8BB0DE", "#186FA7", "#474646",
-#'                  "#BABFC1", "#000000", "#3AA2DF")
-#' #' Color from the Graydon palette representing a low value
-#' #' @export
-#' col_graydon_low <- col_graydon[4]
-#' #' Color from the Graydon palette representing a high value
-#' #' @export
-#' col_graydon_high <- col_graydon[2]
-#' #' Color from the Graydon palette for the grid
-#' #' @export
-#' col_graydon_grid <- col_graydon[7]
-#' #' Color from the Graydon palette for the axes
-#' #' @export
-#' col_graydon_axis <- col_graydon[6]
-#' devtools::use_data(col_graydon_axis)
-
 #' A function for applying a Graydon theme to a ggplot
 #'
 #' This function applies Graydon theme to a ggplot.
