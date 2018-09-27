@@ -82,3 +82,37 @@
 #' \url{https://en.wikipedia.org/wiki/Lieutenancy_area}
 #'
 "sp_uk_lieutenancy"
+
+#' The SBI codes which which are used to describe a companies main economic activity.
+#'
+#' \url{https://sbi.cbs.nl/cbs.typeermodule.typeerservicewebapi/content/angular/app/#/}
+#'
+#' @format A data frame with 1.455 rows and 4 variables:
+#' \describe{
+#'   \item{code_SBI}{Code used to identify economic activities}
+#'   \item{code_SBI_parent}{Code of the economic activity description that is more general}
+#'   \item{description_SBI}{The Dutch description of the economic activity}
+#'   \item{hierarchy layer}{The hierarchical position of the code in the total economic activity tree;
+#'   the higher the number, the more specific the code is.}
+#' }
+"tbl_SBI"
+
+#' A sample of 1.835 UK companies
+#'
+#' A dataset containing the first few companies from our UK GDI dataset
+#'
+#' @format A data frame with 1.835 rows and 23 variables:
+#' \describe{
+#'   \item{GDB_ORG_YUID}{Company identifier}
+#'   \item{GB_CRO_REGISTRATION_NUMBER}{Chamber of commerce identifier}
+#'   \item{GB_Y_COMPANY_ID}{Legacy company identifier}
+#'   \item{PRINCIPAL_NAME}{Legacy company identifier}
+#'   \item{ADDRESS_LINE_1_RA}{Address line for the registred address}
+#'   \item{ADDRESS_LINE_2_RA}{Address line for the registred address}
+#'   \item{ADDRESS_LINE_3_RA}{Address line for the registred address}
+#'   \item{ADDRESS_LINE_4_RA}{Address line for the registred address}
+#'   \item{ADDRESS_LINE_5_RA}{Address line for the registred address}
+#'   \item{POSTCODE_RA}{Legacy company identifier}
+#'   \item{POSTCODE_RA}{Legacy company identifier}
+#' }
+"tbl_companies_uk"

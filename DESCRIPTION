@@ -14,6 +14,7 @@ Imports:
     extrafont,
     ggplot2,
     ggthemes,
+    igraph,
     magrittr,
     readr,
     rgdal,
