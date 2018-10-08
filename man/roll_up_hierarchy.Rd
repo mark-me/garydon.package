@@ -2,7 +2,7 @@
 % Please edit documentation in R/economic_activity_hierachy.R
 \name{roll_up_hierarchy}
 \alias{roll_up_hierarchy}
-\title{A function for applying column configuration file}
+\title{A function to determine which economic activity definitiion level is optimal if you want to have a minimum value in a economic activity group}
 \usage{
 roll_up_hierarchy(tbl_hierarchy, threshold)
 }
@@ -32,8 +32,8 @@ so the codes represent enough of something for example number of companies,
 number of customers or revenue.
 }
 \examples{
-get_columns_file(df, filename_source)
+roll_up_hierarchy(tbl_hierarchy, threshold = 200)
 }
-\keyword{config}
-\keyword{data}
-\keyword{import}
+\keyword{NACE}
+\keyword{SBI}
+\keyword{SIC}

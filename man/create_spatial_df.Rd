@@ -4,7 +4,7 @@
 \alias{create_spatial_df}
 \title{Make shape file of data frame from long and lat columns}
 \usage{
-create_spatial_df(df, lon = "LONGITUDE_RA", lat = "lat")
+create_spatial_df(df, lon = "lon", lat = "lat")
 }
 \arguments{
 \item{df}{The data frame containing the data to be mapped}
