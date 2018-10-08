@@ -1,11 +1,10 @@
 Package: graydon.package
 Type: Package
 Title: Graydon Toolkit
-Version: 0.1.0
-Author: Who wrote it
+Version: 0.2.0
+Author: Mark Zwart
 Maintainer: Mark Zwart <m.zwart@graydon.nl>
-Description: More about what it does (maybe more than one line)
-    Use four spaces when indenting paragraphs within the Description.
+Description: Toolkit for faster development
 License: What license is it under?
 Encoding: UTF-8
 LazyData: true
@@ -15,6 +14,7 @@ Imports:
     extrafont,
     ggplot2,
     ggthemes,
+    igraph,
     magrittr,
     readr,
     rgdal,

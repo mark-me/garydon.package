@@ -1,0 +1,118 @@
+#' Set of Graydon company colors
+#'
+#' A vector containing 9 Graydon company colors in hexadecimal format.
+#'
+"col_graydon"
+
+#' Low value color
+#'
+#' A variable containing a Graydon company color used for the lowest value in positive
+#' valued gradients. The color value is in hexadecimal format.
+#'
+"col_graydon_low"
+
+#' High value color
+#'
+#' A variable containing a Graydon company color used for the highest value in positive
+#' valued gradients. The color value is in hexadecimal format.
+#'
+"col_graydon_high"
+
+#' Map outlining the Dutch country borders
+#'
+#' \url{https://en.wikipedia.org/wiki/Netherlands}
+#'
+"sp_nl_country"
+
+#' Map outlining the Dutch province borders
+#'
+#' \url{https://en.wikipedia.org/wiki/Provinces_of_the_Netherlands}
+#'
+"sp_nl_province"
+
+#' Map outlining the Dutch COROP borders
+#'
+#' \url{https://en.wikipedia.org/wiki/COROP}
+#'
+"sp_nl_corop"
+
+#' Map outlining the Dutch manucipality borders
+#'
+#'
+"sp_nl_gemeenten"
+
+#' Map outlining the Dutch postal code borders
+#'
+#' \url{https://en.wikipedia.org/wiki/Postal_codes_in_the_Netherlands}
+#'
+"sp_nl_postcode"
+
+#' Map outlining the Belgium country borders
+#'
+#' \url{https://en.wikipedia.org/wiki/Belgium}
+#'
+"sp_be_country"
+
+#' Map outlining the Belgium gewest borders
+#'
+#' \url{https://en.wikipedia.org/wiki/Communities,_regions_and_language_areas_of_Belgium}
+#'
+"sp_be_gewest"
+
+#' Map outlining the Belgium province borders
+#'
+#' \url{https://en.wikipedia.org/wiki/Provinces_of_Belgium}
+#'
+"sp_be_province"
+
+#' Map outlining the UK state borders
+#'
+#' \url{https://en.wikipedia.org/wiki/United_Kingdom}
+#'
+"sp_uk_state"
+
+#' Map outlining the UK country borders
+#'
+#' \url{https://en.wikipedia.org/wiki/Countries_of_the_United_Kingdom}
+#'
+"sp_uk_country"
+
+#' Map outlining the UK lieutenancy area borders
+#'
+#' \url{https://en.wikipedia.org/wiki/Lieutenancy_area}
+#'
+"sp_uk_lieutenancy"
+
+#' The SBI codes which which are used to describe a companies main economic activity.
+#'
+#' \url{https://sbi.cbs.nl/cbs.typeermodule.typeerservicewebapi/content/angular/app/#/}
+#'
+#' @format A data frame with 1.455 rows and 4 variables:
+#' \describe{
+#'   \item{code_SBI}{Code used to identify economic activities}
+#'   \item{code_SBI_parent}{Code of the economic activity description that is more general}
+#'   \item{description_SBI}{The Dutch description of the economic activity}
+#'   \item{hierarchy layer}{The hierarchical position of the code in the total economic activity tree;
+#'   the higher the number, the more specific the code is.}
+#' }
+"tbl_SBI"
+
+#' A sample of 1.835 UK companies
+#'
+#' A dataset containing the first few companies from our UK GDI dataset
+#'
+#' @format A data frame with 1.835 rows and 23 variables:
+#' \describe{
+#'   \item{GDB_ORG_YUID}{Company identifier}
+#'   \item{GB_CRO_REGISTRATION_NUMBER}{Chamber of commerce identifier}
+#'   \item{GB_Y_COMPANY_ID}{Legacy company identifier}
+#'   \item{PRINCIPAL_NAME}{Legacy company identifier}
+#'   \item{ADDRESS_LINE_1_RA}{Address line for the registred address}
+#'   \item{ADDRESS_LINE_2_RA}{Address line for the registred address}
+#'   \item{ADDRESS_LINE_3_RA}{Address line for the registred address}
+#'   \item{ADDRESS_LINE_4_RA}{Address line for the registred address}
+#'   \item{ADDRESS_LINE_5_RA}{Address line for the registred address}
+#'   \item{POSTCODE_RA}{Legacy company identifier}
+#'   \item{POSTCODE_RA}{Legacy company identifier}
+#' }
+"tbl_companies_uk"
