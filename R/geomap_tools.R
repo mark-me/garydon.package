@@ -7,7 +7,7 @@
 #' @export
 #' @examples
 #' sp_companies_uk <- create_spatial_df(tbl_companies_uk, lon = "LONGITUDE_RA", lat = "LATITUDE_RA")
-create_spatial_df <- function(df, lon = "LONGITUDE_RA", lat = "lat") {
+create_spatial_df <- function(df, lon = "lon", lat = "lat") {
 
   sp_new <- data.frame(df)
   sp::coordinates(sp_new) <- c(lon, lat)   # Convert data frame to spatial object
