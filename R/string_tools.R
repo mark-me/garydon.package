@@ -115,11 +115,11 @@ format_percent <- function(percentage, number_decimals = 1, format_EN = FALSE) {
 #' @param text The string you want the get a piece of
 #' @param idx_start  Character position in string at which the part to be taken begins. If start is greater than the number of characters in string, NA will be returned.
 #' @param qty_characters If omitted or if there are fewer than length characters in the text (including the character at start), all characters from the start position to the end of the string are returned.
-#' @return A string containing the formatted number
+#' @return A string
 #' @export
 #' @examples
-#' str_mid(text = "A long long time ago", idx_start = 8)
-#' str_mid(text = "A long long time ago", idx_start = 8, qty_characters = 9)
+#' str_mid(text = "A long, long time ago", idx_start = 89)
+#' str_mid(text = "A long, long time ago", idx_start = 9, qty_characters = 9)
 str_mid <- function(text, idx_start, qty_characters = NA) {
 
   qty_total <- stringr::str_length(text)
@@ -128,12 +128,33 @@ str_mid <- function(text, idx_start, qty_characters = NA) {
     return(NA)
   }
 
-  if(is.na(qty_characters)){
+  if(!is.na(qty_characters)){
     idx_end <- qty_total - idx_start
   } else {
-    idx_end <- idx_start + qty_characters - 1
+    idx_end <- qty_total
   }
 
   return(substr(text, idx_start, idx_end))
-  #return(idx_end)
 }
+
+#' Extracts a substring from a string, starting from the right-most character
+#'
+#' @param text The string you want the get a piece of
+#' @param qty_characters If  the number of characters that you wish to extract starting from the left-most character.
+#' @return A string
+#' @export
+#' @examples
+#' str_right(text = "A long, long time ago", qty_characters = 9)
+str_right <- function(text, qty_characters) {
+
+  qty_total <- stringr::str_length(text)
+
+  if(qty_characters > qty_total){
+    return(NA)
+  }
+
+  idx_start <- qty_total - qty_characters
+
+  return(substr(text, idx_start, qty_total))
+}
+
