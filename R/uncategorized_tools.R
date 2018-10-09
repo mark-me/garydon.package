@@ -19,3 +19,25 @@ df_to_clipboard <- function(df, row.names = FALSE, col.names = TRUE, ...) {
     )
 }
 
+#' Gets the last day of the month of a date in the format YYYY-MM-DD
+#'
+#' @param date you'll want to get the last month
+#' @param tz The time zone indicator, which has a default for the Central European time zone
+#' @export
+#' @examples
+#' end_of_month(as.Date('2018-10-09'), tz = "GMT")
+end_of_month <- function(date, tz = "CET") {
+
+  date <- as.POSIXct(date)
+  # date character string containing POSIXct date
+  date.lt <- as.POSIXlt(date) # add a month, then subtract a day:
+  mon <- date.lt$mon + 2
+  year <- date.lt$year
+  year <- year + as.integer(mon==13) # if month was December add a year
+  mon[mon == 13] <- 1
+  iso <- ISOdate(1900+year, mon, 1, hour=0, tz = tz)
+  result <- as.POSIXct(iso) - 86400 # subtract one day
+  result <- result + (as.POSIXlt(iso)$isdst - as.POSIXlt(result)$isdst) * 3600
+
+  return(result)
+}

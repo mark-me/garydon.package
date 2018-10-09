@@ -85,3 +85,55 @@ scale_gradient_graydon <- function(){
   return(scale_fill_gradient(low = col_graydon_low, high = col_graydon_high) +
            scale_color_gradient(low = col_graydon_low, high = col_graydon_high))
 }
+
+#' Saving a plot to a png, ready for use in a PowerPoint
+#'
+#' @param plot the ggplot, stored as a variable, which you want to save
+#' @param file_name the filename, excluding the extension, you ant to save the plot to
+#' @param squared logical indicating whether the plot is squared or landscape,
+#' conform to side by side side slide (squared = TRUE) or
+#' One graph in a slide (squared = FALSE)
+#' @keywords ggplot2
+#' @export
+#' @example
+#' save_plot_to_png
+save_plot_to_png <- function(plot, file_name, squared = FALSE) {
+
+  file_name <- paste0(file_name, ".png")
+
+  if(squared) {
+
+    png(
+      file =  file_name,
+      type = "cairo",
+      bg = 'transparent',
+      units = "cm",
+      width = 14.39,
+      height = 12.09,
+      pointsize = 18,
+      res = 300
+    )
+
+    invisible(print({plot}))
+
+    invisible(dev.off())
+
+  } else {
+
+    png(
+      file =  file_name,
+      type = "cairo",
+      bg = 'transparent',
+      units = "cm",
+      width = 29.21,
+      height = 12.09,
+      pointsize = 18,
+      res = 300
+    )
+
+    print({plot})
+
+    invisible(dev.off())
+
+  }
+}

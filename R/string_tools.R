@@ -81,6 +81,7 @@ format_currency <- function(amount, currency = c("EUR", "GBP"), number_decimals 
     format_EN <- TRUE
   }
 
+
   formatted_number <- format_number(x = amount,
                                     number_decimals = number_decimals,
                                     format_EN = format_EN,
@@ -158,3 +159,51 @@ str_right <- function(text, qty_characters) {
   return(substr(text, idx_start, qty_total))
 }
 
+#' Creates a vector of human readable ntiles
+#'
+#' @param vec_values The vector/column of values you want to 'ntile'
+#' @param qty_ntiles The number of ntiles you want to have
+#' @param FUN The function you want to use to apply formatting
+#' @param ... The parameters you'd want to pass on to the formatting function supplied to FUN
+#' @return Ordered factor
+#' @export
+#' @examples
+#' ntiles_labeled(vec_values = mtcars$mpg, qty_ntiles = 4, FUN = format_currency, currency = "GBP")
+ntiles_labeled <- function(vec_values, qty_ntiles, FUN, ...) {
+
+  ntile_values <- dplyr::ntile(vec_values, qty_ntiles) # Create n-tiles
+  ntile_value_min <- NULL                       # Minimum values for each n-tile
+  ntile_value_max <- NULL                       # Maximum values for each n-tile
+
+  # Search for minimum and maximum value of each ntile
+  for(ntile in c(1:qty_ntiles)){
+
+    # Finding minimum value
+    value_min <- min(vec_values[which(ntile_values == ntile)])
+    ntile_value_min <- c(ntile_value_min, value_min)
+
+    # Finding maximum value
+    ntile_max <- max(vec_values[which(ntile_values == ntile)])
+    ntile_value_max <- c(ntile_value_max, ntile_max)
+  }
+
+  # Format the minimum and maximum values
+  ntile_value_min <- sapply(X=ntile_value_min, FUN=FUN, ...)
+  ntile_value_max <- sapply(X=ntile_value_max, FUN=FUN, ...)
+
+  # Creating the interval variables
+  max_values <- c(ntile_value_min[2:qty_ntiles], ntile_value_max[qty_ntiles])
+  intervals <- paste0(rep('[', qty_ntiles),
+                      ntile_value_min,
+                      " - ",
+                      max_values,
+                      c( rep(')', qty_ntiles - 1), ']'))
+
+  # Replace ntile values with labels
+  interval <- plyr::mapvalues(ntile_values, c(1:qty_ntiles), intervals)
+
+  # Create an ordered factor
+  interval <- ordered(interval, levels = intervals)
+
+  return(interval)
+}
