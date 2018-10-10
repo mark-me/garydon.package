@@ -4,7 +4,7 @@
 \name{tbl_SBI_count}
 \alias{tbl_SBI_count}
 \title{The SBI codes which which are used to describe a companies main economic activity and the number of companies in nl}
-\format{A data frame with 1.455 rows and 4 variables:
+\format{A data frame with 1.455 rows and 5 variables:
 \describe{
   \item{code_SBI}{Code used to identify economic activities}
   \item{code_SBI_parent}{Code of the economic activity description that is more general}

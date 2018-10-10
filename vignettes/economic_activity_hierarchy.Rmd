@@ -61,13 +61,13 @@ plot_hierarchy(tbl_hierarchy_clean, title = "Original")
 
 ## Rolling up the hierarchy on values
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 # Rolling up NACE hierarchy
 tbl_translation <- roll_up_hierarchy(tbl_hierarchy_clean, 100000)
 ```
 
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 # Pushing back numbers to the complete NACE hierarchy ----
 tbl_hierarchy_rolled <- tbl_hierarchy_clean %>% 
   select(-value) %>% 
@@ -78,5 +78,18 @@ tbl_hierarchy_rolled <- tbl_hierarchy_clean %>%
 ```
 
 ```{r, message=FALSE, warning=FALSE}
+# Cleaning hierarchy by removing codes that have a 0 value and are non connective (don't have children that contain values)
+tbl_hierarchy_rolled <- clean_hierarchy(tbl_hierarchy_rolled)
+```
+
+
+```{r, message=FALSE, warning=FALSE}
 plot_hierarchy(tbl_hierarchy_rolled, title = "Rolled up")
 ```
+
+## Set level
+
+```{r, message=FALSE, warning=FALSE}
+tbl_hierarchy_set <- hierarchy_code_level(tbl_hierarchy_clean, level_no = 2)
+```
+
