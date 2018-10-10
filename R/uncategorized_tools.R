@@ -1,4 +1,4 @@
-# Copy a dataframe to the clipboard.
+#' Copy a dataframe to the clipboard.
 #'
 #' @param df The data frame you want to put on the clipboard
 #' @param row.names Indicates whether you want to copy the row names as well, default is FALSE.
@@ -8,15 +8,16 @@
 #' df_to_clipboard(mtcars)
 df_to_clipboard <- function(df, row.names = FALSE, col.names = TRUE, ...) {
 
-    write.table(
-      df,
-      "clipboard-16384",
-      sep = "\t",
-      row.names = row.names,
-      col.names = col.names,
-      dec = ",",
-      ...
-    )
+  write.table(
+    df,
+    "clipboard-16384",
+    sep = "\t",
+    row.names = row.names,
+    col.names = col.names,
+    dec = ",",
+    ...
+  )
+
 }
 
 #' Gets the last day of the month of a date in the format YYYY-MM-DD
@@ -40,4 +41,21 @@ end_of_month <- function(date, tz = "CET") {
   result <- result + (as.POSIXlt(iso)$isdst - as.POSIXlt(result)$isdst) * 3600
 
   return(result)
+}
+
+#' Determining redundant columns of secondary table before joining
+#'
+#' @param tbl_primary The table of which you
+#' @param tbl_secondary The time zone indicator, which has a default for the Central European time zone
+#' @param vec_key_columns
+#' @export
+#' @examples
+#' remove_redundant_columns(as.Date('2018-10-09'), tz = "GMT")
+remove_redundant_columns <- function(tbl_primary, tbl_secondary, vec_key_columns) {
+
+  col_names_both <- c(names(tbl_primary), names(tbl_secondary))
+  col_names_duplicate <- col_names[duplicated(col_names)]
+
+  # Exclude join key
+  col_names_duplicate <- col_names_duplicate[col_names_duplicate %nin% vec_key_columns]
 }

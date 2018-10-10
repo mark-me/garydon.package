@@ -2,7 +2,7 @@
 % Please edit documentation in R/economic_activity_hierachy.R
 \name{roll_up_hierarchy}
 \alias{roll_up_hierarchy}
-\title{A function to determine which economic activity definitiion level is optimal if you want to have a minimum value in a economic activity group}
+\title{Determine which economic activity definition level is optimal if you want to have a minimum value in a economic activity group}
 \usage{
 roll_up_hierarchy(tbl_hierarchy, threshold)
 }

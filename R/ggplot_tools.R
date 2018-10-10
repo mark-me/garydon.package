@@ -95,8 +95,11 @@ scale_gradient_graydon <- function(){
 #' One graph in a slide (squared = FALSE)
 #' @keywords ggplot2
 #' @export
-#' @example
-#' save_plot_to_png
+#' @examples
+#' p < ggplot(data = mtcars,
+#'            mapping = aes(x = wt, y = mpg, color = as.factor(cyl))) +
+#'       geom_point()
+#' save_plot_to_png(plot = p, file_name = "mtcars")
 save_plot_to_png <- function(plot, file_name, squared = FALSE) {
 
   file_name <- paste0(file_name, ".png")

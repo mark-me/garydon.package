@@ -1,4 +1,4 @@
-#' A function to determine which economic activity definitiion level is optimal if you want to have a minimum value in a economic activity group
+#' Determine which economic activity definition level is optimal if you want to have a minimum value in a economic activity group
 #'
 #' This function can be used to aggregate a NACE or SBI code economic activity tree,
 #' so the codes represent enough of something for example number of companies,
@@ -155,22 +155,20 @@ hierarchy_code_level <- function(tbl_hierarchy, level_no){
   return(tbl_hierarchy)
 }
 
-# Function: hierarchy_code_all ------------------------------------------------------------
 
-# Purpose: This function can be used enrich each of the codes with all of the codes from the
-#          levels above the current code
-
-# Arguments:
-#   * tbl_hierarchy - a data frame that should contain the entire NACE or SBI hierarchy,
-#         having at least the following columns:
-#         - code        - a NACE or SBI code.
-#         - code_parent - a NACE or SBI code that refers to the direct parent code.
-#         - layer_no    - an integer indicating the hierarchie's level, 1 being the top level
-
-# Return value: a data frame containing the complete tbl_hierarchy data frame, adding the column:
-#   * code_level_x  - The code at the chosen level of the hierarchy
-#
-
+#' Enrich each of the codes with all of the codes from the levels above the current code
+#'
+#' @param tbl_hierarchy  a data frame that should contain the entire NACE or SBI hierarchy with a
+#' quantity or amount. It should contain the following columns: \describe{
+#'   \item{code}{a NACE or SBI code.}
+#'   \item{code_parent}{a NACE or SBI code that refers to the direct parent code.}
+#'   \item{layer_no}{an integer indicating the hierarchy's level, 1 being the top level}
+#' }
+#' @return a data frame containing the complete tbl_hierarchy data frame, adding the column ode_level_x (the code at the chosen level of the hierarchy)
+#' @keywords SBI NACE SIC
+#' @export
+#' @example
+#' tbl_complete_sbi <- hierarchy_code_all(tbl_sbi_count)
 hierarchy_code_all <- function(tbl_hierarchy){
 
   # Iterator for the levels in the hierarchy, from top to specified level
@@ -181,21 +179,21 @@ hierarchy_code_all <- function(tbl_hierarchy){
   return(tbl_hierarchy)
 }
 
-# Function: clean_hierarchy ------------------------------------------------------------
-
-# Purpose: This function cleans up all nace codes from the hierarchy that contain a NA value
-#          and are non-connective
-
-# Arguments:
-#   * tbl_hierarchy - a data frame that should contain the entire NACE or SBI hierarchy,
-#         having at least the following columns:
-#         - code        - a NACE or SBI code.
-#         - code_parent - a NACE or SBI code that refers to the direct parent code.
-#         - layer_no    - an integer indicating the hierarchie's level, 1 being the top level
-#         - value       - a number containing the values associated with the code
-
-# Return value: a data frame containing only the codes with other values than NA and are non-connecting
-
+#' cleans up all nace codes from the hierarchy that contain a NA value and are non-connective
+#'
+#' @param tbl_hierarchy  a data frame that should contain the entire NACE or SBI hierarchy with a
+#' quantity or amount. It should contain the following columns: \describe{
+#'   \item{code}{a NACE or SBI code.}
+#'   \item{code_parent}{a NACE or SBI code that refers to the direct parent code.}
+#'   \item{layer_no}{an integer indicating the hierarchy's level, 1 being the top level}
+#'   \item{value}{the quantity that is used to evaluate whether the code should be kept in
+#'   place or should be 'pushed up' the hierarchy.}
+#' }
+#' @return a data frame containing only the codes with other values than NA and are non-connecting
+#' @keywords SBI NACE SIC
+#' @export
+#' @example
+#' tbl_sbi_clean <- clean_hierarchy(tbl_sbi_count)
 clean_hierarchy <- function(tbl_hierarchy) {
 
   # Iterator for the levels in the hierarchy, from bottom to top
@@ -234,43 +232,56 @@ clean_hierarchy <- function(tbl_hierarchy) {
   return(tbl_level_codes)
 }
 
-# Function: plot_hierarchy ------------------------------------------------------------
-
-# Purpose: Plotting hierarchies based on a single value, mostly for example puroposes
-
-# Arguments:
-#   * tbl_hierarchy - a data frame that should contain the entire NACE or SBI hierarchy,
-#         having at least the following columns:
-#         - code        - a NACE or SBI code.
-#         - code_parent - a NACE or SBI code that refers to the direct parent code.
-#         - layer_no    - an integer indicating the hierarchie's level, 1 being the top level
-#         - value       - a number containing the values associated with the code
-
-# Return value: a data frame containing only the codes with other values than NA and are non-connecting
-
+#' Plotting hierarchies based on a single value, mostly for example puroposes
+#'
+#' @param tbl_hierarchy  a data frame that should contain the entire NACE or SBI hierarchy with a
+#' quantity or amount. It should contain the following columns: \describe{
+#'   \item{code}{a NACE or SBI code.}
+#'   \item{code_parent}{a NACE or SBI code that refers to the direct parent code.}
+#'   \item{layer_no}{an integer indicating the hierarchy's level, 1 being the top level}
+#'   \item{value}{the quantity that is used to evaluate whether the code should be kept in
+#'   place or should be 'pushed up' the hierarchy.}
+#' }
+#' @keywords SBI NACE SIC
+#' @export
+#' @example
+#' plot_hierarchy(tbl_sbi_count)
 plot_hierarchy <- function(tbl_hierarchy, title = ""){
 
   library(igraph)
 
+  # Create graph
   tbl_nodes <- data.frame(code = with(tbl_hierarchy, unique(c(code, code_parent)))) %>%
     dplyr::left_join(tbl_hierarchy, by = "code") %>%
     dplyr::mutate(value = ifelse(is.na(value), 0, value),
-           layer_no = ifelse(is.na(layer_no), 0, layer_no),
-           layer_no = factor(layer_no))
+                  layer_no = ifelse(is.na(layer_no), 0, layer_no),
+                  layer_no = factor(layer_no))
 
   tbl_links <- tbl_hierarchy %>% select(code_parent, code, everything())
 
-  graph <- graph_from_data_frame(tbl_links, tbl_nodes, directed = TRUE)
+  graph_hierarchy <- graph_from_data_frame(tbl_links, tbl_nodes, directed = TRUE)
 
-  # Create Graph
-  set.seed(42)
-  p_hierarchy <- ggraph(graph, 'dendrogram', circular = TRUE) +
-    geom_edge_diagonal(edge_width = 0.5, alpha = .4) +
-    geom_node_point(aes(colour = layer_no, size = value),
-                    alpha = 0.4) +
-    guides(col = FALSE, size = FALSE) +
-    labs(title = title)
+  # Layout graph
+  graph_layout <- layout_as_tree(graph_hierarchy, circular = TRUE)
+  V(graph_hierarchy)$color <- as.integer(V(graph_hierarchy)$layer_no)
+  V(graph_hierarchy)$size <- 5
+  V(graph_hierarchy)$label <- ""
+  V(graph_hierarchy)$label.family <- "Roboto"
+  E(graph_hierarchy)$arrow.size <- 0
 
+  p_hierarchy <- plot(graph_hierarchy,
+                      palette = col_graydon,
+                      main = title,
+                      layout = graph_layout)
+  # # Create Graph
+  # set.seed(42)
+  # p_hierarchy <- ggraph(graph, 'dendrogram', circular = TRUE) +
+  #   geom_edge_diagonal(edge_width = 0.5, alpha = .4) +
+  #   geom_node_point(aes(colour = layer_no, size = value),
+  #                   alpha = 0.4) +
+  #   guides(col = FALSE, size = FALSE) +
+  #   labs(title = title)
+  #
   rm(graph, tbl_nodes, tbl_links)
   return(p_hierarchy)
 }

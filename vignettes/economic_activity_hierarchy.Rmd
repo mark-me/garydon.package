@@ -1,0 +1,82 @@
+---
+title: " economic activity hierarchies like NACE, SBI and SIC"
+author: "Mark ZwartTraversing"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    css: graydon.css
+    df_print: paged
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(magrittr)
+library(ggplot2)
+library(dplyr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+Our company databases have codes that indicate a company's economic activity. Economic activities are indicated by the NACE, SBI or SIC codes, depending on the country. Although this classification in helpful when looking at a client's customer portfolio, it contains so many groups and in some cases so little customers per group, that it is hard to make a proper portfolio analysis to spot a clients opportunities. With this package you can make use of the hierarchical nature of the economic activity coding to make less and larger groups.
+
+
+First let's load the package:
+```{r}
+library(graydon.package)
+```
+
+### The example data
+
+The package contains a data frame, _tbl_SBI_count_ which is an example of the SBI codes completed with a count of the Dutch companies associated with that SBI code. The data frame contains the following columns:
+```{r}
+data.frame(`Column names` = names(tbl_SBI_count)) %>% 
+  knitr::kable()
+```
+
+For out data frame to work we need to rename the columns of the table, so they comply with the column names used in the functions:
+```{r}
+tbl_hierarchy_count <- tbl_SBI_count %>% 
+  rename(code = code_SBI,
+         code_parent = code_SBI_parent,
+         layer_no = hierarchy_layer,
+         value = qty_companies)
+```
+
+We can clean the hierarchy by removing codes that have a 0 value and are non connective (don't have children that contain values):
+```{r, message=FALSE, warning=FALSE}
+tbl_hierarchy_clean <- clean_hierarchy(tbl_hierarchy_count)
+```
+
+Now if we visualize the hierarchy with the package's _plot_hierarchy_ function we can see it is very complex:
+```{r, message=FALSE, warning=FALSE}
+plot_hierarchy(tbl_hierarchy_clean, title = "Original")
+```
+
+## Rolling up the hierarchy on values
+
+```{r}
+# Rolling up NACE hierarchy
+tbl_translation <- roll_up_hierarchy(tbl_hierarchy_clean, 100000)
+```
+
+
+```{r}
+# Pushing back numbers to the complete NACE hierarchy ----
+tbl_hierarchy_rolled <- tbl_hierarchy_clean %>% 
+  select(-value) %>% 
+  left_join(tbl_translation, by = c("code" = "code_new")) %>% 
+  group_by(code, code_parent, layer_no) %>% 
+  summarise(value = sum(value, na.rm = TRUE)) %>% 
+  ungroup()
+```
+
+```{r, message=FALSE, warning=FALSE}
+plot_hierarchy(tbl_hierarchy_rolled, title = "Rolled up")
+```

@@ -18,4 +18,10 @@ One graph in a slide (squared = FALSE)}
 \description{
 Saving a plot to a png, ready for use in a PowerPoint
 }
+\examples{
+p < ggplot(data = mtcars,
+           mapping = aes(x = wt, y = mpg, color = as.factor(cyl))) +
+      geom_point()
+save_plot_to_png(plot = p, file_name = "mtcars")
+}
 \keyword{ggplot2}
