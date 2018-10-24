@@ -48,8 +48,8 @@ match_sp <- function(sp_from, sp_to) {
 #' @keywords maps distance longitude latitude
 #' @export
 #' @examples
-#' kilometers <- dist_degrees_to_km(lon1, lat1, lon2, lat2)
-dist_degrees_to_km <- function (lon1, lat1, lon2, lat2)
+#' kilometers <- distance_degrees_to_km(lon1, lat1, lon2, lat2)
+distance_degrees_to_km <- function (lon1, lat1, lon2, lat2)
 {
   earth_radius <- 6378.145
   radian <- pi / 180
