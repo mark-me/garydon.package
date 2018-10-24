@@ -50,7 +50,7 @@ end_of_month <- function(date, tz = "CET") {
 #' @param vec_key_columns
 #' @export
 #' @examples
-#' remove_redundant_columns(as.Date('2018-10-09'), tz = "GMT")
+#' remove_redundant_columns(tbl_primary, tbl_secondary, vec_key_columns)
 remove_redundant_columns <- function(tbl_primary, tbl_secondary, vec_key_columns) {
 
   col_names_both <- c(names(tbl_primary), names(tbl_secondary))
