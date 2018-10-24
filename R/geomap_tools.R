@@ -39,3 +39,29 @@ match_sp <- function(sp_from, sp_to) {
   return(df_merge)
 }
 
+#' Formula to calculate distances between two lon-lat points
+#'
+#' @param lon1 The name of the column containing the first point longitude
+#' @param lat1 The name of the column containing the first point latitude
+#' @param lon2 The name of the column containing the second point longitude
+#' @param lat2 The name of the column containing the second point latitude
+#' @keywords maps distance longitude latitude
+#' @export
+#' @examples
+#' kilometers <- dist_degrees_to_km(lon1, lat1, lon2, lat2)
+dist_degrees_to_km <- function (lon1, lat1, lon2, lat2)
+{
+  earth_radius <- 6378.145
+  radian <- pi / 180
+  lat1_rad <- lat1 * radian
+  lon1_rad <- lon1 * radian
+  lat2_rad <- lat2 * radian
+  lon2_rad <- lon2 * radian
+  dist_lon <- lon2_rad - lon1_rad
+  dist_lat <- lat2_rad - lat1_rad
+  a <- (sin(dist_lat / 2)) ^ 2 + cos(lat1_rad) * cos(lat2_rad) * (sin(dist_lon / 2)) ^2
+  c <- 2 * atan2(sqrt(a), sqrt(1 - a))
+
+  dist_km <- earth_radius * c
+  return(dist_km)
+}
