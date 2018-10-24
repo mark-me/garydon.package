@@ -4,25 +4,22 @@
 \alias{hierarchy_code_level}
 \title{A function for enriching each of the codes from it's chosen level's code value}
 \usage{
-hierarchy_code_level(tbl_hierarchy, level_no)
+hierarchy_code_level(tbl_hierarchy, level_no, col_code = "code",
+  col_code_parent = "code_parent", col_layer_no = "layer_no")
 }
 \arguments{
-\item{tbl_hierarchy}{a data frame that should contain the entire NACE or SBI hierarchy with a
-quantity or amount. It should contain the following columns: \describe{
-  \item{code}{a NACE or SBI code.}
-  \item{code_parent}{a NACE or SBI code that refers to the direct parent code.}
-  \item{layer_no}{an integer indicating the hierarchy's level, 1 being the top level}
-  \item{value}{the quantity that is used to evaluate whether the code should be kept in
-  place or should be 'pushed up' the hierarchy.}
-}}
+\item{tbl_hierarchy}{A data frame that should contain the entire NACE or SBI hierarchy.}
 
-\item{tbl_hierarchy}{a data frame that should contain the entire NACE or SBI hierarchy with
-the added code from the requested level: \describe{
-  \item{code}{a NACE or SBI code.}
-  \item{code_parent}{a NACE or SBI code that refers to the direct parent code.}
-  \item{layer_no}{an integer indicating the hierarchy's level, 1 being the top level}
-  \item{code_level_x}{The code at the chosen level of the hierarchy}
-}}
+\item{level_no}{The hierarchy level that you'd want to add the code of}
+
+\item{col_code}{The name of the column containing the NACE, SBI or SIC code.}
+
+\item{col_code_parent}{The name of the column  that contains a NACE, SBI or SIC code that refers to the direct parent code.}
+
+\item{col_layer_no}{The name of the column that contains an integer indicating the hierarchy's level, 1 being the top level}
+}
+\value{
+a data frame containing the original economic activity code and the new activity code
 }
 \description{
 A function for enriching each of the codes from it's chosen level's code value

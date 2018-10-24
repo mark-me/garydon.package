@@ -15,5 +15,5 @@ remove_redundant_columns(tbl_primary, tbl_secondary, vec_key_columns)
 Determining redundant columns of secondary table before joining
 }
 \examples{
-remove_redundant_columns(as.Date('2018-10-09'), tz = "GMT")
+remove_redundant_columns(tbl_primary, tbl_secondary, vec_key_columns)
 }

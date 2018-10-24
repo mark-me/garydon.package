@@ -10,11 +10,11 @@
 
 <meta name="viewport" content="width=device-width, initial-scale=1">
 
-<meta name="author" content="Mark Zwart" />
+<meta name="author" content="Mark ZwartTraversing" />
 
-<meta name="date" content="2018-10-10" />
+<meta name="date" content="2018-10-11" />
 
-<title>Traversing economic activity hierarchies like NACE, SBI and SIC</title>
+<title>economic activity hierarchies like NACE, SBI and SIC</title>
 
 
 
@@ -68,9 +68,9 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 
 
 
-<h1 class="title toc-ignore">Traversing economic activity hierarchies like NACE, SBI and SIC</h1>
-<h4 class="author"><em>Mark Zwart</em></h4>
-<h4 class="date"><em>2018-10-10</em></h4>
+<h1 class="title toc-ignore">economic activity hierarchies like NACE, SBI and SIC</h1>
+<h4 class="author"><em>Mark ZwartTraversing</em></h4>
+<h4 class="date"><em>2018-10-11</em></h4>
 
 
 
@@ -79,8 +79,8 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <p>Our company databases have codes that indicate a company’s economic activity. Economic activities are indicated by the NACE, SBI or SIC codes, depending on the country. Although this classification in helpful when looking at a client’s customer portfolio, it contains so many groups and in some cases so little customers per group, that it is hard to make a proper portfolio analysis to spot a clients opportunities. With this package you can make use of the hierarchical nature of the economic activity coding to make less and larger groups.</p>
 <p>First let’s load the package:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(graydon.package)</code></pre></div>
-<div id="the-example-data" class="section level2">
-<h2>The example data</h2>
+<div id="the-example-data" class="section level3">
+<h3>The example data</h3>
 <p>The package contains a data frame, <em>tbl_SBI_count</em> which is an example of the SBI codes completed with a count of the Dutch companies associated with that SBI code. The data frame contains the following columns:</p>
 <div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">data.frame</span>(<span class="st">`</span><span class="dt">Column names</span><span class="st">`</span> =<span class="st"> </span><span class="kw">names</span>(tbl_SBI_count)) <span class="op">%&gt;%</span><span class="st"> </span>
 <span class="st">  </span>knitr<span class="op">::</span><span class="kw">kable</span>()</code></pre></div>
@@ -108,6 +108,49 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 </tr>
 </tbody>
 </table>
+<p>We can clean the hierarchy by removing codes that have a 0 value and are non connective (don’t have children that contain values):</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tbl_hierarchy_clean &lt;-<span class="st"> </span><span class="kw">clean_hierarchy</span>(tbl_SBI_count,
+                                       <span class="dt">col_code =</span> <span class="st">&quot;code_SBI&quot;</span>,
+                                       <span class="dt">col_code_parent =</span> <span class="st">&quot;code_SBI_parent&quot;</span>,
+                                       <span class="dt">col_layer_no =</span> <span class="st">&quot;hierarchy_layer&quot;</span>,
+                                       <span class="dt">col_value =</span> <span class="st">&quot;qty_companies&quot;</span>)</code></pre></div>
+<p>Now if we visualize the hierarchy with the package’s <em>plot_hierarchy</em> function we can see it is very complex:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot_hierarchy</span>(tbl_hierarchy_clean, <span class="dt">title =</span> <span class="st">&quot;Original&quot;</span>,
+               <span class="dt">col_code =</span> <span class="st">&quot;code_SBI&quot;</span>,
+               <span class="dt">col_code_parent =</span> <span class="st">&quot;code_SBI_parent&quot;</span>,
+               <span class="dt">col_layer_no =</span> <span class="st">&quot;hierarchy_layer&quot;</span>,
+               <span class="dt">col_value =</span> <span class="st">&quot;qty_companies&quot;</span>)
+<span class="co">#&gt; IGRAPH a170fe1 DN-- 974 973 -- </span>
+<span class="co">#&gt; + attr: name (v/c), code_parent (v/c), layer_no (v/c), value</span>
+<span class="co">#&gt; | (v/n), color (v/n), size (v/n), label (v/c), label.family (v/c),</span>
+<span class="co">#&gt; | layer_no (e/n), value (e/n), arrow.size (e/n)</span>
+<span class="co">#&gt; + edges from a170fe1 (vertex names):</span>
+<span class="co">#&gt;  [1] 011-&gt;0111 011-&gt;0113 011-&gt;0116 011-&gt;0119 012-&gt;0121 012-&gt;0124 012-&gt;0125</span>
+<span class="co">#&gt;  [8] 012-&gt;0127 012-&gt;0128 012-&gt;0129 013-&gt;0130 014-&gt;0141 014-&gt;0142 014-&gt;0143</span>
+<span class="co">#&gt; [15] 014-&gt;0145 014-&gt;0146 014-&gt;0147 014-&gt;0149 015-&gt;0150 016-&gt;0161 016-&gt;0162</span>
+<span class="co">#&gt; [22] 016-&gt;0163 016-&gt;0164 017-&gt;0170 021-&gt;0210 022-&gt;0220 024-&gt;0240 031-&gt;0311</span>
+<span class="co">#&gt; [29] 031-&gt;0312 032-&gt;0321 032-&gt;0322 061-&gt;0610 062-&gt;0620 081-&gt;0812 089-&gt;0892</span>
+<span class="co">#&gt; [36] 089-&gt;0899 091-&gt;0910 099-&gt;0990 101-&gt;1011 101-&gt;1012 101-&gt;1013 102-&gt;1020</span>
+<span class="co">#&gt; + ... omitted several edges</span></code></pre></div>
+</div>
+<div id="rolling-up-the-hierarchy-on-values" class="section level2">
+<h2>Rolling up the hierarchy on values</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Rolling up NACE hierarchy</span>
+<span class="co"># tbl_translation &lt;- roll_up_hierarchy(tbl_hierarchy_clean, 100000)</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Pushing back numbers to the complete NACE hierarchy ----</span>
+<span class="co"># tbl_hierarchy_rolled &lt;- tbl_hierarchy_clean %&gt;% </span>
+<span class="co">#   select(-value) %&gt;% </span>
+<span class="co">#   left_join(tbl_translation, by = c(&quot;code&quot; = &quot;code_new&quot;)) %&gt;% </span>
+<span class="co">#   group_by(code, code_parent, layer_no) %&gt;% </span>
+<span class="co">#   summarise(value = sum(value, na.rm = TRUE)) %&gt;% </span>
+<span class="co">#   ungroup()</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># Cleaning hierarchy by removing codes that have a 0 value and are non connective (don't have children that contain values)</span>
+<span class="co"># tbl_hierarchy_rolled &lt;- clean_hierarchy(tbl_hierarchy_rolled)</span></code></pre></div>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># plot_hierarchy(tbl_hierarchy_rolled, title = &quot;Rolled up&quot;)</span></code></pre></div>
+</div>
+<div id="set-level" class="section level2">
+<h2>Set level</h2>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># tbl_hierarchy_set &lt;- hierarchy_code_level(tbl_hierarchy_clean, level_no = 2)</span></code></pre></div>
 </div>
 </div>
 
