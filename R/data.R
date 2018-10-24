@@ -131,3 +131,13 @@
 #'   \item{qty_companies}{The number of companies in The Netherlands}
 #' }
 "tbl_SBI_count"
+
+
+#' Relations between companies
+#'
+#' @format A data frame with 392.835 rows and 2 variables:
+#' \describe{
+#'   \item{id_company}{Code used to identify economic activities}
+#'   \item{id_company_parent}{Code of the economic activity description that is more general}
+#' }
+"tbl_company_relations"
