@@ -16,8 +16,8 @@ anonymize_tbl(tbl_in, vec_col_names, perc_dev = 0.2)
 \description{
 The data frame will be anonymized by doing 3 things:
 \enumerate{
-  \item Replicating about \emph{italics}perc_dev of the rows randomly.
-  \item Getting a random subset from those of about \emph{italics}1 - perc_dev
+  \item Replicating about \emph{perc_dev} of the rows randomly.
+  \item Getting a random subset from those of about \emph{1 - perc_dev}
   \item Randomizing numeric values by multiplying them by random values between 1 - perc_dev and 1 + perc_dev
   \item Randomizing non-numeric values by reassigning the randomly to new rows.
 }
