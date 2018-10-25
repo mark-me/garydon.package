@@ -46,6 +46,7 @@ get_columns_file <- function(df_source, filename_source){
   # Create column specs, based on passed data frame df_source
   tbl_column_specs <- determine_column_specs(df_source)
 
+
   # If there is no column file create one for current data frame
   if(!file.exists(filename_columns)) {
 
@@ -205,7 +206,7 @@ auto_rename_columns <- function(column_names, detection_words, prefix) {
 #' @return A data frame containing the column specifications
 #' @keywords config import data
 #' @examples
-#' clean_column_names(column_names)
+#' tbl_column_specs <- read_colspecs_file(filename_specs)
 read_colspecs_file <- function(filename_columns){
 
   col_types <- readr::cols(
@@ -225,7 +226,13 @@ read_colspecs_file <- function(filename_columns){
   return(tbl_specs_file)
 }
 
-# Write column specs to file ----
+#' Write column specs to file
+#'
+#' @param tbl_col_specs A data-frame containing the column specifications
+#' @param filename_columns The file to write the column specifications to
+#' @keywords config import data
+#' @examples
+#' tbl_column_specs <- read_colspecs_file(filename_specs)
 write_colspecs_file <- function(tbl_col_specs, filename_columns){
 
   tbl_col_specs %<>%
