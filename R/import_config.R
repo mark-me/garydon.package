@@ -2,9 +2,9 @@ require(magrittr)
 
 #' A function for applying column configuration file
 #'
-#' This function applies a column configuration for a source file
-#' The first time it is used it will create a column specification file
-#' allows you to create and or read a file which you can use to control a data file import
+#' This function applies a column configuration for a source file which
+#' you can use to control a data file import .
+#' The first time it is used it will create a column specification file.
 #' @param df_source The dataframe of which you want to apply/get the import specs for
 #' @param filename_source The filename where the data frame is imported fromset
 #' @return A data frame containing column importing specs
@@ -54,8 +54,7 @@ get_columns_file <- function(df_source, filename_source){
     return(tbl_column_specs)
   }
 
-  # Read column specs from file
-  tbl_specs_file <- read_colspecs_file(filename_columns)
+  tbl_specs_file <- read_colspecs_file(filename_columns)  # Read column specs from file
 
   # Check whether the data frame has the same number of columns
   equal_column_specs <- has_equal_column_specs(tbl_column_specs, tbl_specs_file)
@@ -76,8 +75,7 @@ get_columns_file <- function(df_source, filename_source){
 
     print(paste("Changed current column spec file to fit new source", filename_columns))
     tbl_column_specs %<>%
-      dplyr::left_join(tbl_specs_file,
-                       by = "original_name")
+      dplyr::left_join(tbl_specs_file, by = "original_name")
 
     # Make sure previously saved column specs are used
     tbl_column_specs %<>%
@@ -125,7 +123,15 @@ determine_column_specs <- function(df_source){
   return(tbl_column_specs)
 }
 
-# Test whether two column specs are equal ----
+#' Test whether two column specs are equal
+#'
+#' This function allows you to read data frame specs into a data frame
+#' @param tbl_column_specs_a The dataframe with column specs
+#' @param tbl_column_specs_b The dataframe with column specs
+#' @return A boolean indicating whether the two column specs are equal
+#' @keywords config import data
+#' @examples
+#' has_equal_column_specs(df_specs_a, df_specs_b)
 has_equal_column_specs <- function(tbl_column_specs_a, tbl_column_specs_b){
 
   tbl_column_specs_a %<>% dplyr::select(-date_added, -include, -new_name)
@@ -139,7 +145,15 @@ has_equal_column_specs <- function(tbl_column_specs_a, tbl_column_specs_b){
   )
 }
 
-# Clean column names ----
+#' Clean column names
+#'
+#' This function allows you to read data frame specs into a data frame
+#'
+#' @param column_names a vector with column
+#' @return A boolean indicating whether the two column specs are equal
+#' @keywords config import data
+#' @examples
+#' clean_column_names(column_names)
 clean_column_names <- function(column_names){
 
   # New column name cleaning
@@ -160,21 +174,38 @@ clean_column_names <- function(column_names){
   return(column_names)
 }
 
-# Autorenames columns based on word detection and adding a prefix ----
+#' Autorenames columns based on word detection and adding a prefix
+#'
+#' @param column_names a vector with column
+#' @param detection_words The words that indicate a prefix should be added to the column name
+#' @param prefix The prefix the should be added in case a word is detected
+#' @return A boolean indicating whether the two column specs are equal
+#' @keywords config import data
+#' @examples
+#' clean_column_names(column_names)
 auto_rename_columns <- function(column_names, detection_words, prefix) {
 
   regex_detection_words <- paste0('(', paste(detection_words, collapse = "|"), ')')
-  detected <- stringr::str_detect(column_names, regex_detection_words)
+  idx_detected <- stringr::str_detect(column_names, regex_detection_words)
 
-  column_names[detected] <- gsub(regex_detection_words, '', column_names[detected])
-  column_names[detected] <- paste0(prefix, column_names[detected])
-  column_names[detected] <- gsub('_$', '', column_names[detected])
-  column_names[detected] <- gsub('__', '_', column_names[detected])
+  # Removing the detected word
+  column_names[idx_detected] <- gsub(regex_detection_words, '', column_names[idx_detected])
+  # Add the prefix when a word is detected
+  column_names[idx_detected] <- paste0(prefix, column_names[idx_detected])
+  # Clean up after detected word removal like _ remainders
+  column_names[idx_detected] <- gsub('_$', '', column_names[idx_detected])
+  column_names[idx_detected] <- gsub('__', '_', column_names[idx_detected])
 
   return(column_names)
 }
 
-# Read column specs from a file ----
+#' Read column specs from a file
+#'
+#' @param filename_columns The file name containing the column specifications
+#' @return A data frame containing the column specifications
+#' @keywords config import data
+#' @examples
+#' clean_column_names(column_names)
 read_colspecs_file <- function(filename_columns){
 
   col_types <- readr::cols(
@@ -186,8 +217,10 @@ read_colspecs_file <- function(filename_columns){
   )
 
   # Read column specs from file
+  sink("aux")
   tbl_specs_file <- readr::read_csv2(filename_columns,
                                      col_types = col_types)
+  sink()
 
   return(tbl_specs_file)
 }
