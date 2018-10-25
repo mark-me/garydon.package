@@ -218,10 +218,10 @@ read_colspecs_file <- function(filename_columns){
   )
 
   # Read column specs from file
-  sink("aux")
-  tbl_specs_file <- readr::read_csv2(filename_columns,
-                                     col_types = col_types)
-  sink()
+  invisible(
+    tbl_specs_file <- readr::read_csv2(filename_columns,
+                                       col_types = col_types)
+  )
 
   return(tbl_specs_file)
 }
