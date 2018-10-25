@@ -30,8 +30,10 @@ format_number <- function(x, number_decimals = 0, format_EN = FALSE, scale = c("
     decimal_mark <- '.'
   }
 
+  if(length(scale) > 1) scale <- "normal"
+
   # Apply scale
-  if (is.na(scale) | scale == "normal") {
+  if (scale == "normal") {
     suffix <- ""
   }
   else if (scale == "k") {
@@ -71,6 +73,7 @@ format_currency <- function(amount, currency = c("EUR", "GBP"), number_decimals 
 
   amount <- round(amount, digits = 2)
   currency_symbol <- intToUtf8(8364) # Set default currency symbol (EURO)
+  if(length(currency) > 1) currency <- "EUR"
 
   # Determine number format (seperators)
   if(currency == "EUR") {
