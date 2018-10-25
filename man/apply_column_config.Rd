@@ -15,9 +15,9 @@ apply_column_config(df_source, filename_source)
 A data frame containing column importing specs
 }
 \description{
-This function applies a column configuration for a source file
-The first time it is used it will create a column specification file
-allows you to create and or read a file which you can use to control a data file import
+This function applies a column configuration for a source file which
+you can use to control a data file import .
+The first time it is used it will create a column specification file.
 }
 \examples{
 get_columns_file(df, filename_source)
