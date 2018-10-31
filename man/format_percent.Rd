@@ -18,5 +18,5 @@ A string containing the formatted number
 Formats a number to percentage by adding . for thousands, "," for decimals and % to the number
 }
 \examples{
-format_percent(percentage = 0.123, format_EN = TRUE)
+format_percent(percentage = 0.123, number_decimals = 1, format_EN = TRUE)
 }

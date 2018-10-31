@@ -101,7 +101,7 @@ format_currency <- function(amount, currency = c("EUR", "GBP"), number_decimals 
 #' @return A string containing the formatted number
 #' @export
 #' @examples
-#' format_percent(percentage = 0.123, format_EN = TRUE)
+#' format_percent(percentage = 0.123, number_decimals = 1, format_EN = TRUE)
 format_percent <- function(percentage, number_decimals = 1, format_EN = FALSE) {
 
   percentage <- percentage * 100

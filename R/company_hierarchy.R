@@ -17,22 +17,23 @@ create_graph_company_hierarchies <- function(tbl_company_relations) {
   tbl_edges <- tbl_company_relations[,c(1,2)]
   tbl_edges <- tbl_edges[!is.na(tbl_edges[,2]),]
   colname_vertices <- names(tbl_edges)[1]
-  tbl_edges[,colname_vertices] <- as.character(tbl_edges[,colname_vertices])
 
   # Create vertices
-  tbl_vertices <- data.frame(unique(c(tbl_edges[][[1]],tbl_edges[][[2]])))
+  tbl_vertices <- data.frame(unique(c(tbl_edges[][[1]],tbl_edges[][[2]])),
+                             stringsAsFactors = FALSE)
   names(tbl_vertices) <- colname_vertices
-  tbl_vertices[,colname_vertices] <- as.character(tbl_vertices[,colname_vertices])
   tbl_vertices <- tbl_vertices %>%
     dplyr::left_join(tbl_company_relations, by = colname_vertices)
 
   # Create a graph containing all companies
-  graph_company_hierarchies <-
+  graph_hierarchies <-
     igraph::graph_from_data_frame(d = tbl_edges,
                                   vertices = tbl_vertices,
                                   directed = TRUE)
 
-  return(graph_company_hierarchies)
+  #igraph::V(graph_hierarchies)$id_company <- igraph::V(graph_hierarchies)$name # Set id_companies attribute
+
+  return(graph_hierarchies)
 }
 
 #' Function to find a hierarchy for a company
@@ -49,11 +50,40 @@ create_graph_company_hierarchies <- function(tbl_company_relations) {
 #' graph_company_hierarchy <- find_company_hierarchy(graph_company_hierarchies, "931238099")
 find_company_hierarchy <- function(graph_all_companies, id_company){
 
+  vertx <- igraph::V(graph_all_companies)[id_company]
+
   graph_found <- igraph::make_ego_graph(graph = graph_all_companies,
-                                        nodes = igraph::V(graph_all_companies)[id_company],
+                                        nodes = vertx,
                                         order = 900,
                                         mode = "all")
   return(graph_found[[1]])
+}
+
+#' Function to find the hierarchies of
+#'
+#' This function searches the graph of a company's complete hierarchy from a graph containing
+#' a multitude of company hierarchies.
+#' @param graph_all_companies A graph containing all company/company relations data.
+#' @param id_company The id of the company of which you want to retrieve the whole hierarchy
+#' @return A graph with the company hierarchy of the specifief company
+#' @importFrom magrittr "%>%"
+#' @keywords graph company hierarchy
+#' @export
+#' @examples
+#' graph_company_hierarchy <- find_company_hierarchy(graph_company_hierarchies, "931238099")
+select_graph_hierarchies <- function(graph_company_hierarchies, id_companies){
+
+  list_selected <- list()
+  i <- 1
+  while(i <= length(id_companies)){
+
+    id_company <- id_companies[i]
+    graph_found <- find_company_hierarchy(graph_company_hierarchies, id_company)
+    list_selected[[id_company]] <- graph_found
+    i <- i + 1
+  }
+
+  return(list_selected)
 }
 
 #' Get the root node's name of a tree
@@ -121,13 +151,15 @@ get_siblings <- function(graph, idx_vertex){
 get_siblings_df <- function(graph, idx_vertices){
 
   tbl_siblings <- data.frame(id_company = as.character(),
-                            id_sibling = as.character())
+                            id_sibling = as.character(),
+                            stringsAsFactors = FALSE)
 
   for(idx_vertex in idx_vertices){
 
     id_sibling <- get_siblings(graph, idx_vertex)
     id_company <- rep(idx_vertex, length(id_sibling))
-    tbl_siblings <- rbind(tbl_siblings, data.frame(id_company, id_sibling))
+    tbl_siblings <- rbind(tbl_siblings,
+                          data.frame(id_company, id_sibling, stringsAsFactors = FALSE))
   }
 
   # Added stats
@@ -138,6 +170,27 @@ get_siblings_df <- function(graph, idx_vertices){
     dplyr::ungroup()
 
   return(tbl_siblings)
+}
+
+#' Add a logical variable to the companies in a hierarchy when one of it's
+#' attributes match one of a set of values
+#'
+#' @param graph A graph
+#' @param name_logical The name of the newly created logical company attribute
+#' @param name_filter The name of the attribute which values are compared to the criteria
+#' @param set_criteria The set of criteria in a vector to which the values are compared
+#' @return A graph where all the nodes contain the newly created attribute
+#' @keywords graph company hierarchy
+#' @export
+#' @example
+#' graph <- mark_companies_logical(graph, "is_holding", "code_SBI", "64", "642", "6420"))
+mark_companies_logical <- function(graph, name_logical, name_filter , set_criteria){
+
+  name_filter <- ifelse(name_filter == "id_company", "name", name_filter)
+  igraph::vertex_attr(graph, name_logical) <- NA
+  igraph::vertex_attr(graph, name_logical) <-
+    igraph::vertex_attr(graph, name_filter) %in% set_criteria
+  return(graph)
 }
 
 #' Add hierarchy stats to all the vertices of a company hierarchy graph
@@ -168,9 +221,6 @@ add_company_hierarchy_stats <- function(graph){
     sapply(sapply(igraph::V(graph),
                   function(x) igraph::neighbors(graph, x, mode="in")),
            length)
-
-  # Number of sibling companies for each company
-  igraph::vertex_attr(graph, "qty_siblings") <- length(get_siblings(graph, igraph::V(graph)$name))
 
   return(graph)
 }
