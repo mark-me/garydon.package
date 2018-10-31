@@ -1,0 +1,89 @@
+---
+title: "Handling of company hierarchies"
+author: "Mark Zwart"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    css: graydon.css
+    df_print: paged
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r setup, include = FALSE}
+library(magrittr)
+library(ggplot2)
+library(dplyr)
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+# Introduction
+
+Our database contains the relations between companies by a parent child relation, the total tree of company relations actually contains a lot of information about a company that is in it. This package contains several functions that is useful for extracting this kind of information.
+
+First let's load the package:
+```{r}
+library(graydon.package)
+```
+
+### The example data
+
+The package contains a data frame, _tbl_company_relations_ which is an ex(s)ample of how companies are related. The data frame contains the following columns:
+```{r}
+data.frame(`Column names` = names(tbl_company_relations)) %>% 
+  knitr::kable()
+```
+
+```{r, message=FALSE, warning=FALSE}
+graph_company_hierarchies <- create_graph_company_hierarchies(tbl_company_relations)
+```
+
+Now if we visualize the hierarchy with the package's _plot_hierarchy_ function we can see it is very complex:
+```{r, message=FALSE, warning=FALSE}
+list_graphs <- list_company_hierarchy_graphs(graph_company_hierarchies)
+```
+
+## Rolling up the hierarchy on values
+
+```{r}
+library(igraph)
+```
+
+```{r, message=FALSE, warning=FALSE}
+graph <- list_graphs[[986]]
+plot(graph)
+```
+
+
+```{r, message=FALSE, warning=FALSE}
+# Aggregate values
+graph <- aggregate_company_hierarchy_value(graph, 
+                                           name_attribute = "qty_employees", 
+                                           name_aggregate = "qty_employees_cum", 
+                                           sum, na.rm=TRUE)
+```
+
+```{r, message=FALSE, warning=FALSE}
+V(graph)$label <- paste(V(graph)$name, 
+                        V(graph)$qty_employees,
+                        V(graph)$qty_employees_cum,
+                        sep = " - ")
+plot(graph)
+```
+
+
+```{r, message=FALSE, warning=FALSE}
+graph <- add_company_hierarchy_stats(graph)
+```
+
+## Set level
+
+```{r, message=FALSE, warning=FALSE}
+# tbl_hierarchy_set <- hierarchy_code_level(tbl_hierarchy_clean, level_no = 2)
+```
+

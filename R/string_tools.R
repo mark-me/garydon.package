@@ -68,11 +68,12 @@ format_number <- function(x, number_decimals = 0, format_EN = FALSE, scale = c("
 #' @return A string containing the euro formatted number
 #' @export
 #' @examples
-#' format_currency(amount = 1000000, currency = "EUR", scale = "M")
+#' format_currency(amount = 1000000, currency = "EUR", number_decimals = 1,scale = "M")
 format_currency <- function(amount, currency = c("EUR", "GBP"), number_decimals = 2, scale = NA) {
 
   amount <- round(amount, digits = 2)
-  currency_symbol <- intToUtf8(8364) # Set default currency symbol (EURO)
+  # Set default currency symbol (EURO)
+  currency_symbol <- intToUtf8(8364)
   if(length(currency) > 1) currency <- "EUR"
 
   # Determine number format (seperators)
@@ -93,7 +94,7 @@ format_currency <- function(amount, currency = c("EUR", "GBP"), number_decimals 
   return(paste0(currency_symbol, formatted_number))
 }
 
-#' Formats a number to percentage by adding . (thousands), "," (decimals) and % to the number ----
+#' Formats a number to percentage by adding . for thousands, "," for decimals and % to the number
 #'
 #' @param percentage The number you want to format
 #' @param num_digits The number of decimal places you want shown. Default is 1

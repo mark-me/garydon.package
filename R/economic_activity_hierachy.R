@@ -26,6 +26,7 @@ vertices_add_distance_to_root <- function(graph, vertex_attribute = "dist_to_roo
 #' @param order The number of connections to search through to get the children
 #' @return List of vertex names that are incoming
 #' @keywords SBI NACE SIC
+#' @export
 #' @examples
 #' vertex_names <- get_incoming_vertice_names(graph, threshold = 500)
 get_incoming_vertice_names <- function(graph, name_vertex, order = 1){
@@ -231,7 +232,6 @@ graph_remove_empty_non_connecting <- function(graph_tree, name_attribute) {
 
   return(graph_tree)
 }
-
 
 #' Get the root node of a tree
 #'

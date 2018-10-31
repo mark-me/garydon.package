@@ -1,6 +1,6 @@
 ---
-title: " economic activity hierarchies like NACE, SBI and SIC"
-author: "Mark ZwartTraversing"
+title: "Traversing economic activity hierarchies like NACE, SBI and SIC"
+author: "Mark Zwart"
 date: "`r Sys.Date()`"
 output: 
   rmarkdown::html_vignette:
@@ -42,20 +42,20 @@ data.frame(`Column names` = names(tbl_SBI_count)) %>%
 
 We can clean the hierarchy by removing codes that have a 0 value and are non connective (don't have children that contain values):
 ```{r, message=FALSE, warning=FALSE}
-tbl_hierarchy_clean <- clean_hierarchy(tbl_SBI_count,
-                                       col_code = "code_SBI",
-                                       col_code_parent = "code_SBI_parent",
-                                       col_layer_no = "hierarchy_layer",
-                                       col_value = "qty_companies")
+#tbl_hierarchy_clean <- clean_hierarchy(tbl_SBI_count,
+#                                       col_code = "code_SBI",
+#                                       col_code_parent = "code_SBI_parent",
+#                                       col_layer_no = "hierarchy_layer",
+#                                       col_value = "qty_companies")
 ```
 
 Now if we visualize the hierarchy with the package's _plot_hierarchy_ function we can see it is very complex:
 ```{r, message=FALSE, warning=FALSE}
-plot_hierarchy(tbl_hierarchy_clean, title = "Original",
-               col_code = "code_SBI",
-               col_code_parent = "code_SBI_parent",
-               col_layer_no = "hierarchy_layer",
-               col_value = "qty_companies")
+#plot_hierarchy(tbl_hierarchy_clean, title = "Original",
+#               col_code = "code_SBI",
+#               col_code_parent = "code_SBI_parent",
+#               col_layer_no = "hierarchy_layer",
+#               col_value = "qty_companies")
 ```
 
 ## Rolling up the hierarchy on values

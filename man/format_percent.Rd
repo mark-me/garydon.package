@@ -2,7 +2,7 @@
 % Please edit documentation in R/string_tools.R
 \name{format_percent}
 \alias{format_percent}
-\title{Formats a number to percentage by adding . (thousands), "," (decimals) and % to the number ----}
+\title{Formats a number to percentage by adding . for thousands, "," for decimals and % to the number}
 \usage{
 format_percent(percentage, number_decimals = 1, format_EN = FALSE)
 }
@@ -15,7 +15,7 @@ format_percent(percentage, number_decimals = 1, format_EN = FALSE)
 A string containing the formatted number
 }
 \description{
-Formats a number to percentage by adding . (thousands), "," (decimals) and % to the number ----
+Formats a number to percentage by adding . for thousands, "," for decimals and % to the number
 }
 \examples{
 format_percent(percentage = 0.123, format_EN = TRUE)

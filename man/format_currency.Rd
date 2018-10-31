@@ -23,5 +23,5 @@ A string containing the euro formatted number
 Formats a number into a currency string
 }
 \examples{
-format_currency(amount = 1000000, currency = "EUR", scale = "M")
+format_currency(amount = 1000000, currency = "EUR", number_decimals = 1,scale = "M")
 }
