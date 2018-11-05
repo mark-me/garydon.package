@@ -56,16 +56,24 @@ find_company_hierarchy <- function(graph_all_companies, id_company){
                                         nodes = vertx,
                                         order = 900,
                                         mode = "all")
-  return(graph_found[[1]])
+
+  graph_found <- mark_companies_logical(graph_found[[1]],
+                                        "is_searched_company",
+                                        "id_company",
+                                        id_company)
+  return(graph_found)
 }
 
-#' Function to find the hierarchies of
+#' Function to find the hierarchies of a list of companies
 #'
-#' This function searches the graph of a company's complete hierarchy from a graph containing
-#' a multitude of company hierarchies.
+#' This function searches the graphs of a vector of companies for their complete
+#' hierarchies from a graph containing containing a multitude of company hierarchies.
+#'
+#' The graphs will be unique, and contain a vertex attribute is_searched_company
+#' which specifies whether it the vertex represents a company which was selected
 #' @param graph_all_companies A graph containing all company/company relations data.
-#' @param id_company The id of the company of which you want to retrieve the whole hierarchy
-#' @return A graph with the company hierarchy of the specifief company
+#' @param id_companies A vector of company id's of which you want to retrieve the whole hierarchy
+#' @return A list of graphs containing the grawith the company hierarchy of the specifief company
 #' @importFrom magrittr "%>%"
 #' @keywords graph company hierarchy
 #' @export
@@ -73,16 +81,30 @@ find_company_hierarchy <- function(graph_all_companies, id_company){
 #' graph_company_hierarchy <- find_company_hierarchy(graph_company_hierarchies, "931238099")
 select_graph_hierarchies <- function(graph_company_hierarchies, id_companies){
 
-  list_selected <- list()
+  list_selected <- list() # Will contain the list of selected graphs
+  graph_keys <- vector(mode = "character", length = length(id_companies))
   i <- 1
+
   while(i <= length(id_companies)){
 
     id_company <- id_companies[i]
-    graph_found <- find_company_hierarchy(graph_company_hierarchies, id_company)
-    list_selected[[id_company]] <- graph_found
+    # Find the graph associated with the company
+    current_graph <- find_company_hierarchy(graph_company_hierarchies, id_company)
+    id_graph <- get_root_vertex_name(current_graph) # Get the root vertex (as id) of the graph
+    # Only add when the graph isn't present yet
+    if(is.na(match(id_graph, graph_keys))) {
+
+      # Add the root identifier to the graph
+      graph_keys[i] <- id_graph
+      # Mark all companies that are being searched for in the retrieved graph
+      current_graph <- mark_companies_logical(current_graph,
+                                              "is_searched_company",
+                                              "id_company",
+                                              id_companies)
+      list_selected[[id_company]] <- current_graph # Add to selected list
+    }
     i <- i + 1
   }
-
   return(list_selected)
 }
 
@@ -122,54 +144,143 @@ list_company_hierarchy_graphs <- function(graph_company_hierarchies){
 
   list_graphs <- lapply(list_graphs, add_company_hierarchy_stats)
 
-  # df_rolled <- do.call(rbind, lapply(list_graphs_sample,
-  #                                    igraph::as_data_frame,
-  #                                    what = "vertices"))
-
   return(list_graphs)
 }
 
-get_siblings <- function(graph, idx_vertex){
+#' Converts a list of company hierarchy graphs to a data frame
+#'
+#' @param list_graphs The graph containing all the hierarchical company trees
+#' @return A data frame with company hierarchy data
+#' @keywords graph company hierarchy
+#' @export
+#' @example
+#' df_hierarchies <- hierarchy_list_as_data_frame(list_graph_hierarchies)
+hierarchy_list_as_data_frame <- function(list_graphs){
 
-  # Getting the parent
-  vertx_parent <- names(igraph::ego(graph = graph,
-                                    nodes = igraph::V(graph)[idx_vertex],
-                                    mode = "out")[[1]])
-  vertx_parent <- vertx_parent[vertx_parent != idx_vertex]
+  df_hierarchies <- do.call(rbind,
+                            lapply(list_graphs,
+                                   igraph::as_data_frame,
+                                   what = "vertices")
+                            )
+  row.names(df_hierarchies) <- NULL
 
-  # Getting the children of those parent
-  vertx_siblings <- names(igraph::ego(graph = graph,
-                                      nodes = igraph::V(graph)[vertx_parent],
-                                      mode = "in")[[1]])
-
-  # Excluding the idx_vertex, so only it's siblings are returned
-  vertx_siblings <- vertx_siblings[vertx_siblings != vertx_parent]
-
-  return(vertx_siblings)
+  return(df_hierarchies)
 }
 
-get_siblings_df <- function(graph, idx_vertices){
+#' Converts a company hierarchy graph to a data frame
+#'
+#' @param list_graphs The graph containing all the hierarchical company trees
+#' @return A data frame with company hierarchy data
+#' @keywords graph company hierarchy
+#' @export
+#' @example
+#' df_hierarchy <- hierarchy_as_data_frame(graph_hierarchy)
+hierarchy_as_data_frame <- function(graph){
+
+  df_hierarchy <- igraph::as_data_frame(graph, what = "vertices")
+
+  row.names(df_hierarchy) <- NULL
+
+  return(df_hierarchy)
+}
+
+#' Get the sibling company IDs of a company
+#'
+#' @param graph A graph
+#' @param id_company The ID of the company of which you want the sibling IDs
+#' @return A vector with company IDs of the siblings
+#' @keywords graph company hierarchy
+#' @export
+#' @example
+#' sibling_ids <- get_sibling_ids(graph, id_company)
+get_sibling_ids <- function(graph, id_company){
+
+  # Getting the parent
+  id_parent <- names(igraph::ego(graph = graph,
+                                    nodes = igraph::V(graph)[id_company],
+                                    mode = "out")[[1]])
+  id_parent <- id_parent[id_parent != id_company]
+
+  if(length(id_parent) > 0) {
+    # Getting the children of those parent
+    id_siblings <- names(igraph::ego(graph = graph,
+                                        nodes = igraph::V(graph)[id_parent],
+                                        mode = "in")[[1]])
+
+    # Excluding the id_company, so only it's siblings are returned
+    id_siblings <- id_siblings[id_siblings != id_parent &
+                                       id_siblings != id_company]
+  } else {
+    id_siblings <- character(0)
+  }
+  return(id_siblings)
+}
+
+#' Add a logical variable to the companies in a hierarchy when one of it's
+#' attributes match one of a set of values
+#'
+#' @param graph A graph
+#' @param company_ids The name of the newly created logical company attribute
+#' @return A data-frame containing all sibling companies
+#' @keywords graph company hierarchy
+#' @export
+#' @example
+#' graph <- get_siblings_df(graph)
+get_siblings_df <- function(graph, company_ids){
 
   tbl_siblings <- data.frame(id_company = as.character(),
                             id_sibling = as.character(),
                             stringsAsFactors = FALSE)
 
-  for(idx_vertex in idx_vertices){
+  for(company_ids in company_ids){
 
-    id_sibling <- get_siblings(graph, idx_vertex)
-    id_company <- rep(idx_vertex, length(id_sibling))
+    id_sibling <- get_sibling_ids(graph, company_ids)
+    id_company <- rep(company_ids, length(id_sibling))
     tbl_siblings <- rbind(tbl_siblings,
                           data.frame(id_company, id_sibling, stringsAsFactors = FALSE))
   }
 
   # Added stats
-  tbl_siblings %>%
-    dplyr::mutate(is_self = id_company == id_sibling) %>%
+  tbl_siblings %<>%
+    dplyr::mutate(is_customer = id_sibling %in% company_ids) %>%
+    dplyr::filter(!is_customer) %>%
+    dplyr::select(-is_customer) %>%
     dplyr::group_by(id_company) %>%
     dplyr::mutate(qty_siblings = n()) %>%
     dplyr::ungroup()
 
   return(tbl_siblings)
+}
+
+#' Get the number of sibling companies
+#'
+#' @param graph A graph
+#' @param vertx The vertex representing a company
+#' @return A data-frame containing all sibling companies
+#' @keywords graph company hierarchy
+#' @example
+#' graph <- get_siblings_df(graph)
+get_qty_siblings <- function(graph, vertx) {
+
+  # Getting the parent
+  vertx_parent <- igraph::ego(graph = graph,
+                              nodes = vertx,
+                              mode = "out")[[1]]
+  vertx_parent <- vertx_parent[vertx_parent != vertx]
+
+  # Getting the children of those parent
+  if(length(vertx_parent) > 0 ){
+    vertx_siblings <- igraph::ego(graph = graph,
+                                  nodes = igraph::V(graph)[vertx_parent],
+                                  mode = "in")[[1]]
+
+    # Excluding the idx_vertex, so only it's siblings are returned
+    qty_siblings <- length(vertx_siblings[vertx_siblings != vertx_parent])
+  } else {
+    qty_siblings <- 0
+  }
+
+  return(qty_siblings)
 }
 
 #' Add a logical variable to the companies in a hierarchy when one of it's
@@ -187,9 +298,11 @@ get_siblings_df <- function(graph, idx_vertices){
 mark_companies_logical <- function(graph, name_logical, name_filter , set_criteria){
 
   name_filter <- ifelse(name_filter == "id_company", "name", name_filter)
+
   igraph::vertex_attr(graph, name_logical) <- NA
   igraph::vertex_attr(graph, name_logical) <-
     igraph::vertex_attr(graph, name_filter) %in% set_criteria
+
   return(graph)
 }
 
@@ -207,7 +320,7 @@ add_company_hierarchy_stats <- function(graph){
   igraph::vertex_attr(graph, "is_tree") <- igraph::is_dag(graph)
 
   # Determine the number of companies in the company hierarchies
-  igraph::vertex_attr(graph, "qty_hierarchy_total") <- igraph::vcount(graph)
+  igraph::vertex_attr(graph, "qty_comapny_hierarchy") <- igraph::vcount(graph)
 
   # Determine top company
   igraph::vertex_attr(graph, "id_company_top") <- get_root_vertex_name(graph)
@@ -221,6 +334,11 @@ add_company_hierarchy_stats <- function(graph){
     sapply(sapply(igraph::V(graph),
                   function(x) igraph::neighbors(graph, x, mode="in")),
            length)
+
+  # Number of sister companues
+  igraph::vertex_attr(graph, "qty_sister_companies") <-
+    sapply(igraph::V(graph),
+           function(x) get_qty_siblings(graph, x))
 
   return(graph)
 }
@@ -260,6 +378,31 @@ aggregate_company_hierarchy_value <- function(graph, name_attribute, name_aggreg
   }
 
   return(graph)
+}
+
+#' Plots a company hierarchy graph
+#'
+#' @param graph A graph
+#' @param ... The parameters passed to the function specified in FUN
+#' @keywords graph company hierarchy
+#' @export
+#' @example
+#' plot_graydon_graph(graph)
+plot_graydon_graph <- function(graph, ...){
+
+  igraph_options(
+    vertex.color = col_graydon[4],
+    vertex.label.family = "Roboto",
+    vertex.label.cex = .7,
+    vertex.label.color = col_graydon[8],
+    vertex.label.dist = 1,
+    vertex.frame.color = col_graydon[3],
+    vertex.size = 15,
+    edge.color = col_graydon[7],
+    edge.arrow.size = 0.5
+  )
+
+  igraph::plot.igraph(graph, ...)
 }
 
 # igraph::plot.igraph(list_graphs_sample[[2]])

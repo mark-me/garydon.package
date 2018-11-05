@@ -33,57 +33,215 @@ library(graydon.package)
 
 ### The example data
 
-The package contains a data frame, _tbl_company_relations_ which is an ex(s)ample of how companies are related. The data frame contains the following columns:
-```{r}
+The package contains a data frame, _tbl_company_relations_ which is an ex(s)ample of how companie relations are typically represented in our database. The data frame contains the following columns:
+```{r, echo=FALSE}
 data.frame(`Column names` = names(tbl_company_relations)) %>% 
   knitr::kable()
 ```
+# Creating a company hierarchy graph
 
+Company relations in our database are represented in parent-child relations, but this doesn't give you the complete overview of how companies fit together in their complete hierarchy. [Graphs](https://en.wikipedia.org/wiki/Graph_(discrete_mathematics) provide a way of getting those overviews. Let's load the [_igraph_](http://igraph.org/r/doc/) library first:
 ```{r, message=FALSE, warning=FALSE}
-graph_company_hierarchies <- create_graph_company_hierarchies(tbl_company_relations)
-```
-
-Now if we visualize the hierarchy with the package's _plot_hierarchy_ function we can see it is very complex:
-```{r, message=FALSE, warning=FALSE}
-list_graphs <- list_company_hierarchy_graphs(graph_company_hierarchies)
-```
-
-## Rolling up the hierarchy on values
-
-```{r}
 library(igraph)
 ```
 
+
+With a simple function call we can create a graph, based on those parent-child relationships expressed in a table. Make sure the child and the parent ID columns are the first and second column in the table respectively.
 ```{r, message=FALSE, warning=FALSE}
-graph <- list_graphs[[986]]
-plot(graph)
+graph_company_hierarchies <- create_graph_company_hierarchies(tbl_company_relations)
+```
+The resulting graph represents a network of all individual company hierarchies in one big 'space' which can be graphically represented like below. You can see this plot is pretty useless in in itself, but this 'space' of hierarchies can be used as a 'database' to easily retrieve the desired company hierarchies which are usefull for plotting and doing calculations within those.
+
+The _plot_graydon_graph_ function is used to plot graphs using graydon colors, the extra parameters _vertex.label_, _vertex.size_ and _edge.arrow.size_ are set so they override the defaults.
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+par(bg = "#ECECEC")
+```
+```{r message=FALSE, warning=FALSE, echo=FALSE}
+plot_graydon_graph(graph_company_hierarchies,
+                   vertex.label = "",
+                   vertex.size = 4,
+                   edge.arrow.size = 0)
 ```
 
 
-```{r, message=FALSE, warning=FALSE}
-# Aggregate values
-graph <- aggregate_company_hierarchy_value(graph, 
-                                           name_attribute = "qty_employees", 
-                                           name_aggregate = "qty_employees_cum", 
-                                           sum, na.rm=TRUE)
+# Selecting company hierarchies graphs
+
+There are a few ways which we can select the distinct company hierarchies so we can make useful calculations or plots about them. 
+
+## Selecting a hierarchy by company ID
+
+If you have a single company that you want to find out about more you can select it using the function _find_company_hierarchy_:
+```{r}
+id_company_selected <- "931238099"
+  
+graph_company_hierarchy <- find_company_hierarchy(graph_company_hierarchies, id_company_selected)
 ```
 
+The resulting graph has the logical attribute _is_searched_company_ set to _TRUE_ of the searched for company. Let's plot this graph, highlighting the searched for companies:
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+par(bg = "#ECECEC")
+```
 ```{r, message=FALSE, warning=FALSE}
-V(graph)$label <- paste(V(graph)$name, 
-                        V(graph)$qty_employees,
-                        V(graph)$qty_employees_cum,
-                        sep = " - ")
-plot(graph)
+graph_company_hierarchy <- mark_companies_logical(graph_company_hierarchy,
+                                      "is_searched_company",
+                                      "id_company",
+                                      id_company_selected)
+
+igraph::V(graph_company_hierarchy)$color <- ifelse(igraph::V(graph_company_hierarchy)$is_searched_company,
+                                                   col_graydon[2],
+                                                   col_graydon[4])
+plot_graydon_graph(graph_company_hierarchy)
+```
+
+## Selecting hierarchies with a vector of company IDs
+
+A customer's file contains multiple companies of which we might want to calculate, or show (parts) of their hierarchy. The _list_selected_hierarchies_ function can be used to put the graphs of all these companies in a list. In this example we have a data frame _tbl_customers_ with the column _id_company_, of which we want to retrieve all the graphs. 
+```{r, echo=FALSE}
+id_company <- as.character(
+  sample(tbl_company_relations$id_company[!is.na(tbl_company_relations$id_company)],
+         size = 300)
+  )
+
+tbl_customers <- data.frame(id_company, stringsAsFactors = FALSE)
+```
+```{r}
+list_selected_hierarchies <- select_graph_hierarchies(graph_company_hierarchies, 
+                                                      tbl_customers$id_company)
+```
+```{r, echo=FALSE}
+qty_customers <- length(unique(tbl_customers$id_company))
+qty_graphs <- length(list_selected_hierarchies) 
+
+qty_graph_selected <- sapply(
+  lapply(list_selected_hierarchies, 
+         igraph::vertex_attr, 
+         name = "is_searched_company"
+         ), 
+  sum
+  ) 
+
+id_graph_multiple <- names(qty_graph_selected[qty_graph_selected > 2])
+qty_vertices <- sapply(list_selected_hierarchies, igraph::vcount)
+id_graph_6_vertices <- names(qty_vertices[qty_vertices > 5])
+id_graph_candidates <- id_graph_6_vertices[match(id_graph_6_vertices, id_graph_multiple)]
+id_graph_example <- first(id_graph_candidates[!is.na(id_graph_candidates)])
+graph_example <- list_selected_hierarchies[[id_graph_example]]
+rm(qty_graph_selected, id_graph_multiple, qty_vertices, id_graph_6_vertices, id_graph_example)
+```
+The _tbl_customers_ data-frame contains `r qty_customers`, while the _list_selected_hierarchies_ contains `r qty_graphs` graphs. This is because there are a customers that fall withing the same company hierarchy. The vertices in the graphs in this list now also contain an extra logical attribute _is_searched_company_ which indicates whether the vertex was in the _id_company_ column. Let's take a look at one of the graphs that contain multiple customers. The customer 'vertices' are colored orange here:
+```{r, message=FALSE, echo=FALSE, warning=FALSE}
+par(bg = "#ECECEC")
+```
+```{r, message=FALSE, warning=FALSE}
+igraph::V(graph_example)$color <- ifelse(igraph::V(graph_example)$is_searched_company,
+                                                   col_graydon[2],
+                                                   col_graydon[4])
+
+plot_graydon_graph(graph_example,
+                   vertex.label = "")
+```
+
+## Listing all hierarchy graphs
+
+For whatever reason you might want to creating a list of all of the seperate company hierarchies out of the complete company hierarchy 'space'. 
+```{r, message=FALSE, warning=FALSE}
+list_all_graphs <- list_company_hierarchy_graphs(graph_company_hierarchies)
 ```
 
 
-```{r, message=FALSE, warning=FALSE}
-graph <- add_company_hierarchy_stats(graph)
+# Converting company hierarchy graphs to data-frames 
+
+Having graphs is nice for creating beautiful plots and useful calculations, but for the data to be useful for further processing getting data from the graph into a data-frame format is handy.
+
+## Converting a single hierarchy graph
+
+With the function _hierarchy_as_data_frame_ you can turn a graph into a data-frame. Before we created the graph _graph_company_hierarchy_ by searching for hierarchies by companies and set the colors to their being in the searched-for companies, this is reflected by the _graph_company_hierarchy_ and _color_ columns respectively.
+```{r}
+df_single_hierarchy <- hierarchy_as_data_frame(graph_company_hierarchy)
+```
+```{r, echo=FALSE}
+df_single_hierarchy %>% 
+  knitr::kable()
 ```
 
-## Set level
+## Converting a list of hierarchy graphs
 
-```{r, message=FALSE, warning=FALSE}
-# tbl_hierarchy_set <- hierarchy_code_level(tbl_hierarchy_clean, level_no = 2)
+A list of graphs can also be converted into a data-frame using _hierarchy_list_as_data_frame_:
+```{r}
+df_selected_hierarchies <- hierarchy_list_as_data_frame(list_selected_hierarchies)
 ```
+
+
+# Calculating properties
+
+## Propagating values
+
+It might come in handy to cumulate values in the hierarchy bottom up; this is where the _aggregate_company_hierarchy_value_ function comes in handy. In this example the companies will get a new attribute _qty_employees_cum_ which will contain the sum of all the _qty_employees_ of the companies that below the company within the hierarchy.
+```{r}
+graph_company_hierarchy <- 
+  aggregate_company_hierarchy_value(graph = graph_company_hierarchy, 
+                                    name_attribute = "qty_employees",
+                                    name_aggregate = "qty_employees_cum",
+                                    FUN = sum, 
+                                    na.rm = TRUE)
+```
+The result can be found can be shown in a graph, where we can see the original values and the rolled up values.
+```{r, message=FALSE, warning=FALSE}
+igraph::V(graph_company_hierarchy)$label <- paste0("# ",
+                                                   igraph::V(graph_company_hierarchy)$qty_employees,
+                                                   " -> Cum # ",
+                                                   igraph::V(graph_company_hierarchy)$qty_employees_cum)
+
+plot_graydon_graph(graph_company_hierarchy)
+```
+
+## Adding graph statistics
+
+Some overall statistics about the hierarchy can be added to the individual companies by using the _add_company_hierarchy_stats_ function. This function will add the following attributes
+* _is_tree_ - A logical indicating whether the company hierarchy is a tree (which should always be the case).
+* _qty_comapny_hierarchy_ - The the number of companies in the hierarchy.
+* _id_company_top_ - The company ID of the highest company in the hierachy (ultimate mother).
+* _distance_to_top_ - The number of companies between the current company and the ultimate mother company
+* _qty_child_companies_ - The number of child companies.
+* _qty_sister_companies_ - The number of sibling companies.
+
+```{r}
+graph_company_hierarchy <- add_company_hierarchy_stats(graph_company_hierarchy)
+```
+Let's look at the statistics:
+```{r}
+df_single_hierarchy <- hierarchy_as_data_frame(graph_company_hierarchy)
+```
+```{r, echo=FALSE}
+df_single_hierarchy %>% 
+  select(-color, -label) %>% 
+  knitr::kable()
+```
+_mark_companies_logical_
+```{r}
+
+```
+
+_get_siblings_
+```{r, warning=FALSE, message=FALSE}
+id_siblings <- get_sibling_ids(graph_company_hierarchy, "1003667")
+
+graph_company_hierarchy <- mark_companies_logical(graph_company_hierarchy,
+                                                  name_logical = "is_sibling", 
+                                                  name_filter = "id_company",
+                                                  set_criteria = id_siblings
+                                                  )
+
+V(graph_company_hierarchy)$color <- ifelse(V(graph_company_hierarchy)$is_sibling,
+                                                   col_graydon[2],
+                                                   col_graydon[3])
+
+plot_graydon_graph(graph_company_hierarchy)
+```
+
+Remember the table of customers? If we want to get all siblings of those companies we can use the function _get_siblings_df_.
+```{r}
+tbl_siblings <- get_siblings_df(graph_company_hierarchies, tbl_customers$id_company)
+```
+
 

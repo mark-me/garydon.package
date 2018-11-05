@@ -2,21 +2,25 @@
 % Please edit documentation in R/company_hierarchy.R
 \name{select_graph_hierarchies}
 \alias{select_graph_hierarchies}
-\title{Function to find the hierarchies of}
+\title{Function to find the hierarchies of a list of companies}
 \usage{
 select_graph_hierarchies(graph_company_hierarchies, id_companies)
 }
 \arguments{
-\item{graph_all_companies}{A graph containing all company/company relations data.}
+\item{id_companies}{A vector of company id's of which you want to retrieve the whole hierarchy}
 
-\item{id_company}{The id of the company of which you want to retrieve the whole hierarchy}
+\item{graph_all_companies}{A graph containing all company/company relations data.}
 }
 \value{
-A graph with the company hierarchy of the specifief company
+A list of graphs containing the grawith the company hierarchy of the specifief company
 }
 \description{
-This function searches the graph of a company's complete hierarchy from a graph containing
-a multitude of company hierarchies.
+This function searches the graphs of a vector of companies for their complete
+hierarchies from a graph containing containing a multitude of company hierarchies.
+}
+\details{
+The graphs will be unique, and contain a vertex attribute is_searched_company
+which specifies whether it the vertex represents a company which was selected
 }
 \examples{
 graph_company_hierarchy <- find_company_hierarchy(graph_company_hierarchies, "931238099")
