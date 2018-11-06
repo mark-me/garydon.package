@@ -112,9 +112,6 @@ graph_company_hierarchy <-
                                     FUN = sum, 
                                     na.rm = TRUE)
 
-## ---- message=FALSE, echo=FALSE, warning=FALSE---------------------------
-par(bg = "#ECECEC")
-
 ## ---- message=FALSE, warning=FALSE---------------------------------------
 igraph::V(graph_company_hierarchy)$label <- paste0("# ",
                                                    igraph::V(graph_company_hierarchy)$qty_employees,
@@ -128,4 +125,30 @@ graph_company_hierarchy <- add_company_hierarchy_stats(graph_company_hierarchy)
 
 ## ------------------------------------------------------------------------
 df_single_hierarchy <- hierarchy_as_data_frame(graph_company_hierarchy)
+
+## ---- echo=FALSE---------------------------------------------------------
+df_single_hierarchy %>% 
+  select(-color, -label) %>% 
+  knitr::kable()
+
+## ------------------------------------------------------------------------
+
+
+## ---- warning=FALSE, message=FALSE---------------------------------------
+id_siblings <- get_sibling_ids(graph_company_hierarchy, "1003667")
+
+graph_company_hierarchy <- mark_companies_logical(graph_company_hierarchy,
+                                                  name_logical = "is_sibling", 
+                                                  name_filter = "id_company",
+                                                  set_criteria = id_siblings
+                                                  )
+
+V(graph_company_hierarchy)$color <- ifelse(V(graph_company_hierarchy)$is_sibling,
+                                                   col_graydon[2],
+                                                   col_graydon[3])
+
+plot_graydon_graph(graph_company_hierarchy)
+
+## ------------------------------------------------------------------------
+tbl_siblings <- get_siblings_df(graph_company_hierarchies, tbl_customers$id_company)
 
