@@ -380,6 +380,46 @@ aggregate_company_hierarchy_value <- function(graph, name_attribute, name_aggreg
   return(graph)
 }
 
+#' Determine holding SBI replacement
+#'
+#' @param graph A graph
+#' @param name_attribute The name of the value attribute to be aggregated
+#' @param name_aggregate The name of the attribute where the aggregated value is stored
+#' @param FUN the function which is used to calculate aggregated
+#' @param ... The parameters passed to the function specified in FUN
+#' @return A graph where all the nodes contain aggregated value
+#' @keywords graph company hierarchy
+#' @export
+#' @example
+#' graph <- determine_holding_sbi(graph, name_attribute = "qty_employees", name_aggregate = "qty_employees_cum", FUN = sum, na.rm = TRUE)
+determine_holding_sbi <- function(ego_graph){
+
+  vec_sbi_holdings <- c("64", "642", "6420")
+
+  # The default new SBI code is the same as the current
+  code_sbi_new <- get_root_vertex(ego_graph)$code_sbi
+
+  # Determine wether the node is a holding
+  is_holding <- get_root_vertex(ego_graph)$code_sbi %in% vec_sbi_holdings
+
+  # If the company is not a holding the new SBI code is the same as the original
+  if(is_holding){
+
+    sbi_children <- V(ego_graph)[ nei(V(ego_graph), "in") ]$code_sbi_holding # Getting SBI codes of 'children'
+    sbi_children <- sbi_children[!sbi_children %in% vec_sbi_holdings]        # Remove holding SBI codes for children
+    sbi_children <- sbi_children[!is.na(sbi_children)]                       # Remove empty SBI codes for children
+
+    if(length(sbi_children) > 0) {
+
+      code_sbi_2 <- str_sub(sbi_children, 1, 2)                         # Shorten SBI code to first 2 digits
+      freq_sbi_2 <- table(code_sbi_2)                                   # Count SBI code 2-digit occurence
+      code_sbi_new <- names(freq_sbi_2)[which.max(freq_sbi_2)][1]       # Get first of maximum values
+    }
+  }
+
+  return(code_sbi_new)
+}
+
 #' Plots a company hierarchy graph
 #'
 #' @param graph A graph
