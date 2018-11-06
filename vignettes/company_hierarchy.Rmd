@@ -217,12 +217,17 @@ df_single_hierarchy %>%
   select(-color, -label) %>% 
   knitr::kable()
 ```
+
 _mark_companies_logical_
+
+You can 
 ```{r}
 
 ```
 
-_get_siblings_
+## Sister companies
+
+
 ```{r, warning=FALSE, message=FALSE}
 id_siblings <- get_sibling_ids(graph_company_hierarchy, "1003667")
 
@@ -232,9 +237,10 @@ graph_company_hierarchy <- mark_companies_logical(graph_company_hierarchy,
                                                   set_criteria = id_siblings
                                                   )
 
+igraph::V(graph_company_hierarchy)$label <- igraph::V(graph_company_hierarchy)$name
 V(graph_company_hierarchy)$color <- ifelse(V(graph_company_hierarchy)$is_sibling,
                                                    col_graydon[2],
-                                                   col_graydon[3])
+                                                   col_graydon[4])
 
 plot_graydon_graph(graph_company_hierarchy)
 ```
@@ -243,5 +249,26 @@ Remember the table of customers? If we want to get all siblings of those compani
 ```{r}
 tbl_siblings <- get_siblings_df(graph_company_hierarchies, tbl_customers$id_company)
 ```
+Below you can see a sample of the resulting data-frame, where you can see the company with it's siblings and the _qty_siblings_ indicating the total number of siblings the company of _id_company_ has.
+```{r, echo=FALSE}
+tbl_siblings %>%
+  head() %>% 
+  knitr::kable()
+```
 
+```{r}
+vec_sbi_holdings <- c("64", "642", "6420")
+
+graph_company_hierarchy <- mark_companies_logical(graph_company_hierarchy,
+                                                  name_logical = "is_holding",
+                                                  name_filter = "code_sbi",
+                                                  set_criteria = vec_sbi_holdings)
+
+igraph::V(graph_company_hierarchy)$label <- igraph::V(graph_company_hierarchy)$code_sbi
+V(graph_company_hierarchy)$color <- ifelse(V(graph_company_hierarchy)$is_holding,
+                                                   col_graydon[2],
+                                                   col_graydon[4])
+
+plot_graydon_graph(graph_company_hierarchy)
+```
 
