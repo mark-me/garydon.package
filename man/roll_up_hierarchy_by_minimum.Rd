@@ -7,6 +7,15 @@
 roll_up_hierarchy_by_minimum(graph_tree, name_attribute, name_propagated,
   threshold)
 }
+\arguments{
+\item{graph_tree}{Graph representing the economic activity hierarchy}
+
+\item{name_attribute}{The name of the attribute you want to base the roll-up on}
+
+\item{name_propagated}{The name of the new attribute that should contain the cumulative value of name_attribute}
+
+\item{threshold}{The minimum value name_attribute should have to be exluded from further roll-up}
+}
 \value{
 A data frame containing the original economic activity code, the new activity code and the quantity/value that the new code would contain if aggregated
 }

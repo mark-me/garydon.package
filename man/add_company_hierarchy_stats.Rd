@@ -15,6 +15,9 @@ A graph where all the nodes contain information about the company hierarchy grap
 \description{
 Add hierarchy stats to all the vertices of a company hierarchy graph
 }
+\examples{
+graph <- add_company_hierarchy_stats(graph)
+}
 \keyword{company}
 \keyword{graph}
 \keyword{hierarchy}

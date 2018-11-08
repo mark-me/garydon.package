@@ -23,6 +23,9 @@ A graph where all the nodes contain the newly created attribute
 Add a logical variable to the companies in a hierarchy when one of it's
 attributes match one of a set of values
 }
+\examples{
+graph <- mark_companies_logical(graph, "is_holding", "code_SBI", "64", "642", "6420"))
+}
 \keyword{company}
 \keyword{graph}
 \keyword{hierarchy}

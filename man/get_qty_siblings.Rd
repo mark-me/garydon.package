@@ -17,6 +17,9 @@ A data-frame containing all sibling companies
 \description{
 Get the number of sibling companies
 }
+\examples{
+graph <- get_siblings_df(graph)
+}
 \keyword{company}
 \keyword{graph}
 \keyword{hierarchy}

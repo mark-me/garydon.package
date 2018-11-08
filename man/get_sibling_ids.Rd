@@ -17,6 +17,9 @@ A vector with company IDs of the siblings
 \description{
 Get the sibling company IDs of a company
 }
+\examples{
+sibling_ids <- get_sibling_ids(graph, id_company)
+}
 \keyword{company}
 \keyword{graph}
 \keyword{hierarchy}

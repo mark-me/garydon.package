@@ -20,6 +20,9 @@ Graph representation of the economic activity hierarchy
 \description{
 Making a graph of a economic activity hierarchy data-frame.
 }
+\examples{
+graph_SBI <- create_economic_activity_graph(tbl_SBI_count, col_id = "code_SBI", col_id_parent = "code_SBI_parent")
+}
 \keyword{NACE}
 \keyword{SBI}
 \keyword{SIC}

@@ -14,6 +14,9 @@ plot_graydon_graph(graph, ...)
 \description{
 Plots a company hierarchy graph
 }
+\examples{
+plot_graydon_graph(graph)
+}
 \keyword{company}
 \keyword{graph}
 \keyword{hierarchy}

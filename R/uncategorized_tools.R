@@ -47,7 +47,7 @@ end_of_month <- function(date, tz = "CET") {
 #'
 #' @param tbl_primary The table of which you
 #' @param tbl_secondary The time zone indicator, which has a default for the Central European time zone
-#' @param vec_key_columns
+#' @param vec_key_columns a vector indicating the column which are the common keys in both tables
 #' @export
 #' @examples
 #' remove_redundant_columns(tbl_primary, tbl_secondary, vec_key_columns)

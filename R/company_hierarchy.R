@@ -114,8 +114,8 @@ select_graph_hierarchies <- function(graph_company_hierarchies, id_companies){
 #' @return The vertex name that is the root of the graph
 #' @keywords graph company hierarchy
 #' @export
-#' @example
-#' graph_SBI <- get_root_vertex_name(tbl_SBI_count, col_id = "code_SBI", col_id_parent = "code_SBI_parent")
+#' @examples
+#' graph_SBI <- get_root_vertex_name(tree_graph)
 get_root_vertex_name <- function(tree_graph){
 
   # Find root node
@@ -135,7 +135,7 @@ get_root_vertex_name <- function(tree_graph){
 #' @return A list of company hierarchy graphs
 #' @keywords graph company hierarchy
 #' @export
-#' @example
+#' @examples
 #' list_graphs <- list_company_hierarchy_graphs(graph_company_hierarchies)
 list_company_hierarchy_graphs <- function(graph_company_hierarchies){
 
@@ -153,7 +153,7 @@ list_company_hierarchy_graphs <- function(graph_company_hierarchies){
 #' @return A data frame with company hierarchy data
 #' @keywords graph company hierarchy
 #' @export
-#' @example
+#' @examples
 #' df_hierarchies <- hierarchy_list_as_data_frame(list_graph_hierarchies)
 hierarchy_list_as_data_frame <- function(list_graphs){
 
@@ -173,7 +173,7 @@ hierarchy_list_as_data_frame <- function(list_graphs){
 #' @return A data frame with company hierarchy data
 #' @keywords graph company hierarchy
 #' @export
-#' @example
+#' @examples
 #' df_hierarchy <- hierarchy_as_data_frame(graph_hierarchy)
 hierarchy_as_data_frame <- function(graph){
 
@@ -191,7 +191,7 @@ hierarchy_as_data_frame <- function(graph){
 #' @return A vector with company IDs of the siblings
 #' @keywords graph company hierarchy
 #' @export
-#' @example
+#' @examples
 #' sibling_ids <- get_sibling_ids(graph, id_company)
 get_sibling_ids <- function(graph, id_company){
 
@@ -224,7 +224,7 @@ get_sibling_ids <- function(graph, id_company){
 #' @return A data-frame containing all sibling companies
 #' @keywords graph company hierarchy
 #' @export
-#' @example
+#' @examples
 #' graph <- get_siblings_df(graph)
 get_siblings_df <- function(graph, company_ids){
 
@@ -258,7 +258,7 @@ get_siblings_df <- function(graph, company_ids){
 #' @param vertx The vertex representing a company
 #' @return A data-frame containing all sibling companies
 #' @keywords graph company hierarchy
-#' @example
+#' @examples
 #' graph <- get_siblings_df(graph)
 get_qty_siblings <- function(graph, vertx) {
 
@@ -293,7 +293,7 @@ get_qty_siblings <- function(graph, vertx) {
 #' @return A graph where all the nodes contain the newly created attribute
 #' @keywords graph company hierarchy
 #' @export
-#' @example
+#' @examples
 #' graph <- mark_companies_logical(graph, "is_holding", "code_SBI", "64", "642", "6420"))
 mark_companies_logical <- function(graph, name_logical, name_filter , set_criteria){
 
@@ -312,7 +312,7 @@ mark_companies_logical <- function(graph, name_logical, name_filter , set_criter
 #' @return A graph where all the nodes contain information about the company hierarchy graph
 #' @keywords graph company hierarchy
 #' @export
-#' @example
+#' @examples
 #' graph <- add_company_hierarchy_stats(graph)
 add_company_hierarchy_stats <- function(graph){
 
@@ -353,7 +353,7 @@ add_company_hierarchy_stats <- function(graph){
 #' @return A graph where all the nodes contain aggregated value
 #' @keywords graph company hierarchy
 #' @export
-#' @example
+#' @examples
 #' graph <- aggregate_company_hierarchy_value(graph, name_attribute = "qty_employees", name_aggregate = "qty_employees_cum", FUN = sum, na.rm = TRUE)
 aggregate_company_hierarchy_value <- function(graph, name_attribute, name_aggregate, FUN, ...){
 
@@ -382,42 +382,60 @@ aggregate_company_hierarchy_value <- function(graph, name_attribute, name_aggreg
 
 #' Determine holding SBI replacement
 #'
-#' @param graph A graph
-#' @param name_attribute The name of the value attribute to be aggregated
-#' @param name_aggregate The name of the attribute where the aggregated value is stored
-#' @param FUN the function which is used to calculate aggregated
-#' @param ... The parameters passed to the function specified in FUN
+#' @param graph_company_hierarchy A graph with the company hierarchy
+#' @param name_activity_code The name of the value attribute that contains the economic activity code
+#' @param vec_holding_codes A vector of codes that represent holdings
 #' @return A graph where all the nodes contain aggregated value
 #' @keywords graph company hierarchy
 #' @export
-#' @example
-#' graph <- determine_holding_sbi(graph, name_attribute = "qty_employees", name_aggregate = "qty_employees_cum", FUN = sum, na.rm = TRUE)
-determine_holding_sbi <- function(ego_graph){
+#' @examples
+#' graph_company_hierarchy <- recode_holding_codes(graph_company_hierarchy, name_activity_code = "code_sbi", vec_holding_codes = c("64", "642", "6420"))
+recode_holding_codes <- function(graph_company_hierarchy, name_activity_code, vec_holding_codes){
 
-  vec_sbi_holdings <- c("64", "642", "6420")
+  # Determine the ultimate mother company
+  vertx_root <- get_root_vertex(graph_company_hierarchy)
+  # Determine the order of the companies by sorting them in distance from the ultimate mother
+  vertex_distances <- igraph::distances(graph_company_hierarchy,
+                                        v = igraph::V(graph_company_hierarchy),
+                                        to = vertx_root)[, 1]
+  idx_by_distances <- names(sort(vertex_distances, decreasing = TRUE))
 
-  # The default new SBI code is the same as the current
-  code_sbi_new <- get_root_vertex(ego_graph)$code_sbi
+  # Iterate through each company in the network
+  for(idx_company in idx_by_distances) {
 
-  # Determine wether the node is a holding
-  is_holding <- get_root_vertex(ego_graph)$code_sbi %in% vec_sbi_holdings
+    #idx_company <- ""
+    # The company vertice
+    vertex_company <- igraph::V(graph_company_hierarchy)[idx_company]
 
-  # If the company is not a holding the new SBI code is the same as the original
-  if(is_holding){
+    # Determine wether the node is a holding
+    is_holding <- igraph::vertex_attr(graph_company_hierarchy,
+                                      name_activity_code,
+                                      index = igraph::V(graph_company_hierarchy)[idx_company]
+    ) %in% vec_holding_codes
+    if(is_holding){
 
-    sbi_children <- V(ego_graph)[ nei(V(ego_graph), "in") ]$code_sbi_holding # Getting SBI codes of 'children'
-    sbi_children <- sbi_children[!sbi_children %in% vec_sbi_holdings]        # Remove holding SBI codes for children
-    sbi_children <- sbi_children[!is.na(sbi_children)]                       # Remove empty SBI codes for children
+      idx_children <- get_incoming_vertice_names(graph_company_hierarchy, idx_company)
+      children_code <- igraph::vertex_attr(graph = graph_company_hierarchy,
+                                           name_activity_code,
+                                           index = igraph::V(graph_company_hierarchy)[idx_children])
 
-    if(length(sbi_children) > 0) {
+      children_code <- children_code[!children_code %in% vec_holding_codes] # Remove holding SBI codes for children
+      children_code <- children_code[!is.na(children_code)]                 # Remove empty SBI codes for children
 
-      code_sbi_2 <- str_sub(sbi_children, 1, 2)                         # Shorten SBI code to first 2 digits
-      freq_sbi_2 <- table(code_sbi_2)                                   # Count SBI code 2-digit occurence
-      code_sbi_new <- names(freq_sbi_2)[which.max(freq_sbi_2)][1]       # Get first of maximum values
+      if(length(children_code) > 0) {
+
+        code_2 <- stringr::str_sub(children_code, 1, 2) # Shorten SBI code to first 2 digits
+        freq_2 <- table(code_2)                         # Count SBI code 2-digit occurence
+        code_new <- names(freq_2)[which.max(freq_2)][1] # Get first of maximum values
+        igraph::vertex_attr(graph_company_hierarchy,
+                            name_activity_code,
+                            index = igraph::V(graph_company_hierarchy)[idx_company]) <- code_new
+      }
+
     }
   }
 
-  return(code_sbi_new)
+  return(graph_company_hierarchy)
 }
 
 #' Plots a company hierarchy graph
@@ -426,7 +444,7 @@ determine_holding_sbi <- function(ego_graph){
 #' @param ... The parameters passed to the function specified in FUN
 #' @keywords graph company hierarchy
 #' @export
-#' @example
+#' @examples
 #' plot_graydon_graph(graph)
 plot_graydon_graph <- function(graph, ...){
 
@@ -445,21 +463,3 @@ plot_graydon_graph <- function(graph, ...){
   igraph::plot.igraph(graph, ...)
 }
 
-# igraph::plot.igraph(list_graphs_sample[[2]])
-# igraph::plot.igraph(list_graphs[[2]])
-#
-# tbl_companies <- readRDS("~/R scripts/ana1965_graydon/Input/input_r_market_nl.RDS")
-#
-# tbl_temp <- df_rolled %>%
-#   mutate(name = as.integer(name)) %>%
-#   select(name) %>%
-#   left_join(tbl_companies, by = c("name" = "id_graydon")) %>%
-#   select(id_company = name,
-#          id_company_parent = id_mothercompany,
-#          code_sbi,
-#          size_company = type_company,
-#          qty_employees = number_employees
-#          )
-
-# tbl_company_relations_sample <- df_rolled2
-# devtools::use_data(tbl_company_relations_sample, overwrite = TRUE)

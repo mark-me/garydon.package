@@ -15,6 +15,9 @@ The vertex name that is the root of the graph
 \description{
 Get the root node's name of a tree
 }
+\examples{
+graph_SBI <- get_root_vertex_name(tree_graph)
+}
 \keyword{company}
 \keyword{graph}
 \keyword{hierarchy}

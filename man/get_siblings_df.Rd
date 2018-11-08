@@ -19,6 +19,9 @@ A data-frame containing all sibling companies
 Add a logical variable to the companies in a hierarchy when one of it's
 attributes match one of a set of values
 }
+\examples{
+graph <- get_siblings_df(graph)
+}
 \keyword{company}
 \keyword{graph}
 \keyword{hierarchy}

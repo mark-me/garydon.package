@@ -10,6 +10,8 @@ remove_redundant_columns(tbl_primary, tbl_secondary, vec_key_columns)
 \item{tbl_primary}{The table of which you}
 
 \item{tbl_secondary}{The time zone indicator, which has a default for the Central European time zone}
+
+\item{vec_key_columns}{a vector indicating the column which are the common keys in both tables}
 }
 \description{
 Determining redundant columns of secondary table before joining

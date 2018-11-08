@@ -17,6 +17,9 @@ A list of company hierarchy graphs
 Decomposes a graph with all company hierarchies to a list where the items contain
 a single company hierarchy
 }
+\examples{
+list_graphs <- list_company_hierarchy_graphs(graph_company_hierarchies)
+}
 \keyword{company}
 \keyword{graph}
 \keyword{hierarchy}

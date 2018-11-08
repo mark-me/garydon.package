@@ -20,10 +20,7 @@ library(igraph)
 ## ---- message=FALSE, warning=FALSE---------------------------------------
 graph_company_hierarchies <- create_graph_company_hierarchies(tbl_company_relations)
 
-## ---- message=FALSE, echo=FALSE, warning=FALSE---------------------------
-par(bg = "#ECECEC")
-
-## ----message=FALSE, warning=FALSE, echo=FALSE----------------------------
+## ----message=FALSE, warning=FALSE----------------------------------------
 plot_graydon_graph(graph_company_hierarchies,
                    vertex.label = "",
                    vertex.size = 4,
@@ -31,18 +28,9 @@ plot_graydon_graph(graph_company_hierarchies,
 
 ## ------------------------------------------------------------------------
 id_company_selected <- "931238099"
-  
 graph_company_hierarchy <- find_company_hierarchy(graph_company_hierarchies, id_company_selected)
 
-## ---- message=FALSE, echo=FALSE, warning=FALSE---------------------------
-par(bg = "#ECECEC")
-
 ## ---- message=FALSE, warning=FALSE---------------------------------------
-graph_company_hierarchy <- mark_companies_logical(graph_company_hierarchy,
-                                      "is_searched_company",
-                                      "id_company",
-                                      id_company_selected)
-
 igraph::V(graph_company_hierarchy)$color <- ifelse(igraph::V(graph_company_hierarchy)$is_searched_company,
                                                    col_graydon[2],
                                                    col_graydon[4])
@@ -53,7 +41,6 @@ id_company <- as.character(
   sample(tbl_company_relations$id_company[!is.na(tbl_company_relations$id_company)],
          size = 300)
   )
-
 tbl_customers <- data.frame(id_company, stringsAsFactors = FALSE)
 
 ## ------------------------------------------------------------------------
@@ -79,9 +66,6 @@ id_graph_candidates <- id_graph_6_vertices[match(id_graph_6_vertices, id_graph_m
 id_graph_example <- first(id_graph_candidates[!is.na(id_graph_candidates)])
 graph_example <- list_selected_hierarchies[[id_graph_example]]
 rm(qty_graph_selected, id_graph_multiple, qty_vertices, id_graph_6_vertices, id_graph_example)
-
-## ---- message=FALSE, echo=FALSE, warning=FALSE---------------------------
-par(bg = "#ECECEC")
 
 ## ---- message=FALSE, warning=FALSE---------------------------------------
 igraph::V(graph_example)$color <- ifelse(igraph::V(graph_example)$is_searched_company,
@@ -132,7 +116,12 @@ df_single_hierarchy %>%
   knitr::kable()
 
 ## ------------------------------------------------------------------------
+vec_sbi_holdings <- c("64", "642", "6420")
 
+graph_company_hierarchy <- mark_companies_logical(graph_company_hierarchy,
+                                                  name_logical = "is_holding",
+                                                  name_filter = "code_sbi",
+                                                  set_criteria = vec_sbi_holdings)
 
 ## ---- warning=FALSE, message=FALSE---------------------------------------
 id_siblings <- get_sibling_ids(graph_company_hierarchy, "1003667")
@@ -143,12 +132,53 @@ graph_company_hierarchy <- mark_companies_logical(graph_company_hierarchy,
                                                   set_criteria = id_siblings
                                                   )
 
+igraph::V(graph_company_hierarchy)$label <- igraph::V(graph_company_hierarchy)$name
 V(graph_company_hierarchy)$color <- ifelse(V(graph_company_hierarchy)$is_sibling,
                                                    col_graydon[2],
-                                                   col_graydon[3])
+                                                   col_graydon[4])
 
 plot_graydon_graph(graph_company_hierarchy)
 
 ## ------------------------------------------------------------------------
 tbl_siblings <- get_siblings_df(graph_company_hierarchies, tbl_customers$id_company)
+
+## ---- echo=FALSE---------------------------------------------------------
+tbl_siblings %>%
+  head() %>% 
+  knitr::kable()
+
+## ---- message=FALSE, warning=FALSE---------------------------------------
+vec_sbi_holdings <- c("64", "642", "6420")
+
+graph_company_hierarchy <- mark_companies_logical(graph_company_hierarchy,
+                                                  name_logical = "is_holding",
+                                                  name_filter = "code_sbi",
+                                                  set_criteria = vec_sbi_holdings)
+
+igraph::V(graph_company_hierarchy)$label <- igraph::V(graph_company_hierarchy)$code_sbi
+V(graph_company_hierarchy)$color <- ifelse(V(graph_company_hierarchy)$is_holding,
+                                                   col_graydon[2],
+                                                   col_graydon[4])
+
+plot_graydon_graph(graph_company_hierarchy)
+
+## ------------------------------------------------------------------------
+graph_company_hierarchy <- recode_holding_codes(graph_company_hierarchy, 
+                                                name_activity_code = "code_sbi", 
+                                                vec_holding_codes = c("64", "642", "6420"))
+
+## ---- echo=FALSE, message=FALSE, warning=FALSE---------------------------
+vec_sbi_holdings <- c("64", "642", "6420")
+
+graph_company_hierarchy <- mark_companies_logical(graph_company_hierarchy,
+                                                  name_logical = "is_holding",
+                                                  name_filter = "code_sbi",
+                                                  set_criteria = vec_sbi_holdings)
+
+igraph::V(graph_company_hierarchy)$label <- igraph::V(graph_company_hierarchy)$code_sbi
+V(graph_company_hierarchy)$color <- ifelse(V(graph_company_hierarchy)$is_holding,
+                                                   col_graydon[2],
+                                                   col_graydon[4])
+
+plot_graydon_graph(graph_company_hierarchy)
 

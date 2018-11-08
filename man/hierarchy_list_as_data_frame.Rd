@@ -15,6 +15,9 @@ A data frame with company hierarchy data
 \description{
 Converts a list of company hierarchy graphs to a data frame
 }
+\examples{
+df_hierarchies <- hierarchy_list_as_data_frame(list_graph_hierarchies)
+}
 \keyword{company}
 \keyword{graph}
 \keyword{hierarchy}

@@ -15,6 +15,9 @@ The vertext that is the root of the graph
 \description{
 Get the root node of a tree
 }
+\examples{
+graph_SBI <- create_economic_activity_graph(tbl_SBI_count, col_id = "code_SBI", col_id_parent = "code_SBI_parent")
+}
 \keyword{NACE}
 \keyword{SBI}
 \keyword{SIC}

@@ -50,10 +50,10 @@ get_incoming_vertice_names <- function(graph, name_vertex, order = 1){
 #' so the codes represent enough of something for example number of companies, number of customers or
 #' revenue.
 #'
-#' @param graph_tree
-#' @param name_attribute
-#' @param name_propagated
-#' @param threshold
+#' @param graph_tree Graph representing the economic activity hierarchy
+#' @param name_attribute The name of the attribute you want to base the roll-up on
+#' @param name_propagated The name of the new attribute that should contain the cumulative value of name_attribute
+#' @param threshold The minimum value name_attribute should have to be exluded from further roll-up
 #' @return A data frame containing the original economic activity code, the new activity code and the quantity/value that the new code would contain if aggregated
 #' @keywords SBI NACE SIC
 #' @export
@@ -198,7 +198,7 @@ hierarchy_code_level <- function(tbl_hierarchy,
 #' @return A graph containing only the codes with other values than NA and are non-connecting
 #' @keywords SBI NACE SIC
 #' @export
-#' @example
+#' @examples
 #' graph_SBI_clean <- graph_remove_empty_non_connecting(graph_SBI, name_attribute = "qty_companies")
 graph_remove_empty_non_connecting <- function(graph_tree, name_attribute) {
 
@@ -239,7 +239,7 @@ graph_remove_empty_non_connecting <- function(graph_tree, name_attribute) {
 #' @return The vertext that is the root of the graph
 #' @keywords SBI NACE SIC
 #' @export
-#' @example
+#' @examples
 #' graph_SBI <- create_economic_activity_graph(tbl_SBI_count, col_id = "code_SBI", col_id_parent = "code_SBI_parent")
 get_root_vertex <- function(tree_graph){
 
@@ -261,7 +261,7 @@ get_root_vertex <- function(tree_graph){
 #' @return Graph representation of the economic activity hierarchy
 #' @keywords SBI NACE SIC
 #' @export
-#' @example
+#' @examples
 #' graph_SBI <- create_economic_activity_graph(tbl_SBI_count, col_id = "code_SBI", col_id_parent = "code_SBI_parent")
 create_economic_activity_graph <- function(tbl_hierarchy, col_id = "code", col_id_parent = "code_parent") {
 
@@ -295,9 +295,9 @@ create_economic_activity_graph <- function(tbl_hierarchy, col_id = "code", col_i
 #' @param size The name of the vertex attribute you want to use for size
 #' @keywords SBI NACE SIC
 #' @export
-#' @example
+#' @examples
 #' plot_econ_hierarchy(graph_SBI)
-plot_econ_hierarchy <- function(graph, title = "", label = NA, size = NA){
+plot_econ_hierarchy <- function(graph, title = "", label = NA, size = NA, ...){
 
   # Layout
   vertx_root <- get_root_vertex(graph)

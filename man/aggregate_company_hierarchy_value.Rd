@@ -24,6 +24,9 @@ A graph where all the nodes contain aggregated value
 \description{
 Adds an aggregate value to the vertices of a company hierarchy
 }
+\examples{
+graph <- aggregate_company_hierarchy_value(graph, name_attribute = "qty_employees", name_aggregate = "qty_employees_cum", FUN = sum, na.rm = TRUE)
+}
 \keyword{company}
 \keyword{graph}
 \keyword{hierarchy}

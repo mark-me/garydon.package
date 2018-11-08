@@ -4,7 +4,7 @@
 \alias{plot_econ_hierarchy}
 \title{Plotting hierarchies based on a single value, mostly for example puroposes}
 \usage{
-plot_econ_hierarchy(graph, title = "", label = NA, size = NA)
+plot_econ_hierarchy(graph, title = "", label = NA, size = NA, ...)
 }
 \arguments{
 \item{graph}{The graph made of a economic activity tree (usually created with the create_economic_activity_graph function)}
@@ -17,6 +17,9 @@ plot_econ_hierarchy(graph, title = "", label = NA, size = NA)
 }
 \description{
 Plotting hierarchies based on a single value, mostly for example puroposes
+}
+\examples{
+plot_econ_hierarchy(graph_SBI)
 }
 \keyword{NACE}
 \keyword{SBI}
