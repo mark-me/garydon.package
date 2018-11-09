@@ -12,6 +12,23 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+* [Introduction](#introduction)
+    - [Example data](#example_data)
+* [Creating a company hierarchy graph](#create_hierachy_graph)
+* [Selecting company hierarchies graphs](#selecting)
+    - [Selecting a hierarchy by company ID](#selecting_single)
+    - [Selecting hierarchies with a column of company IDs](#selecting_multiple)
+    - [Listing all hierarchy graphs](#selecting_all)
+* [Converting company hierarchy graphs to data-frames](#selecting)
+    - [Converting a single hierarchy graph](#selecting_single)
+    - [Converting a list of hierarchy graphs](#selecting_multiple)
+* [Calculating properties](#calculate)
+    - [Propagating values](#propagate_values)
+    - [Adding graph statistics](#adding_stats)
+    - [Marking companies](#marking)
+    - [Sister companies](#sister_companies)
+    - [Recoding holdings](#recode_holdings)
+
 ```{r setup, include = FALSE}
 library(magrittr)
 library(ggplot2)
@@ -26,7 +43,7 @@ knitr::opts_chunk$set(
 
 In our database we can find the relations between companies by a parent child relation, but there is a lot of information that can be gained from the total total tree of company relations. This package contains several functions that is useful for extracting this kind of information, and for plotting the total company hierarchy.
 
-### The example data
+### <a name="example_data"></a>The example data
 
 First let's load the package:
 ```{r}
@@ -38,7 +55,7 @@ The package contains a data frame, _tbl_company_relations_ which is an ex(s)ampl
 data.frame(`Column names` = names(tbl_company_relations)) %>% 
   knitr::kable()
 ```
-# Creating a company hierarchy graph
+# <a name="create_hierachy_graph"></a>Creating a company hierarchy graph
 
 Company relations in our database are represented in parent-child relations, but this doesn't give you the complete overview of how companies fit together in their complete hierarchy.  [Graphs](https://en.wikipedia.org/wiki/Graph_(discrete_mathematics) provide a way of getting those overviews. Let's load the [_igraph_](http://igraph.org/r/doc/) library first:
 ```{r, message=FALSE, warning=FALSE}
@@ -59,11 +76,11 @@ plot_graydon_graph(graph_company_hierarchies,
                    edge.arrow.size = 0)
 ```
 
-# Selecting company hierarchies graphs
+# <a name="selecting"></a>Selecting company hierarchies graphs
 
 There are a few ways which we can select the distinct company hierarchies so we can make useful calculations or plots about them: you can either select them individually or by bulk.
 
-## Selecting a hierarchy by company ID
+## <a name="selecting_single"></a>Selecting a hierarchy by company ID
 
 If you have a single company that you want to find out about more you can select it using the function _find_company_hierarchy_:
 ```{r}
@@ -79,7 +96,7 @@ igraph::V(graph_company_hierarchy)$color <- ifelse(igraph::V(graph_company_hiera
 plot_graydon_graph(graph_company_hierarchy)
 ```
 
-## Selecting hierarchies with a column of company IDs
+## <a name="selecting_multiple"></a>Selecting hierarchies with a column of company IDs
 
 A customer's file contains multiple companies of which we might want to calculate, or show (parts) of their hierarchy. The _list_selected_hierarchies_ function can be used to put the graphs of all these companies in a list. In this example we have a data frame _tbl_customers_ with the column _id_company_, of which we want to retrieve all the graphs. 
 ```{r, echo=FALSE}
@@ -123,7 +140,7 @@ plot_graydon_graph(graph_example,
                    vertex.label = "")
 ```
 
-## Listing all hierarchy graphs
+## <a name="selecting_all"></a>Listing all hierarchy graphs
 
 For whatever reason, you might want to creating a list of all of the seperate company hierarchies out of the complete company hierarchy 'space'. This will take some time, so take some coffee....    
 ```{r, message=FALSE, warning=FALSE}
@@ -131,11 +148,11 @@ list_all_graphs <- list_company_hierarchy_graphs(graph_company_hierarchies)
 ```
 
 
-# Converting company hierarchy graphs to data-frames 
+# <a name="convert_graph"></a>Converting company hierarchy graphs to data-frames 
 
 Having graphs is nice for creating beautiful plots and useful calculations, but for the data to be useful for further processing, getting data from the graph into a data-frame format is handy.
 
-## Converting a single hierarchy graph
+## <a name="convert_single_graph"></a>Converting a single hierarchy graph
 
 To turn a graph into a data-frame youy can use the function _hierarchy_as_data_frame_. We created the graph _graph_company_hierarchy_ by searching hierarchies by company IDs and set the colors to them being in the searched-for companies, this is reflected by the _graph_company_hierarchy_ and _color_ columns respectively.
 ```{r}
@@ -146,7 +163,7 @@ df_single_hierarchy %>%
   knitr::kable()
 ```
 
-## Converting a list of hierarchy graphs
+## <a name="convert_list_graphs"></a>Converting a list of hierarchy graphs
 
 A list of graphs can also be converted into a data-frame using _hierarchy_list_as_data_frame_:
 ```{r}
@@ -154,9 +171,9 @@ df_selected_hierarchies <- hierarchy_list_as_data_frame(list_selected_hierarchie
 ```
 
 
-# Calculating properties
+# <a name="calculate"></a>Calculating properties
 
-## Propagating values
+## <a name="propage_values"></a>Propagating values
 
 It might come in handy to cumulate values in the hierarchy bottom up; this is where the _aggregate_company_hierarchy_value_ function comes in handy. In this example the companies will get a new attribute _qty_employees_cum_ which will contain the sum of all the _qty_employees_ of the companies that below the company within the hierarchy.
 ```{r}
@@ -177,7 +194,7 @@ igraph::V(graph_company_hierarchy)$label <- paste0("# ",
 plot_graydon_graph(graph_company_hierarchy)
 ```
 
-## Adding graph statistics
+## <a name="adding_stats"></a>Adding graph statistics
 
 Some overall statistics about the hierarchy can be added to the individual companies by using the _add_company_hierarchy_stats_ function. This function will add the following attributes
 * _is_tree_ - A logical indicating whether the company hierarchy is a tree (which should always be the case).
@@ -200,7 +217,7 @@ df_single_hierarchy %>%
   knitr::kable()
 ```
 
-## Marking companies
+## <a name="marking"></a>Marking companies
 
 You can mark companies within a graphthat meet certain categorical  criteria with the function _mark_companies_logical_. This can be useful for derivations or coloring graphs. As a somewhat travial  example, let's mark the companies that have SBI codes (from _code_sbi_) that are a associated with holdings (that are in the vector _vec_sbi_holdings_). The new company attribute name will be _is_holding_.
 ```{r}
@@ -212,7 +229,7 @@ graph_company_hierarchy <- mark_companies_logical(graph_company_hierarchy,
                                                   set_criteria = vec_sbi_holdings)
 ```
 
-## Sister companies
+## <a name="sister_companies"></a>Sister companies
 
 You can get the siblings IDs of a company using the function _get_sibling_ids_, which in turn can be used to mark companies and plot them.
 ```{r, warning=FALSE, message=FALSE}
@@ -243,7 +260,7 @@ tbl_siblings %>%
   knitr::kable()
 ```
 
-## Recoding holdings
+## <a name="recode_holdings"></a>Recoding holdings
 
 When dealing with customers you'll ofen encounter them having economic activity codes that mark them as financial holdings. This is often the case because this is the company you send the bills too. But this is not really informative when analysing the type of companies you have as customers. In this case you might want to recode them to better reflect what kind of business they are really in.
 
