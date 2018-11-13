@@ -59,3 +59,23 @@ remove_redundant_columns <- function(tbl_primary, tbl_secondary, vec_key_columns
   # Exclude join key
   col_names_duplicate <- col_names_duplicate[col_names_duplicate %nin% vec_key_columns]
 }
+
+#' Installing regularly used packages
+#'
+#' @export
+#' @examples
+#' install_graydon_packages()
+install_graydon_packages <- function() {
+
+  # Installing and loading libraries
+  list_of_packages <- c("ggplot2", "dplyr", "magrittr", "purrr", "fst", "ggmap", "ggthemes", "reshape2", "scales", "xlsx",
+                        "stringr", "RColorBrewer", "qgraph", "Hmisc", "factoextra", "cluster", "kimisc", "ggrepel", "class",
+                        "lubridate", "tidyr", "broom", "funr", "htmltools", "outliers", "readr", "janitor", "ggmosaic",
+                        "extrafont", "gridExtra", "DT", "formattable", "data.table", "bit64", "igraph")
+  new_packages <- list_of_packages[!(list_of_packages %in% installed.packages()[,"Package"])]
+
+  if(length(new_packages)) install.packages(new_packages, dependencies = TRUE)
+
+  rm(list_of_packages, new_packages)
+
+}
