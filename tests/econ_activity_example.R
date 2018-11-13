@@ -37,8 +37,13 @@ create_SBI_tree <- function(code_SBI = NA) {
 }
 
 # Create SBI graph ----
-graph_tree <- create_SBI_tree(c("D", "E"))
-plot_econ_hierarchy(graph_tree, title = "Initial", label = "qty_companies")
+graph_tree <- create_SBI_tree(c("14"))
+
+
+plot_graydon_graph(graph_tree)
+
+
+
 
 # Create list of trees for each sector code (letters) ----
 list_trees <- igraph::decompose(graph_tree)

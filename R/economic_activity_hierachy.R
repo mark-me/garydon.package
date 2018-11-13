@@ -1,3 +1,37 @@
+#' Making a graph of a economic activity hierarchy data-frame.
+#'
+#' @param tbl_hierarchy The data frame containing all codes and references to their parents.
+#' @param col_id The name of the column that is the economic activity code
+#' @param col_id_parent The name of the column that is the parent's code of the economic activity code
+#' @return Graph representation of the economic activity hierarchy
+#' @keywords SBI NACE SIC
+#' @export
+#' @example
+#' graph_SBI <- create_economic_activity_graph(tbl_SBI_count, col_id = "code_SBI", col_id_parent = "code_SBI_parent")
+create_economic_activity_graph <- function(tbl_hierarchy, col_id = "code", col_id_parent = "code_parent") {
+
+  # Rename columns for processing within the function
+  names(tbl_hierarchy)[which(names(tbl_hierarchy) == col_id)] <- "code"
+  names(tbl_hierarchy)[which(names(tbl_hierarchy) == col_id_parent)] <- "code_parent"
+
+  # Create vertices
+  vertices <- with(tbl_hierarchy, unique(c(code, code_parent)))
+  tbl_vertices <- data.frame(code = vertices) %>%
+    dplyr::left_join(tbl_hierarchy, by = "code")
+
+  # Create edges
+  tbl_edges <- tbl_hierarchy %>% dplyr::select(code, code_parent, everything())
+
+  # Create graph
+  graph_hierarchy <- igraph::graph_from_data_frame(d = tbl_edges,
+                                                   vertices = tbl_vertices,
+                                                   directed = TRUE)
+
+  graph_hierarchy <- vertices_add_distance_to_root(graph_hierarchy) # Add layer information
+
+  return(graph_hierarchy)
+}
+
 #' Add the distance to each vertex to the graph's root
 #'
 #' @param graph The graph to do the searhing in
