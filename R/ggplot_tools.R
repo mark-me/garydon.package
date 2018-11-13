@@ -16,7 +16,7 @@ theme_graydon <- function(type = c("grid", "horizontal", "vertical", "blank")) {
 
   graydon_theme <-
     ggthemes::theme_gdocs() +
-    theme(axis.title = element_text(face = "plain"),
+    ggplot2::theme(axis.title = element_text(face = "plain"),
           panel.grid.major = element_line(colour = col_graydon_grid),
           plot.background = element_blank(),
           axis.line = element_line(colour = col_graydon_axis),
@@ -27,14 +27,14 @@ theme_graydon <- function(type = c("grid", "horizontal", "vertical", "blank")) {
   if (type == "horizontal") {
 
     graydon_theme <- graydon_theme +
-      theme(panel.grid.major.x = element_blank(),
+      ggplot2::theme(panel.grid.major.x = element_blank(),
             axis.line.y = element_blank()
       )
 
   } else if (type == "vertical") {
 
     graydon_theme <- graydon_theme +
-      theme(panel.grid.major.y = element_blank(),
+      ggplot2::theme(panel.grid.major.y = element_blank(),
             axis.line.x = element_blank()
       )
 
@@ -66,7 +66,7 @@ theme_graydon <- function(type = c("grid", "horizontal", "vertical", "blank")) {
 #' @keywords ggplot2
 #' @export
 scale_color_graydon <- function(){
-  return(scale_color_manual(values = col_graydon))
+  return(ggplot2::scale_color_manual(values = col_graydon))
 }
 
 #' A function to include in a ggplot so the fill aesthetics make use of the Graydon color palette
@@ -74,7 +74,7 @@ scale_color_graydon <- function(){
 #' @keywords ggplot2
 #' @export
 scale_fill_graydon <- function(){
-  return(scale_fill_manual(values = col_graydon))
+  return(ggplot2::scale_fill_manual(values = col_graydon))
 }
 
 #' A function to include in a ggplot so color and fill aesthetics make use of the Graydon color palette
@@ -82,8 +82,96 @@ scale_fill_graydon <- function(){
 #' @keywords ggplot2
 #' @export
 scale_gradient_graydon <- function(){
-  return(scale_fill_gradient(low = col_graydon_low, high = col_graydon_high) +
-           scale_color_gradient(low = col_graydon_low, high = col_graydon_high))
+  return(ggplot2::scale_fill_gradient(low = col_graydon_low, high = col_graydon_high) +
+           ggplot2::scale_color_gradient(low = col_graydon_low, high = col_graydon_high))
+}
+
+#' A function to create a continuous x-axis for formatted numbers
+#'
+#' @keywords ggplot2
+#' @export
+scale_y_numeric <- function(number_decimals = 0, format_EN = FALSE, scale = c("normal", "k", "M")) {
+
+  return(
+    ggplot2::scale_x_continuous(labels = function(x) format_number(x,
+                                                          number_decimals,
+                                                          format_EN,
+                                                          scale))
+  )
+}
+
+#' A function to create a continuous y-axis for formatted numbers
+#'
+#' @keywords ggplot2
+#' @export
+scale_y_numeric <- function(number_decimals = 0, format_EN = FALSE, scale = c("normal", "k", "M")) {
+
+  return(
+    ggplot2::scale_y_continuous(labels = function(x) format_number(x,
+                                                          number_decimals,
+                                                          format_EN,
+                                                          scale))
+  )
+}
+
+#' A function to create a continuous x-axis for formatted currency
+#'
+#' @keywords ggplot2
+#' @export
+scale_x_currency <- function(currency = c("EUR", "GBP"),
+                             number_decimals = 2,
+                             scale = c("normal", "k", "M")) {
+
+  return(
+    ggplot2::scale_x_continuous(labels = function(x) format_currency(x,
+                                                                     currency,
+                                                                     number_decimals,
+                                                                     scale))
+  )
+}
+
+#' A function to create a continuous y-axis for formatted currency
+#'
+#' @keywords ggplot2
+#' @export
+scale_y_currency <- function(currency = c("EUR", "GBP"),
+                             number_decimals = 2,
+                             scale = c("normal", "k", "M")) {
+
+  return(
+    ggplot2::scale_y_continuous(labels = function(x) format_currency(x,
+                                                          currency,
+                                                          number_decimals,
+                                                          scale))
+  )
+}
+
+#' A function to create a continuous x-axis for formatted percentages
+#'
+#' @keywords ggplot2
+#' @export
+scale_x_percent <- function(number_decimals = 1,
+                            format_EN = FALSE) {
+
+  return(
+    ggplot2::scale_x_continuous(labels = function(x) format_percent(x,
+                                                                    number_decimals,
+                                                                    format_EN))
+  )
+}
+
+#' A function to create a continuous y-axis for formatted percentages
+#'
+#' @keywords ggplot2
+#' @export
+scale_y_percent <- function(number_decimals = 1,
+                            format_EN = FALSE) {
+
+  return(
+    ggplot2::scale_y_continuous(labels = function(x) format_percent(x,
+                                                                    number_decimals,
+                                                                    format_EN))
+  )
 }
 
 #' Saving a plot to a png, ready for use in a PowerPoint

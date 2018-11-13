@@ -12,8 +12,17 @@ vignette: >
   %\VignetteEncoding{UTF-8}
 ---
 
+* [Introduction](#introduction)
+* [Graydon colouring and grid background](#color_grid)
+* [Axis formatting](#axis_formatting)
+    - [Number axis](#axis_formatting_number)
+    - [Currency axis](#axis_formatting_currency)
+    - [Percent axis](#axis_formatting_percent)
+* [Saving hires plots to PNG files](#saving_png)
+    
 ```{r setup, include = FALSE}
 library(ggplot2)
+library(tidyverse)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -29,7 +38,7 @@ First let's load the package:
 library(graydon.package)
 ```
 
-## Graydon colouring aesthetics and grid background
+## <a name="color_grid"></a>Graydon colouring aesthetics and grid background
 
 ```{r, warning=FALSE}
 ggplot(mtcars,
@@ -50,6 +59,7 @@ ggplot(mtcars,
   scale_fill_graydon() +
   theme_graydon("horizontal")
 ```
+
 ## Graydon fill aesthetic and vertical gridlines only
 ```{r, message=FALSE, warning=FALSE}
 ggplot(mtcars,
@@ -62,12 +72,101 @@ ggplot(mtcars,
 ```
 
 ## Graydon gradient aesthetics and no background
-```{r, message=FALSE}
+```{r, message=FALSE, fig.width = 5}
 ggplot(mtcars, aes(x = hp, y = wt, fill = qsec, col = qsec)) +
   geom_jitter(size = 15, shape = 22) +
   guides(fill = FALSE, col = FALSE) +
   scale_color_gradient(low = col_graydon[8], high = col_graydon[4]) +
   scale_fill_gradient(low = col_graydon[2], high = col_graydon[1]) +
   theme_graydon("blank")
+```
+
+## <a name="axis_formatting"></a>Axis formatting
+
+### <a name="axis_formatting_number"></a>Numbers
+
+You can turn numeric results is presentable formats by using the _scale_x_numeric_ or _scale_y_numeric_  function. These functions optionally take the following input variables: 
+
+* _number_decimals_ - which, unsurprisingly, allows you to manipulate how many decimals should be shown. The default value is 2. 
+* _format_EN_ - which speficifies whether the thousands and decimal seperators should be UK style or European style. The default value is FALSE (EU style)
+* _scale_ - The scale which you can use to abbreviate numbers. You could display the numers in thousands ("k") or Millions ("M"). The deault value is "normal" however.
+
+```{r, warning=FALSE, fig.width = 7}
+diamonds %>% 
+  group_by(color, cut) %>% 
+  summarise(price_median = median(price)) %>% 
+ggplot(aes(x = cut, y = price_median, col = color)) +
+  geom_line(aes(group = color), size = 1, alpha = 0.7) +
+  geom_point(size = 5) +
+  labs(x = "Cut quality", y = "Price", col = "Color") +
+  scale_color_graydon() +
+  scale_y_numeric(format_EN = TRUE) +
+  theme_graydon("grid")
+```
+
+### <a name="axis_formatting_currency"></a>Currency
+
+You can turn numeric results is presentable formats by using the _scale_x_currency_ or _scale_y_currency_ function. These functions optionally take the following input variables: 
+
+* _currency_ - This specifies whether the currency is Euro ("EUR") or Pounds ("GBP"). This also speficifies whether the thousands and decimal seperators should be UK style or European style. The default value is "EUR".
+* _number_decimals_ - which, unsurprisingly, allows you to manipulate how many decimals should be shown. The default value is 2. 
+* _scale_ - The scale which you can use to abbreviate numbers. You could display the numers in thousands ("k") or Millions ("M"). The deault value is "normal" however.
+
+Some examples:
+```{r, warning=FALSE, fig.width = 7}
+diamonds %>% 
+  group_by(color, cut) %>% 
+  summarise(price_median = median(price)) %>% 
+ggplot(aes(x = cut, y = price_median, col = color)) +
+  geom_line(aes(group = color), size = 1, alpha = 0.7) +
+  geom_point(size = 5) +
+  labs(x = "Cut quality", y = "Price", col = "Color") +
+  scale_color_graydon() +
+  scale_y_currency(currency = "EUR", scale = "k", number_decimals = 1) +
+  theme_graydon("grid")
+```
+
+### <a name="axis_formatting_percent"></a>Percent
+
+The functions _scale_x_percent_ and _scale_y_percent_ can be used in ggplots to for percentage formatted axes. These functions optionally take the following input variables: 
+
+* _number_decimals_ - which, unsurprisingly, allows you to manipulate how many decimals should be shown. The default value is 2. 
+* _format_EN_ - which speficifies whether the thousands and decimal seperators should be UK style or European style. The default value is FALSE (EU style)
+
+
+```{r, warning=FALSE, fig.width = 7}
+diamonds %>% 
+  mutate(depth = depth / 100) %>% 
+  group_by(cut) %>% 
+  summarise(price_median = median(price),
+            depth_median = median(depth)) %>% 
+ggplot(aes(x = depth_median, y = price_median, col = cut)) +
+  geom_point(size = 7, alpha = 0.7) +
+  labs(x = "Depth", y = "Price", col = "Cut") +
+  scale_color_graydon() +
+  scale_x_percent(format_EN = TRUE) +
+  scale_y_currency(currency = "GBP") +
+  theme_graydon("grid")
+```
+
+## <a name="saving_png"></a>Saving hires plots to PNG files
+
+
+Plots are nice to have within R Studio or a R Markdown document, but we need them in PowerPoint as well. You can automatically save high res PNG files using the _save_plot_to_png_ function. To use this function you must store the plot in a variable, pass a filename (without extension) and indicate whether you want a squared plot (for side by side PP slides) or not (a slide filling PP slide).
+
+Let's create some high res abstract art:
+
+```{r, fig.width = 5}
+
+p_abstract <- ggplot(mtcars, aes(x = hp, y = wt, fill = qsec, col = qsec)) +
+  geom_jitter(size = 15, shape = 22, alpha = 0.7) +
+  guides(fill = FALSE, col = FALSE) +
+  scale_color_gradient(low = col_graydon[8], high = col_graydon[4]) +
+  scale_fill_gradient(low = col_graydon[2], high = col_graydon[1]) +
+  theme_graydon("blank")
+
+save_plot_to_png(p_abstract, "abstract_art", squared = TRUE)
+
+p_abstract
 ```
 

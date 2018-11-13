@@ -6,8 +6,10 @@
 #' @examples
 #' str_firstup("ThIs iS One uGLy sTRIng!")
 str_firstup <- function(x) {
+
+  x <- tolower(x)
   substr(x, 1, 1) <- toupper(substr(x, 1, 1))
-  x
+  return(x)
 }
 
 #' Sets first letter of a string to capital
@@ -30,9 +32,9 @@ format_number <- function(x, number_decimals = 0, format_EN = FALSE, scale = c("
     decimal_mark <- '.'
   }
 
-  if(length(scale) > 1) scale <- "normal"
-
   # Apply scale
+  scale <- ifelse(length(scale) > 1, "normal", scale)
+
   if (scale == "normal") {
     suffix <- ""
   }
@@ -69,12 +71,17 @@ format_number <- function(x, number_decimals = 0, format_EN = FALSE, scale = c("
 #' @export
 #' @examples
 #' format_currency(amount = 1000000, currency = "EUR", number_decimals = 1,scale = "M")
-format_currency <- function(amount, currency = c("EUR", "GBP"), number_decimals = 2, scale = NA) {
+format_currency <- function(amount,
+                            currency = c("EUR", "GBP"),
+                            number_decimals = 2,
+                            scale = c("normal", "k", "M")) {
+
+  scale <- ifelse(length(scale) > 1, "normal", scale)
 
   amount <- round(amount, digits = 2)
   # Set default currency symbol (EURO)
   currency_symbol <- intToUtf8(8364)
-  if(length(currency) > 1) currency <- "EUR"
+  #if(stringr::str_length(currency) > 1) currency <- "EUR"
 
   # Determine number format (seperators)
   if(currency == "EUR") {
@@ -85,12 +92,10 @@ format_currency <- function(amount, currency = c("EUR", "GBP"), number_decimals 
     format_EN <- TRUE
   }
 
-
   formatted_number <- format_number(x = amount,
                                     number_decimals = number_decimals,
                                     format_EN = format_EN,
                                     scale = scale)
-
   return(paste0(currency_symbol, formatted_number))
 }
 
@@ -134,7 +139,7 @@ str_mid <- function(text, idx_start, qty_characters = NA) {
   }
 
   if(!is.na(qty_characters)){
-    idx_end <- qty_total - idx_start
+    idx_end <- idx_start + qty_characters - 1
   } else {
     idx_end <- qty_total
   }
@@ -158,7 +163,7 @@ str_right <- function(text, qty_characters) {
     return(NA)
   }
 
-  idx_start <- qty_total - qty_characters
+  idx_start <- qty_total - qty_characters + 1
 
   return(substr(text, idx_start, qty_total))
 }
@@ -173,41 +178,98 @@ str_right <- function(text, qty_characters) {
 #' @export
 #' @examples
 #' ntiles_labeled(vec_values = mtcars$mpg, qty_ntiles = 4, FUN = format_currency, currency = "GBP")
-ntiles_labeled <- function(vec_values, qty_ntiles, FUN, ...) {
+ntiles_labeled <- function(values, qty_ntiles, FUN, ...) {
 
-  ntile_values <- dplyr::ntile(vec_values, qty_ntiles) # Create n-tiles
-  ntile_value_min <- NULL                       # Minimum values for each n-tile
-  ntile_value_max <- NULL                       # Maximum values for each n-tile
+  ntile_values <- dplyr::ntile(values, qty_ntiles) # Create n-tiles
 
-  # Search for minimum and maximum value of each ntile
-  for(ntile in c(1:qty_ntiles)){
+  ntile_labels <- label_intervals(values, ntile_values, FUN, ...)
+
+  return(ntile_labels)
+}
+
+#' Creates a vector of human readable bins based on width
+#'
+#' @param values The vector/column of values you want to 'ntile'
+#' @param width The width of the bins
+#' @param FUN The function you want to use to apply formatting
+#' @param ... The parameters you'd want to pass on to the formatting function supplied to FUN
+#' @return Ordered factor
+#' @export
+#' @examples
+#' bin_width_labeled(values = mtcars$mpg, qty_ntiles = 4, FUN = format_currency, currency = "GBP")
+bin_width_labeled <- function(values, width, FUN, ...) {
+
+  bin_values <- ggplot2::cut_width(values, width) # Create bins
+  bin_labels <- label_intervals(values, bin_values, FUN, ...)
+
+  return(bin_labels)
+}
+
+
+#' Creates a vector of human readable bins based on width
+#'
+#' @param values The vector/column of values you want to 'ntile'
+#' @param qty_bins The number of ntiles you want to have
+#' @param FUN The function you want to use to apply formatting
+#' @param ... The parameters you'd want to pass on to the formatting function supplied to FUN
+#' @return Ordered factor
+#' @export
+#' @examples
+#' bin_quantity_labeled(values = mtcars$mpg, qty_ntiles = 4, FUN = format_currency, currency = "GBP")
+bin_quantity_labeled <- function(values, qty_bins, FUN, ...) {
+
+  bin_values <- ggplot2::cut_interval(values, n = qty_bins) # Create bins
+  bin_labels <- label_intervals(values, bin_values, FUN, ...)
+
+  return(bin_labels)
+}
+
+#' Creates a vector of human readable bins
+#'
+#' @param values The original values
+#' @param intervals The created intervals
+#' @param FUN The function you want to use to apply formatting
+#' @param ... The parameters you'd want to pass on to the formatting function supplied to FUN
+#' @return Ordered factor
+#' @examples
+#' label_intervals(vec_values = mtcars$mpg, intervals, FUN = format_currency, currency = "GBP")
+label_intervals <- function(values, intervals, FUN, ...){
+
+  # Convert factors to integers
+  if(class(intervals) == "factor") intervals <- as.integer(intervals)
+  qty_intervals <- length(unique(intervals))  # Number of intervals given
+  interval_value_min <- NULL                  # Minimum values for each n-tile
+  interval_value_max <- NULL                  # Maximum values for each n-tile
+
+  # Search for minimum and maximum value of each interval
+  for(interval in c(1:qty_intervals)){
 
     # Finding minimum value
-    value_min <- min(vec_values[which(ntile_values == ntile)])
-    ntile_value_min <- c(ntile_value_min, value_min)
+    value_min <- min(values[which(intervals == interval)])
+    interval_value_min <- c(interval_value_min, value_min)
 
     # Finding maximum value
-    ntile_max <- max(vec_values[which(ntile_values == ntile)])
-    ntile_value_max <- c(ntile_value_max, ntile_max)
+    interval_max <- max(values[which(intervals == interval)])
+    interval_value_max <- c(interval_value_max, interval_max)
   }
 
   # Format the minimum and maximum values
-  ntile_value_min <- sapply(X=ntile_value_min, FUN=FUN, ...)
-  ntile_value_max <- sapply(X=ntile_value_max, FUN=FUN, ...)
+  interval_value_min <- sapply(X=interval_value_min, FUN=FUN, ...)
+  interval_value_max <- sapply(X=interval_value_max, FUN=FUN, ...)
 
   # Creating the interval variables
-  max_values <- c(ntile_value_min[2:qty_ntiles], ntile_value_max[qty_ntiles])
-  intervals <- paste0(rep('[', qty_ntiles),
-                      ntile_value_min,
-                      " - ",
-                      max_values,
-                      c( rep(')', qty_ntiles - 1), ']'))
+  max_values <- c(interval_value_min[2:qty_intervals], interval_value_max[qty_intervals])
+  interval_labels <- paste0(rep('[', qty_intervals),
+                            interval_value_min,
+                            " - ",
+                            max_values,
+                            c(rep(')', qty_intervals - 1), ']'))
 
-  # Replace ntile values with labels
-  interval <- plyr::mapvalues(ntile_values, c(1:qty_ntiles), intervals)
+  # Replace interval values with labels
+  interval <- plyr::mapvalues(intervals, c(1:qty_intervals), interval_labels)
 
   # Create an ordered factor
-  interval <- ordered(interval, levels = intervals)
+  interval <- ordered(interval, levels = interval_labels)
 
   return(interval)
 }

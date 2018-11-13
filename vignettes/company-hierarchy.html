@@ -1,97 +1,228 @@
 <!DOCTYPE html>
-
-<html xmlns="http://www.w3.org/1999/xhtml">
-
+<html>
 <head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
 
-<meta charset="utf-8" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<meta name="generator" content="pandoc" />
+<title>Introduction</title>
 
-<meta name="viewport" content="width=device-width, initial-scale=1">
+<script type="text/javascript">
+window.onload = function() {
+  var imgs = document.getElementsByTagName('img'), i, img;
+  for (i = 0; i < imgs.length; i++) {
+    img = imgs[i];
+    // center an image if it is the only element of its parent
+    if (img.parentElement.childElementCount === 1)
+      img.parentElement.style.textAlign = 'center';
+  }
+};
+</script>
 
-<meta name="author" content="Mark Zwart" />
-
-<meta name="date" content="2018-11-09" />
-
-<title>Handling of company hierarchies</title>
-
-
-
-<style type="text/css">code{white-space: pre;}</style>
+<!-- Styles for R syntax highlighter -->
 <style type="text/css">
-div.sourceCode { overflow-x: auto; }
-table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
-  margin: 0; padding: 0; vertical-align: baseline; border: none; }
-table.sourceCode { width: 100%; line-height: 100%; }
-td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
-td.sourceCode { padding-left: 5px; }
-code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
-code > span.dt { color: #902000; } /* DataType */
-code > span.dv { color: #40a070; } /* DecVal */
-code > span.bn { color: #40a070; } /* BaseN */
-code > span.fl { color: #40a070; } /* Float */
-code > span.ch { color: #4070a0; } /* Char */
-code > span.st { color: #4070a0; } /* String */
-code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
-code > span.ot { color: #007020; } /* Other */
-code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
-code > span.fu { color: #06287e; } /* Function */
-code > span.er { color: #ff0000; font-weight: bold; } /* Error */
-code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
-code > span.cn { color: #880000; } /* Constant */
-code > span.sc { color: #4070a0; } /* SpecialChar */
-code > span.vs { color: #4070a0; } /* VerbatimString */
-code > span.ss { color: #bb6688; } /* SpecialString */
-code > span.im { } /* Import */
-code > span.va { color: #19177c; } /* Variable */
-code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
-code > span.op { color: #666666; } /* Operator */
-code > span.bu { } /* BuiltIn */
-code > span.ex { } /* Extension */
-code > span.pp { color: #bc7a00; } /* Preprocessor */
-code > span.at { color: #7d9029; } /* Attribute */
-code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
-code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
-code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
-code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+   pre .operator,
+   pre .paren {
+     color: rgb(104, 118, 135)
+   }
+
+   pre .literal {
+     color: #990073
+   }
+
+   pre .number {
+     color: #099;
+   }
+
+   pre .comment {
+     color: #998;
+     font-style: italic
+   }
+
+   pre .keyword {
+     color: #900;
+     font-weight: bold
+   }
+
+   pre .identifier {
+     color: rgb(0, 0, 0);
+   }
+
+   pre .string {
+     color: #d14;
+   }
+</style>
+
+<!-- R syntax highlighter -->
+<script type="text/javascript">
+var hljs=new function(){function m(p){return p.replace(/&/gm,"&amp;").replace(/</gm,"&lt;")}function f(r,q,p){return RegExp(q,"m"+(r.cI?"i":"")+(p?"g":""))}function b(r){for(var p=0;p<r.childNodes.length;p++){var q=r.childNodes[p];if(q.nodeName=="CODE"){return q}if(!(q.nodeType==3&&q.nodeValue.match(/\s+/))){break}}}function h(t,s){var p="";for(var r=0;r<t.childNodes.length;r++){if(t.childNodes[r].nodeType==3){var q=t.childNodes[r].nodeValue;if(s){q=q.replace(/\n/g,"")}p+=q}else{if(t.childNodes[r].nodeName=="BR"){p+="\n"}else{p+=h(t.childNodes[r])}}}if(/MSIE [678]/.test(navigator.userAgent)){p=p.replace(/\r/g,"\n")}return p}function a(s){var r=s.className.split(/\s+/);r=r.concat(s.parentNode.className.split(/\s+/));for(var q=0;q<r.length;q++){var p=r[q].replace(/^language-/,"");if(e[p]){return p}}}function c(q){var p=[];(function(s,t){for(var r=0;r<s.childNodes.length;r++){if(s.childNodes[r].nodeType==3){t+=s.childNodes[r].nodeValue.length}else{if(s.childNodes[r].nodeName=="BR"){t+=1}else{if(s.childNodes[r].nodeType==1){p.push({event:"start",offset:t,node:s.childNodes[r]});t=arguments.callee(s.childNodes[r],t);p.push({event:"stop",offset:t,node:s.childNodes[r]})}}}}return t})(q,0);return p}function k(y,w,x){var q=0;var z="";var s=[];function u(){if(y.length&&w.length){if(y[0].offset!=w[0].offset){return(y[0].offset<w[0].offset)?y:w}else{return w[0].event=="start"?y:w}}else{return y.length?y:w}}function t(D){var A="<"+D.nodeName.toLowerCase();for(var B=0;B<D.attributes.length;B++){var C=D.attributes[B];A+=" "+C.nodeName.toLowerCase();if(C.value!==undefined&&C.value!==false&&C.value!==null){A+='="'+m(C.value)+'"'}}return A+">"}while(y.length||w.length){var v=u().splice(0,1)[0];z+=m(x.substr(q,v.offset-q));q=v.offset;if(v.event=="start"){z+=t(v.node);s.push(v.node)}else{if(v.event=="stop"){var p,r=s.length;do{r--;p=s[r];z+=("</"+p.nodeName.toLowerCase()+">")}while(p!=v.node);s.splice(r,1);while(r<s.length){z+=t(s[r]);r++}}}}return z+m(x.substr(q))}function j(){function q(x,y,v){if(x.compiled){return}var u;var s=[];if(x.k){x.lR=f(y,x.l||hljs.IR,true);for(var w in x.k){if(!x.k.hasOwnProperty(w)){continue}if(x.k[w] instanceof Object){u=x.k[w]}else{u=x.k;w="keyword"}for(var r in u){if(!u.hasOwnProperty(r)){continue}x.k[r]=[w,u[r]];s.push(r)}}}if(!v){if(x.bWK){x.b="\\b("+s.join("|")+")\\s"}x.bR=f(y,x.b?x.b:"\\B|\\b");if(!x.e&&!x.eW){x.e="\\B|\\b"}if(x.e){x.eR=f(y,x.e)}}if(x.i){x.iR=f(y,x.i)}if(x.r===undefined){x.r=1}if(!x.c){x.c=[]}x.compiled=true;for(var t=0;t<x.c.length;t++){if(x.c[t]=="self"){x.c[t]=x}q(x.c[t],y,false)}if(x.starts){q(x.starts,y,false)}}for(var p in e){if(!e.hasOwnProperty(p)){continue}q(e[p].dM,e[p],true)}}function d(B,C){if(!j.called){j();j.called=true}function q(r,M){for(var L=0;L<M.c.length;L++){if((M.c[L].bR.exec(r)||[null])[0]==r){return M.c[L]}}}function v(L,r){if(D[L].e&&D[L].eR.test(r)){return 1}if(D[L].eW){var M=v(L-1,r);return M?M+1:0}return 0}function w(r,L){return L.i&&L.iR.test(r)}function K(N,O){var M=[];for(var L=0;L<N.c.length;L++){M.push(N.c[L].b)}var r=D.length-1;do{if(D[r].e){M.push(D[r].e)}r--}while(D[r+1].eW);if(N.i){M.push(N.i)}return f(O,M.join("|"),true)}function p(M,L){var N=D[D.length-1];if(!N.t){N.t=K(N,E)}N.t.lastIndex=L;var r=N.t.exec(M);return r?[M.substr(L,r.index-L),r[0],false]:[M.substr(L),"",true]}function z(N,r){var L=E.cI?r[0].toLowerCase():r[0];var M=N.k[L];if(M&&M instanceof Array){return M}return false}function F(L,P){L=m(L);if(!P.k){return L}var r="";var O=0;P.lR.lastIndex=0;var M=P.lR.exec(L);while(M){r+=L.substr(O,M.index-O);var N=z(P,M);if(N){x+=N[1];r+='<span class="'+N[0]+'">'+M[0]+"</span>"}else{r+=M[0]}O=P.lR.lastIndex;M=P.lR.exec(L)}return r+L.substr(O,L.length-O)}function J(L,M){if(M.sL&&e[M.sL]){var r=d(M.sL,L);x+=r.keyword_count;return r.value}else{return F(L,M)}}function I(M,r){var L=M.cN?'<span class="'+M.cN+'">':"";if(M.rB){y+=L;M.buffer=""}else{if(M.eB){y+=m(r)+L;M.buffer=""}else{y+=L;M.buffer=r}}D.push(M);A+=M.r}function G(N,M,Q){var R=D[D.length-1];if(Q){y+=J(R.buffer+N,R);return false}var P=q(M,R);if(P){y+=J(R.buffer+N,R);I(P,M);return P.rB}var L=v(D.length-1,M);if(L){var O=R.cN?"</span>":"";if(R.rE){y+=J(R.buffer+N,R)+O}else{if(R.eE){y+=J(R.buffer+N,R)+O+m(M)}else{y+=J(R.buffer+N+M,R)+O}}while(L>1){O=D[D.length-2].cN?"</span>":"";y+=O;L--;D.length--}var r=D[D.length-1];D.length--;D[D.length-1].buffer="";if(r.starts){I(r.starts,"")}return R.rE}if(w(M,R)){throw"Illegal"}}var E=e[B];var D=[E.dM];var A=0;var x=0;var y="";try{var s,u=0;E.dM.buffer="";do{s=p(C,u);var t=G(s[0],s[1],s[2]);u+=s[0].length;if(!t){u+=s[1].length}}while(!s[2]);if(D.length>1){throw"Illegal"}return{r:A,keyword_count:x,value:y}}catch(H){if(H=="Illegal"){return{r:0,keyword_count:0,value:m(C)}}else{throw H}}}function g(t){var p={keyword_count:0,r:0,value:m(t)};var r=p;for(var q in e){if(!e.hasOwnProperty(q)){continue}var s=d(q,t);s.language=q;if(s.keyword_count+s.r>r.keyword_count+r.r){r=s}if(s.keyword_count+s.r>p.keyword_count+p.r){r=p;p=s}}if(r.language){p.second_best=r}return p}function i(r,q,p){if(q){r=r.replace(/^((<[^>]+>|\t)+)/gm,function(t,w,v,u){return w.replace(/\t/g,q)})}if(p){r=r.replace(/\n/g,"<br>")}return r}function n(t,w,r){var x=h(t,r);var v=a(t);var y,s;if(v){y=d(v,x)}else{return}var q=c(t);if(q.length){s=document.createElement("pre");s.innerHTML=y.value;y.value=k(q,c(s),x)}y.value=i(y.value,w,r);var u=t.className;if(!u.match("(\\s|^)(language-)?"+v+"(\\s|$)")){u=u?(u+" "+v):v}if(/MSIE [678]/.test(navigator.userAgent)&&t.tagName=="CODE"&&t.parentNode.tagName=="PRE"){s=t.parentNode;var p=document.createElement("div");p.innerHTML="<pre><code>"+y.value+"</code></pre>";t=p.firstChild.firstChild;p.firstChild.cN=s.cN;s.parentNode.replaceChild(p.firstChild,s)}else{t.innerHTML=y.value}t.className=u;t.result={language:v,kw:y.keyword_count,re:y.r};if(y.second_best){t.second_best={language:y.second_best.language,kw:y.second_best.keyword_count,re:y.second_best.r}}}function o(){if(o.called){return}o.called=true;var r=document.getElementsByTagName("pre");for(var p=0;p<r.length;p++){var q=b(r[p]);if(q){n(q,hljs.tabReplace)}}}function l(){if(window.addEventListener){window.addEventListener("DOMContentLoaded",o,false);window.addEventListener("load",o,false)}else{if(window.attachEvent){window.attachEvent("onload",o)}else{window.onload=o}}}var e={};this.LANGUAGES=e;this.highlight=d;this.highlightAuto=g;this.fixMarkup=i;this.highlightBlock=n;this.initHighlighting=o;this.initHighlightingOnLoad=l;this.IR="[a-zA-Z][a-zA-Z0-9_]*";this.UIR="[a-zA-Z_][a-zA-Z0-9_]*";this.NR="\\b\\d+(\\.\\d+)?";this.CNR="\\b(0[xX][a-fA-F0-9]+|(\\d+(\\.\\d*)?|\\.\\d+)([eE][-+]?\\d+)?)";this.BNR="\\b(0b[01]+)";this.RSR="!|!=|!==|%|%=|&|&&|&=|\\*|\\*=|\\+|\\+=|,|\\.|-|-=|/|/=|:|;|<|<<|<<=|<=|=|==|===|>|>=|>>|>>=|>>>|>>>=|\\?|\\[|\\{|\\(|\\^|\\^=|\\||\\|=|\\|\\||~";this.ER="(?![\\s\\S])";this.BE={b:"\\\\.",r:0};this.ASM={cN:"string",b:"'",e:"'",i:"\\n",c:[this.BE],r:0};this.QSM={cN:"string",b:'"',e:'"',i:"\\n",c:[this.BE],r:0};this.CLCM={cN:"comment",b:"//",e:"$"};this.CBLCLM={cN:"comment",b:"/\\*",e:"\\*/"};this.HCM={cN:"comment",b:"#",e:"$"};this.NM={cN:"number",b:this.NR,r:0};this.CNM={cN:"number",b:this.CNR,r:0};this.BNM={cN:"number",b:this.BNR,r:0};this.inherit=function(r,s){var p={};for(var q in r){p[q]=r[q]}if(s){for(var q in s){p[q]=s[q]}}return p}}();hljs.LANGUAGES.cpp=function(){var a={keyword:{"false":1,"int":1,"float":1,"while":1,"private":1,"char":1,"catch":1,"export":1,virtual:1,operator:2,sizeof:2,dynamic_cast:2,typedef:2,const_cast:2,"const":1,struct:1,"for":1,static_cast:2,union:1,namespace:1,unsigned:1,"long":1,"throw":1,"volatile":2,"static":1,"protected":1,bool:1,template:1,mutable:1,"if":1,"public":1,friend:2,"do":1,"return":1,"goto":1,auto:1,"void":2,"enum":1,"else":1,"break":1,"new":1,extern:1,using:1,"true":1,"class":1,asm:1,"case":1,typeid:1,"short":1,reinterpret_cast:2,"default":1,"double":1,register:1,explicit:1,signed:1,typename:1,"try":1,"this":1,"switch":1,"continue":1,wchar_t:1,inline:1,"delete":1,alignof:1,char16_t:1,char32_t:1,constexpr:1,decltype:1,noexcept:1,nullptr:1,static_assert:1,thread_local:1,restrict:1,_Bool:1,complex:1},built_in:{std:1,string:1,cin:1,cout:1,cerr:1,clog:1,stringstream:1,istringstream:1,ostringstream:1,auto_ptr:1,deque:1,list:1,queue:1,stack:1,vector:1,map:1,set:1,bitset:1,multiset:1,multimap:1,unordered_set:1,unordered_map:1,unordered_multiset:1,unordered_multimap:1,array:1,shared_ptr:1}};return{dM:{k:a,i:"</",c:[hljs.CLCM,hljs.CBLCLM,hljs.QSM,{cN:"string",b:"'\\\\?.",e:"'",i:"."},{cN:"number",b:"\\b(\\d+(\\.\\d*)?|\\.\\d+)(u|U|l|L|ul|UL|f|F)"},hljs.CNM,{cN:"preprocessor",b:"#",e:"$"},{cN:"stl_container",b:"\\b(deque|list|queue|stack|vector|map|set|bitset|multiset|multimap|unordered_map|unordered_set|unordered_multiset|unordered_multimap|array)\\s*<",e:">",k:a,r:10,c:["self"]}]}}}();hljs.LANGUAGES.r={dM:{c:[hljs.HCM,{cN:"number",b:"\\b0[xX][0-9a-fA-F]+[Li]?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+(?:[eE][+\\-]?\\d*)?L\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\b\\d+\\.(?!\\d)(?:i\\b)?",e:hljs.IMMEDIATE_RE,r:1},{cN:"number",b:"\\b\\d+(?:\\.\\d*)?(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"number",b:"\\.\\d+(?:[eE][+\\-]?\\d*)?i?\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"keyword",b:"(?:tryCatch|library|setGeneric|setGroupGeneric)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\.",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\.\\.\\d+(?![\\w.])",e:hljs.IMMEDIATE_RE,r:10},{cN:"keyword",b:"\\b(?:function)",e:hljs.IMMEDIATE_RE,r:2},{cN:"keyword",b:"(?:if|in|break|next|repeat|else|for|return|switch|while|try|stop|warning|require|attach|detach|source|setMethod|setClass)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"literal",b:"(?:NA|NA_integer_|NA_real_|NA_character_|NA_complex_)\\b",e:hljs.IMMEDIATE_RE,r:10},{cN:"literal",b:"(?:NULL|TRUE|FALSE|T|F|Inf|NaN)\\b",e:hljs.IMMEDIATE_RE,r:1},{cN:"identifier",b:"[a-zA-Z.][a-zA-Z0-9._]*\\b",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"<\\-(?!\\s*\\d)",e:hljs.IMMEDIATE_RE,r:2},{cN:"operator",b:"\\->|<\\-",e:hljs.IMMEDIATE_RE,r:1},{cN:"operator",b:"%%|~",e:hljs.IMMEDIATE_RE},{cN:"operator",b:">=|<=|==|!=|\\|\\||&&|=|\\+|\\-|\\*|/|\\^|>|<|!|&|\\||\\$|:",e:hljs.IMMEDIATE_RE,r:0},{cN:"operator",b:"%",e:"%",i:"\\n",r:1},{cN:"identifier",b:"`",e:"`",r:0},{cN:"string",b:'"',e:'"',c:[hljs.BE],r:0},{cN:"string",b:"'",e:"'",c:[hljs.BE],r:0},{cN:"paren",b:"[[({\\])}]",e:hljs.IMMEDIATE_RE,r:0}]}};
+hljs.initHighlightingOnLoad();
+</script>
+
+
+
+<style type="text/css">
+body, td {
+   font-family: sans-serif;
+   background-color: white;
+   font-size: 13px;
+}
+
+body {
+  max-width: 800px;
+  margin: auto;
+  padding: 1em;
+  line-height: 20px;
+}
+
+tt, code, pre {
+   font-family: 'DejaVu Sans Mono', 'Droid Sans Mono', 'Lucida Console', Consolas, Monaco, monospace;
+}
+
+h1 {
+   font-size:2.2em;
+}
+
+h2 {
+   font-size:1.8em;
+}
+
+h3 {
+   font-size:1.4em;
+}
+
+h4 {
+   font-size:1.0em;
+}
+
+h5 {
+   font-size:0.9em;
+}
+
+h6 {
+   font-size:0.8em;
+}
+
+a:visited {
+   color: rgb(50%, 0%, 50%);
+}
+
+pre, img {
+  max-width: 100%;
+}
+pre {
+  overflow-x: auto;
+}
+pre code {
+   display: block; padding: 0.5em;
+}
+
+code {
+  font-size: 92%;
+  border: 1px solid #ccc;
+}
+
+code[class] {
+  background-color: #F8F8F8;
+}
+
+table, td, th {
+  border: none;
+}
+
+blockquote {
+   color:#666666;
+   margin:0;
+   padding-left: 1em;
+   border-left: 0.5em #EEE solid;
+}
+
+hr {
+   height: 0px;
+   border-bottom: none;
+   border-top-width: thin;
+   border-top-style: dotted;
+   border-top-color: #999999;
+}
+
+@media print {
+   * {
+      background: transparent !important;
+      color: black !important;
+      filter:none !important;
+      -ms-filter: none !important;
+   }
+
+   body {
+      font-size:12pt;
+      max-width:100%;
+   }
+
+   a, a:visited {
+      text-decoration: underline;
+   }
+
+   hr {
+      visibility: hidden;
+      page-break-before: always;
+   }
+
+   pre, blockquote {
+      padding-right: 1em;
+      page-break-inside: avoid;
+   }
+
+   tr, img {
+      page-break-inside: avoid;
+   }
+
+   img {
+      max-width: 100% !important;
+   }
+
+   @page :left {
+      margin: 15mm 20mm 15mm 10mm;
+   }
+
+   @page :right {
+      margin: 15mm 10mm 15mm 20mm;
+   }
+
+   p, h2, h3 {
+      orphans: 3; widows: 3;
+   }
+
+   h2, h3 {
+      page-break-after: avoid;
+   }
+}
 </style>
 
 
 
-<link href="data:text/css;charset=utf-8,html%2C%20body%20%7B%0Afont%2Dfamily%3A%20%22Roboto%22%2C%20%22Times%20New%20Roman%22%2C%20Times%2C%20serif%3B%0Afont%2Dweight%3A%20300%3B%0Aline%2Dheight%3A%201%2E4%3B%0Afont%2Dsize%3A%2014px%3B%0Acolor%3A%20%23000000%3B%0Abackground%2Dcolor%3A%20%23ECECEC%3B%0Amargin%3A%200%3B%0Apadding%3A%200%3B%0Awidth%3A%20100%25%3B%0Aheight%3A%20100%25%3B%0A%7D%0A%0Abody%20div%2Emain%2Dcontainer%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%2Dbottom%3A%2050px%3B%0Apadding%2Dtop%3A%2020px%3B%0Abox%2Dshadow%3A%200%202px%205px%20%23808080%3B%0Amargin%2Dtop%3A%2040px%3B%0Amargin%2Dbottom%3A%2040px%3B%0A%7D%0Adiv%2Etoc%2Dcontent%20%7B%0Apadding%3A%200%2015px%200%2030px%3B%0A%7D%0A%0A%23TOC%20%7B%0Aborder%2Dradius%3A%200%3B%0Aborder%2Dwidth%3A%200%3B%0Afont%2Dsize%3A%201rem%3B%0Afont%2Dweight%3A%20500%3B%0Acolor%3A%20%2300545D%3B%0A%7D%0A%23TOC%20%2Eactive%20%7B%0Abackground%2Dcolor%3A%20%23168FA7%3B%0Acolor%3A%20%23FFFFFF%3B%0A%7D%0A%23TOC%20li%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23ECECEC%3B%0Aheight%3A%2040px%3B%0Aline%2Dheight%3A%2032px%3B%0A%7D%0A%23TOC%20%3E%20ul%3Alast%2Dchild%20%3E%20li%3Alast%2Dchild%20%7B%0Aborder%3A%200%3B%0A%7D%0A%0Ah1%2C%20h2%2C%20h3%20%7B%0Afont%2Dfamily%3A%20%22Roboto%22%2C%20%22Times%20New%20Roman%22%2C%20Times%2C%20serif%3B%0Afont%2Dweight%3A%20700%3B%0Acolor%3A%20%2300545D%3B%0A%7D%0Ah4%2C%20h5%2C%20h6%20%7B%0Afont%2Dweight%3A%20500%3B%0Acolor%3A%20%23000000%3B%0A%7D%0Ah1%20%7B%20font%2Dsize%3A%202%2E25rem%3B%20%7D%0Ah2%20%7B%20font%2Dsize%3A%201%2E875rem%3B%20%7D%0Ah3%20%7B%20font%2Dsize%3A%201%2E5rem%3B%20%7D%0Ah4%20%7B%20font%2Dsize%3A%201%2E25rem%3B%20%7D%0Ah5%20%7B%20font%2Dsize%3A%201%2E125rem%3B%20%7D%0Ah6%20%7B%20font%2Dsize%3A%201rem%3B%20%7D%0Ah4%2Eauthor%20%3E%20em%2C%20h4%2Edate%20%3E%20em%20%7B%0Afont%2Dfamily%3A%20%22Roboto%22%2C%20%22Times%20New%20Roman%22%2C%20Times%2C%20serif%3B%0Afont%2Dstyle%3A%20normal%3B%0Afont%2Dweight%3A%20400%3B%0Acolor%3A%20%23858587%3B%0A%7D%0A%0Aul%3Anot%28%5Bclass%5D%29%20%7B%0Afont%2Dsize%3A%201rem%3B%0Alist%2Dstyle%3A%20none%3B%0A%7D%0Aul%3Anot%28%5Bclass%5D%29%20li%3Abefore%20%7B%0Acolor%3A%20%23EB6E08%3B%0Acontent%3A%20%22%5C2022%22%3B%0Amargin%2Dleft%3A%20%2D0%2E75em%3B%0Aposition%3A%20relative%3B%0Atop%3A%200%2E125em%3B%0Aline%2Dheight%3A%200%3B%0Apadding%2Dright%3A%200%2E25em%3B%0Afont%2Dsize%3A%201%2E5em%3B%0A%7D%0A%0Aa%20%7B%0Acolor%3A%20%23168FA7%3B%0A%7D%0A%0Aul%2Enav%20%7B%0Afont%2Dweight%3A%20500%3B%0A%7D%0Aul%2Enav%20a%20%7B%0Acolor%3A%20%23168FA7%3B%0A%7D%0A%0A%0A%2Epagedtable%2Dwrapper%20%7B%0Afont%2Dsize%3A%201rem%3B%0Aborder%2Dwidth%3A%200%3B%0A%7D%0A%2Epagedtable%2Dwrapper%20%2Epagedtable%20%7B%0Apadding%3A%200%3B%0A%7D%0A%2Epagedtable%2Dwrapper%20a%20%7B%0Acolor%3A%20%23168FA7%3B%0A%7D%0A%2Epagedtable%2Dwrapper%20a%2Epagedtable%2Dindex%2Dnav%2Ddisabled%20%7B%0Acolor%3A%20%23999%3B%0A%7D%0A%2Epagedtable%2Dwrapper%20a%2Epagedtable%2Dindex%2Dcurrent%20%7B%0Acolor%3A%20%23333%3B%0A%7D%0A%0Atable%20thead%20%7B%0Afont%2Dsize%3A%200%2E7em%3B%0Acolor%3A%20%23FFFFFF%3B%0Abackground%2Dcolor%3A%20%2300545D%3B%0A%7D%0Atable%20tr%2Eodd%20%7B%0Afont%2Dsize%3A%200%2E7em%3B%0Abackground%2Dcolor%3A%20%23EFF0F0%3B%0A%7D%0Atable%20tr%2Eeven%20%7B%0Afont%2Dsize%3A%200%2E7em%3B%0Abackground%2Dcolor%3A%20%23DFE0E1%3B%0A%7D%0A%0Abutton%2C%20input%20%7B%0Afont%2Dsize%3A%2001rem%3B%0Aborder%2Dradius%3A%200%2E25em%3B%0Amargin%2Dbottom%3A%200%2E625em%3B%0Apadding%3A%200%2E625em%3B%0Aoutline%3A%20none%3B%0A%7D%0Ainput%5Btype%3Dtext%5D%2C%20input%5Btype%3Dnumber%5D%2C%20select%20%7B%0Afont%2Dweight%3A%20300%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Amin%2Dwidth%3A%2012em%3B%0A%7D%0Abutton%2C%20input%5Btype%3Dsubmit%5D%20%7B%0Afont%2Dweight%3A%20900%3B%0Aborder%3A%20none%3B%0Apadding%3A%200%2E625em%201%2E875em%3B%0Abackground%2Dcolor%3A%20%23EB6E08%3B%0Acolor%3A%20%23FFFFFF%3B%0Acursor%3A%20pointer%3B%0Amin%2Dwidth%3A%20inherit%3B%0A%7D%0Abutton%3Ahover%2C%20input%5Btype%3Dsubmit%5D%3Ahover%20%7B%0Abackground%2Dcolor%3A%20%23f29d63%3B%0A%7D%0A%0Aimg%2C%20iframe%20%7B%0Adisplay%3A%20block%3B%0Amargin%3A%200%20auto%3B%0A%7D%0A" rel="stylesheet" type="text/css" />
-
 </head>
 
 <body>
-
-
-
-
-<h1 class="title toc-ignore">Handling of company hierarchies</h1>
-<h4 class="author"><em>Mark Zwart</em></h4>
-<h4 class="date"><em>2018-11-09</em></h4>
-
-
-
 <ul>
 <li><a href="#introduction">Introduction</a>
+
 <ul>
 <li><a href="#example_data">Example data</a></li>
 </ul></li>
 <li><a href="#create_hierachy_graph">Creating a company hierarchy graph</a></li>
 <li><a href="#selecting">Selecting company hierarchies graphs</a>
+
 <ul>
 <li><a href="#selecting_single">Selecting a hierarchy by company ID</a></li>
 <li><a href="#selecting_multiple">Selecting hierarchies with a column of company IDs</a></li>
 <li><a href="#selecting_all">Listing all hierarchy graphs</a></li>
 </ul></li>
 <li><a href="#selecting">Converting company hierarchy graphs to data-frames</a>
+
 <ul>
 <li><a href="#selecting_single">Converting a single hierarchy graph</a></li>
 <li><a href="#selecting_multiple">Converting a list of hierarchy graphs</a></li>
 </ul></li>
 <li><a href="#calculate">Calculating properties</a>
+
 <ul>
 <li><a href="#propagate_values">Propagating values</a></li>
 <li><a href="#adding_stats">Adding graph statistics</a></li>
@@ -100,99 +231,128 @@ code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Inf
 <li><a href="#recode_holdings">Recoding holdings</a></li>
 </ul></li>
 </ul>
-<div id="introduction" class="section level1">
+
 <h1>Introduction</h1>
+
 <p>In our database we can find the relations between companies by a parent child relation, but there is a lot of information that can be gained from the total total tree of company relations. This package contains several functions that is useful for extracting this kind of information, and for plotting the total company hierarchy.</p>
-<div id="the-example-data" class="section level3">
+
 <h3><a name="example_data"></a>The example data</h3>
-<p>First let’s load the package:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(graydon.package)</code></pre></div>
+
+<p>First let&#39;s load the package:</p>
+
+<pre><code class="r">library(graydon.package)
+</code></pre>
+
 <p>The package contains a data frame, <em>tbl_company_relations</em> which is an ex(s)ample of how company relations are typically represented in our database (<em>id_company</em>, <em>id_company_parent</em>), with some extra added data about each of the companies. The data frame contains the following columns:</p>
-<table>
-<thead>
-<tr class="header">
+
+<table><thead>
+<tr>
 <th align="left">Column.names</th>
 </tr>
-</thead>
-<tbody>
-<tr class="odd">
+</thead><tbody>
+<tr>
 <td align="left">id_company</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">id_company_parent</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">code_sbi</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">size_company</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">qty_employees</td>
 </tr>
-</tbody>
-</table>
-</div>
-</div>
-<div id="creating-a-company-hierarchy-graph" class="section level1">
-<h1><a name="create_hierachy_graph"></a>Creating a company hierarchy graph</h1>
-<p>Company relations in our database are represented in parent-child relations, but this doesn’t give you the complete overview of how companies fit together in their complete hierarchy. [Graphs](<a href="https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)" class="uri">https://en.wikipedia.org/wiki/Graph_(discrete_mathematics)</a> provide a way of getting those overviews. Let’s load the <a href="http://igraph.org/r/doc/"><em>igraph</em></a> library first:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">library</span>(igraph)</code></pre></div>
-<p>With a simple function call we can create a graph, based on those parent-child relationships expressed in a table. Make sure the child and the parent ID columns are the first and second column in the table respectively.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">graph_company_hierarchies &lt;-<span class="st"> </span><span class="kw">create_graph_company_hierarchies</span>(tbl_company_relations)</code></pre></div>
-<p>The resulting graph represents a network of all individual company hierarchies in one big ‘space’ which can be graphically represented like below. You can see this plot is pretty useless in in itself, but this ‘space’ of hierarchies can be used as a ‘database’ to easily retrieve the desired company hierarchies which are usefull for plotting and doing calculations within those.</p>
-<p>The <em>plot_graydon_graph</em> function is used to plot graphs using graydon colors, the extra parameters <em>vertex.label</em>, <em>vertex.size</em> and <em>edge.arrow.size</em> are set so they override the defaults.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">plot_graydon_graph</span>(graph_company_hierarchies,
-                   <span class="dt">vertex.label =</span> <span class="st">&quot;&quot;</span>,
-                   <span class="dt">vertex.size =</span> <span class="dv">4</span>,
-                   <span class="dt">edge.arrow.size =</span> <span class="dv">0</span>)</code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
-</div>
-<div id="selecting-company-hierarchies-graphs" class="section level1">
-<h1><a name="selecting"></a>Selecting company hierarchies graphs</h1>
-<p>There are a few ways which we can select the distinct company hierarchies so we can make useful calculations or plots about them: you can either select them individually or by bulk.</p>
-<div id="selecting-a-hierarchy-by-company-id" class="section level2">
-<h2><a name="selecting_single"></a>Selecting a hierarchy by company ID</h2>
-<p>If you have a single company that you want to find out about more you can select it using the function <em>find_company_hierarchy</em>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">id_company_selected &lt;-<span class="st"> &quot;931238099&quot;</span>
-graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">find_company_hierarchy</span>(graph_company_hierarchies, id_company_selected)</code></pre></div>
-<p>The resulting graph has the logical attribute <em>is_searched_company</em> set to <em>TRUE</em> of the searched for company. Let’s plot this graph, highlighting the searched for companies:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">igraph<span class="op">::</span><span class="kw">V</span>(graph_company_hierarchy)<span class="op">$</span>color &lt;-<span class="st"> </span><span class="kw">ifelse</span>(igraph<span class="op">::</span><span class="kw">V</span>(graph_company_hierarchy)<span class="op">$</span>is_searched_company,
-                                                   col_graydon[<span class="dv">2</span>],
-                                                   col_graydon[<span class="dv">4</span>])
-<span class="kw">plot_graydon_graph</span>(graph_company_hierarchy)</code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
-</div>
-<div id="selecting-hierarchies-with-a-column-of-company-ids" class="section level2">
-<h2><a name="selecting_multiple"></a>Selecting hierarchies with a column of company IDs</h2>
-<p>A customer’s file contains multiple companies of which we might want to calculate, or show (parts) of their hierarchy. The <em>list_selected_hierarchies</em> function can be used to put the graphs of all these companies in a list. In this example we have a data frame <em>tbl_customers</em> with the column <em>id_company</em>, of which we want to retrieve all the graphs.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">list_selected_hierarchies &lt;-<span class="st"> </span><span class="kw">select_graph_hierarchies</span>(graph_company_hierarchies, 
-                                                      tbl_customers<span class="op">$</span>id_company)</code></pre></div>
-<p>Note that the <em>tbl_customers</em> data-frame contains 300, while the <em>list_selected_hierarchies</em> contains 251 graphs; this is because there are customers that fall within the same company hierarchy. The companies in the graphs in this list now also contain an extra logical attribute, <em>is_searched_company</em>, which indicates whether the company was in the <em>id_company</em> column. Let’s take a look at one of the graphs that contain multiple customers. The customer ‘vertices’ are colored orange here:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">igraph<span class="op">::</span><span class="kw">V</span>(graph_example)<span class="op">$</span>color &lt;-<span class="st"> </span><span class="kw">ifelse</span>(igraph<span class="op">::</span><span class="kw">V</span>(graph_example)<span class="op">$</span>is_searched_company,
-                                                   col_graydon[<span class="dv">2</span>],
-                                                   col_graydon[<span class="dv">4</span>])
+</tbody></table>
 
-<span class="kw">plot_graydon_graph</span>(graph_example,
-                   <span class="dt">vertex.label =</span> <span class="st">&quot;&quot;</span>)</code></pre></div>
-<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAAEgCAMAAAAjXV6yAAAAD1BMVEWFhYeLsN66v8Hrbgj////AvDdNAAAACXBIWXMAAA7DAAAOwwHHb6hkAAAD2ElEQVR4nO3d626jMBQAYULy/s/cJU2y3AdQ5GP3zPzsKgJ/AlPA2XYP262L3oHaEwgSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIEggSCBIIagmo6wL2tiGg7na7ld/ddoAGnwAhgWizpTd4OYEo5yDKqxjUR2xUIKghoBAfgSiBIIGgdoBifASiBIIEgpoBCvIRiBIIEghqBSjKJwLo0mOdREDXHgzmAbr2aDnMRyBKIChqDjo54kxAr6tYf2bMcT6RvwedIMoJdGLcWYEOH0RpgQ4OPdAnHOjQQZQa6AhRciAEiPSpAwgOIoEe+wgCDW0cRMOPBfptlagfKr4royoCWj9U+mCiqoDWDqLoQ6guoPdBNBLxFJv1nJWnQHE786gQaH5SCbRsIhTs8xeBvrucukKgfnJlP+9zv9+/OKoKgaa/+0zm6wOfHXy+KVQl0LMn0fh02Z2u+/dxlwdoGPTnNfX0tBv9pJ//Syagz0vGfqXtDyWYg969gA6oTD71169i/xu/po66J6sZaDQHvX4QsBP1Ai2uYjFFb3+rzwnlrcZaoylZoGWzew3v5hfN7lZ9YDZPoP36CYrPpOf1j8VDad9qjJpjBL/3qQ1oSeEpNm6F4h+PQO82JAT6bftUcpIe2nugWm4v5tUDVOkaqmqA9gnSA9GVPDsQjz/PF+rWqnmpdA1AVa+2jwc6eCORFujowLMCVf+dsWCgE6POCHTuOUa+/6KriS/2xgA9X5ieHXAioIsrVEKEIoCurnESiMqyukMg3OjFVXJpgC4v+wkQir7VOJdAVHkhgSCBoMaAygsJBLUGVFxIIKg5oNJry5sDKv0XfloDKv43ogSiDZbb1FcSiHIOoryK1ZVAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkECQQJBAkEDQD0uWCxoK9HyKAAAAAElFTkSuQmCC" /><!-- --></p>
-</div>
-<div id="listing-all-hierarchy-graphs" class="section level2">
+<h1><a name="create_hierachy_graph"></a>Creating a company hierarchy graph</h1>
+
+<p>Company relations in our database are represented in parent-child relations, but this doesn&#39;t give you the complete overview of how companies fit together in their complete hierarchy.  <a href="https://en.wikipedia.org/wiki/Graph_(discrete_mathematics">Graphs</a> provide a way of getting those overviews. Let&#39;s load the <a href="http://igraph.org/r/doc/"><em>igraph</em></a> library first:</p>
+
+<pre><code class="r">library(igraph)
+</code></pre>
+
+<p>With a simple function call we can create a graph, based on those parent-child relationships expressed in a table. Make sure the child and the parent ID columns are the first and second column in the table respectively.</p>
+
+<pre><code class="r">graph_company_hierarchies &lt;- create_graph_company_hierarchies(tbl_company_relations)
+</code></pre>
+
+<p>The resulting graph represents a network of all individual company hierarchies in one big &#39;space&#39; which can be graphically represented like below. You can see this plot is pretty useless in in itself, but this &#39;space&#39; of hierarchies can be used as a &#39;database&#39; to easily retrieve the desired company hierarchies which are usefull for plotting and doing calculations within those.</p>
+
+<p>The <em>plot_graydon_graph</em> function is used to plot graphs using graydon colors, the extra parameters <em>vertex.label</em>, <em>vertex.size</em> and <em>edge.arrow.size</em> are set so they override the defaults.</p>
+
+<pre><code class="r">plot_graydon_graph(graph_company_hierarchies,
+                   vertex.label = &quot;&quot;,
+                   vertex.size = 4,
+                   edge.arrow.size = 0)
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-5"/></p>
+
+<h1><a name="selecting"></a>Selecting company hierarchies graphs</h1>
+
+<p>There are a few ways which we can select the distinct company hierarchies so we can make useful calculations or plots about them: you can either select them individually or by bulk.</p>
+
+<h2><a name="selecting_single"></a>Selecting a hierarchy by company ID</h2>
+
+<p>If you have a single company that you want to find out about more you can select it using the function <em>find_company_hierarchy</em>:</p>
+
+<pre><code class="r">id_company_selected &lt;- &quot;931238099&quot;
+graph_company_hierarchy &lt;- find_company_hierarchy(graph_company_hierarchies, id_company_selected)
+</code></pre>
+
+<p>The resulting graph has the logical attribute <em>is_searched_company</em> set to <em>TRUE</em> of the searched for company. Let&#39;s plot this graph, highlighting the searched for companies:</p>
+
+<pre><code class="r">igraph::V(graph_company_hierarchy)$color &lt;- ifelse(igraph::V(graph_company_hierarchy)$is_searched_company,
+                                                   col_graydon[2],
+                                                   col_graydon[4])
+plot_graydon_graph(graph_company_hierarchy)
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-7"/></p>
+
+<h2><a name="selecting_multiple"></a>Selecting hierarchies with a column of company IDs</h2>
+
+<p>A customer&#39;s file contains multiple companies of which we might want to calculate, or show (parts) of their hierarchy. The <em>list_selected_hierarchies</em> function can be used to put the graphs of all these companies in a list. In this example we have a data frame <em>tbl_customers</em> with the column <em>id_company</em>, of which we want to retrieve all the graphs. </p>
+
+<pre><code class="r">list_selected_hierarchies &lt;- select_graph_hierarchies(graph_company_hierarchies, 
+                                                      tbl_customers$id_company)
+</code></pre>
+
+<p>Note that the <em>tbl_customers</em> data-frame contains 300, while the <em>list_selected_hierarchies</em> contains 252 graphs; this is because there are customers that fall within the same company hierarchy. The companies in the graphs in this list now also contain an extra logical attribute, <em>is_searched_company</em>, which indicates whether the company was in the <em>id_company</em> column. Let&#39;s take a look at one of the graphs that contain multiple customers. The customer &#39;vertices&#39; are colored orange here:</p>
+
+<pre><code class="r">igraph::V(graph_example)$color &lt;- ifelse(igraph::V(graph_example)$is_searched_company,
+                                                   col_graydon[2],
+                                                   col_graydon[4])
+
+plot_graydon_graph(graph_example,
+                   vertex.label = &quot;&quot;)
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-11"/></p>
+
 <h2><a name="selecting_all"></a>Listing all hierarchy graphs</h2>
-<p>For whatever reason, you might want to creating a list of all of the seperate company hierarchies out of the complete company hierarchy ‘space’. This will take some time, so take some coffee….</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">list_all_graphs &lt;-<span class="st"> </span><span class="kw">list_company_hierarchy_graphs</span>(graph_company_hierarchies)</code></pre></div>
-</div>
-</div>
-<div id="converting-company-hierarchy-graphs-to-data-frames" class="section level1">
+
+<p>For whatever reason, you might want to creating a list of all of the seperate company hierarchies out of the complete company hierarchy &#39;space&#39;. This will take some time, so take some coffee&hellip;.    </p>
+
+<pre><code class="r">list_all_graphs &lt;- list_company_hierarchy_graphs(graph_company_hierarchies)
+</code></pre>
+
 <h1><a name="convert_graph"></a>Converting company hierarchy graphs to data-frames</h1>
+
 <p>Having graphs is nice for creating beautiful plots and useful calculations, but for the data to be useful for further processing, getting data from the graph into a data-frame format is handy.</p>
-<div id="converting-a-single-hierarchy-graph" class="section level2">
+
 <h2><a name="convert_single_graph"></a>Converting a single hierarchy graph</h2>
+
 <p>To turn a graph into a data-frame youy can use the function <em>hierarchy_as_data_frame</em>. We created the graph <em>graph_company_hierarchy</em> by searching hierarchies by company IDs and set the colors to them being in the searched-for companies, this is reflected by the <em>graph_company_hierarchy</em> and <em>color</em> columns respectively.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_single_hierarchy &lt;-<span class="st"> </span><span class="kw">hierarchy_as_data_frame</span>(graph_company_hierarchy)</code></pre></div>
-<table>
-<thead>
-<tr class="header">
+
+<pre><code class="r">df_single_hierarchy &lt;- hierarchy_as_data_frame(graph_company_hierarchy)
+</code></pre>
+
+<table><thead>
+<tr>
 <th align="left">name</th>
 <th align="right">id_company_parent</th>
 <th align="left">code_sbi</th>
@@ -201,9 +361,8 @@ graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">find_comp
 <th align="left">is_searched_company</th>
 <th align="left">color</th>
 </tr>
-</thead>
-<tbody>
-<tr class="odd">
+</thead><tbody>
+<tr>
 <td align="left">1003667</td>
 <td align="right">931238099</td>
 <td align="left">7022</td>
@@ -212,7 +371,7 @@ graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">find_comp
 <td align="left">FALSE</td>
 <td align="left">#8BB0DE</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">931238099</td>
 <td align="right">933898487</td>
 <td align="left">6420</td>
@@ -221,7 +380,7 @@ graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">find_comp
 <td align="left">TRUE</td>
 <td align="left">#EB6E08</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">933898487</td>
 <td align="right">911277358</td>
 <td align="left">7022</td>
@@ -230,7 +389,7 @@ graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">find_comp
 <td align="left">FALSE</td>
 <td align="left">#8BB0DE</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">936298138</td>
 <td align="right">931238099</td>
 <td align="left">7311</td>
@@ -239,7 +398,7 @@ graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">find_comp
 <td align="left">FALSE</td>
 <td align="left">#8BB0DE</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">911277358</td>
 <td align="right">NA</td>
 <td align="left">6420</td>
@@ -248,44 +407,64 @@ graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">find_comp
 <td align="left">FALSE</td>
 <td align="left">#8BB0DE</td>
 </tr>
-</tbody>
-</table>
-</div>
-<div id="converting-a-list-of-hierarchy-graphs" class="section level2">
-<h2><a name="convert_list_graphs"></a>Converting a list of hierarchy graphs</h2>
-<p>A list of graphs can also be converted into a data-frame using <em>hierarchy_list_as_data_frame</em>:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_selected_hierarchies &lt;-<span class="st"> </span><span class="kw">hierarchy_list_as_data_frame</span>(list_selected_hierarchies)</code></pre></div>
-</div>
-</div>
-<div id="calculating-properties" class="section level1">
-<h1><a name="calculate"></a>Calculating properties</h1>
-<div id="propagating-values" class="section level2">
-<h2><a name="propage_values"></a>Propagating values</h2>
-<p>It might come in handy to cumulate values in the hierarchy bottom up; this is where the <em>aggregate_company_hierarchy_value</em> function comes in handy. In this example the companies will get a new attribute <em>qty_employees_cum</em> which will contain the sum of all the <em>qty_employees</em> of the companies that below the company within the hierarchy.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">graph_company_hierarchy &lt;-<span class="st"> </span>
-<span class="st">  </span><span class="kw">aggregate_company_hierarchy_value</span>(<span class="dt">graph =</span> graph_company_hierarchy, 
-                                    <span class="dt">name_attribute =</span> <span class="st">&quot;qty_employees&quot;</span>,
-                                    <span class="dt">name_aggregate =</span> <span class="st">&quot;qty_employees_cum&quot;</span>,
-                                    <span class="dt">FUN =</span> sum, 
-                                    <span class="dt">na.rm =</span> <span class="ot">TRUE</span>)</code></pre></div>
-<p>The result can be found can be shown in a graph, where we can see the original values and the rolled up values.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">igraph<span class="op">::</span><span class="kw">V</span>(graph_company_hierarchy)<span class="op">$</span>label &lt;-<span class="st"> </span><span class="kw">paste0</span>(<span class="st">&quot;# &quot;</span>,
-                                                   igraph<span class="op">::</span><span class="kw">V</span>(graph_company_hierarchy)<span class="op">$</span>qty_employees,
-                                                   <span class="st">&quot; -&gt; Cum # &quot;</span>,
-                                                   igraph<span class="op">::</span><span class="kw">V</span>(graph_company_hierarchy)<span class="op">$</span>qty_employees_cum)
+</tbody></table>
 
-<span class="kw">plot_graydon_graph</span>(graph_company_hierarchy)</code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
-</div>
-<div id="adding-graph-statistics" class="section level2">
+<h2><a name="convert_list_graphs"></a>Converting a list of hierarchy graphs</h2>
+
+<p>A list of graphs can also be converted into a data-frame using <em>hierarchy_list_as_data_frame</em>:</p>
+
+<pre><code class="r">df_selected_hierarchies &lt;- hierarchy_list_as_data_frame(list_selected_hierarchies)
+</code></pre>
+
+<h1><a name="calculate"></a>Calculating properties</h1>
+
+<h2><a name="propage_values"></a>Propagating values</h2>
+
+<p>It might come in handy to cumulate values in the hierarchy bottom up; this is where the <em>aggregate_company_hierarchy_value</em> function comes in handy. In this example the companies will get a new attribute <em>qty_employees_cum</em> which will contain the sum of all the <em>qty_employees</em> of the companies that below the company within the hierarchy.</p>
+
+<pre><code class="r">graph_company_hierarchy &lt;- 
+  aggregate_company_hierarchy_value(graph = graph_company_hierarchy, 
+                                    name_attribute = &quot;qty_employees&quot;,
+                                    name_aggregate = &quot;qty_employees_cum&quot;,
+                                    FUN = sum, 
+                                    na.rm = TRUE)
+</code></pre>
+
+<p>The result can be found can be shown in a graph, where we can see the original values and the rolled up values.</p>
+
+<pre><code class="r">igraph::V(graph_company_hierarchy)$label &lt;- paste0(&quot;# &quot;,
+                                                   igraph::V(graph_company_hierarchy)$qty_employees,
+                                                   &quot; -&gt; Cum # &quot;,
+                                                   igraph::V(graph_company_hierarchy)$qty_employees_cum)
+
+plot_graydon_graph(graph_company_hierarchy)
+</code></pre>
+
+<p><img src="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAfgAAAH4CAMAAACR9g9NAAABPlBMVEUAAAAAAAMAADIAADYAADoAAFkAAGYAGQQAH0wAJ30ALAYAOpAARp4AZrYfAAAfNWAfS3QgAAAgRp41AAA1Hx81LAY1X4c4AAA4J304ft46AAA6OgA6Ojo6ZpA6ZrY6kNtLHzZLNUxOJwBORn1Ol95eGQReTghfNQBfSx9fhYdjRgBjRjJjYzJjsN5mAABmAGZmOjpmOpBmZrZmkNtmtv9ySx9ycnRyhYd3YzJ3Y1l3sN6EGQCEXgiFXzaFckyFcnSFhWCFhXSFhYeLflmLl32Ll7+LsJ6LsL+LsN6QOgCQOmaQZpCQkLaQkNuQ29uQ2/+oLACoPgOobgi2ZgC2Zjq2Zma2kDq2//+6v8HJPgPJbgjbkDrbkGbbtmbb29vb///rTgPrXgTrXgbrbgbrbgj/tmb/25D//7b//9v///8eZzAJAAAACXBIWXMAAAsSAAALEgHS3X78AAALtUlEQVR4nO3dC3fUxgGG4WlrSl3TNElvLJi6uC4lBJOmXYohTZusDRa1wU0J9qaYLim7ePX//0B12YvWlveCJc2Mvvc9J9IxZ7DnnGclVrNDMCFJZmxPgOwEvGjAiwa8aMCLBrxowIsGvGjAiwa8aMCLBrxowIsGvGjAiwa8aMCLBrxowIsGvGjAiwa8aMCLBrxowIsGvGjAiwa8aMCLBrxowIsGvGjAiwa8aMCLBrxowIsGvGjAiwa8aMCLBrxowIsGvGjAiwa8aMCLBrxowIsGvGjAiwa8aMCLBrxowIsGvGjAiwa8aMCLBrxowIsGvGjAiwa8aMCLBrxowIsGvGjAiwa8aMCLBvz0glZUYHsWJQT8tGL0qOhkeyaFB/z5pepptaMHPlN/73UzOXXCk3vmR5tj92Db/KQzbfCPj2xM+AIBn+nk2fFBGPbMSmT558zlHrlfCXZ+PmWwnfleJODHvbu2unSjk17E735pGgn5VnJ+uBEEj283+3uHJq55avCf4l/xK+AzHT/fj0+xZfjX4NONYHf90mZwZ/lRAh/cj+Gj/zq9tVOD/xt+e2B15osH/LhXS9dXY9LY8stGij244rcbwZOrd3+dgc8O7jXDY+D9rb/fS+7YseVXvzHRhT5qd92Yxs4HZmUEnx0cvblb6Uz/3s4FfG4T7+wyD3W251VcwOcGvGjAiwa8aMCLBrxqufI1cgf+nIBXLUe+Tu7Anxfwqp2Rr5U78OfXqrM78FNi65VsbLaUje3VVK+An13b9gTKCPjZAS8a8KIBLxrwogEvGvCiAa9aHeWBnyPgRQNeNOBFA1404EUDXjTgRQNeNOBFA1404EUDXjTgRQNetRrKAz9PwIsGvGjAiwa8aMCLBrxowIsGvGjAiwa8aMCLBrxowIsGvGr1kwd+roAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjVaicP/HwBLxrwogEvGvCiAS8a8KIBLxrwogEvGvCiAS8a8KIBr1rd5IGfM+BFA1404EUDXjTgRQNeNOBFA1404EUDXjTgRQNeNOBFA161mskDP2/Aiwa8aMCLBrxowIsGvGjAiwa8aMCLBrxowIsGvGjAi9aOsj2HAgN+vto1cwd+3oBXDXjRgBcNeNHq5Q78/AEvWbcV1bU9i+ICfq5i9KjoZHsmRQV8fv29183o+NRExzBVj3pjLj9o5YyLTp3whTFLBzbm+l4Bn9/Js+MIsdeMRYfs3Tc/7X7/q24rZ5xZ6YQpvy8Bn9u7a6tLNzphhPryKHb/ztyKj3/rdv/3za2v9w5NXHM0bkDea9qe9/wBn9/x8/34GMF/0n37xQ/+3f3X5f8k8N3vbr29eRjfCXpro3EpvE8XPPD5vVq6vro2hB9d8W9udd/+4Zss/GBcap68EnwJ+Nz6+8lt++Se+bA77u0Xxtz6/hfm8u0h/GBcAn/y2ZHlWS8S8DNqdXOqwUMd8NPLda+DPPDTcwU+iBcOgwK/IfDTmw5f1Qc3MXpUkQuHwE/vPPj2oPJ+8njtMFVP+zJdKsodt9C3B3569uDTNcFvD/q/2xy7b18J/v7bc8b9c6GHCuCnN/VW356s0B88XBMMv7r6KCbfMo3o+HAjCP4RryKcWTsMTz5faPkI+BlNfZybxC72RTBYE2x9Glnvrl/aDO4sP0rgg/sx/Om1w+iaX+jbAz+j93yOv/CtYLgm+MdGepNPr/jtRvDk6u0s/HDciwU/JwB+Vjnyi763fp9XwWBN8L4xP9wY/xm/u25MY+cDs3J4au3w1aKfCQM/qwLgJ1rsVZB5Qz+uiIc64Gd2Rr7A1ZtZL4Jc90LkgZ9Zu1Wa++TPyXkVAG+vdmbrVcxezWrtwB94a6XXnq3NlsDbavQnr53t1cBbyvZfogDeTrbdeZyzk3134G3kgHuufCFvMIE/Nyfcga88N9xz5It5ogT+nFxxPyNf0EoC8Pm54x6vHmXYi1pBAj43l9xDNltWlmPuIdurq8k99+ID/mwK7sCfTcId+DNpuAN/OhF34E+l4g78ZDLuwE+k4w58NiF34DMpuQM/Tsod+FFa7sAPE3MHfpCaO/Bpcu7AJ+m5Ax8n6A58qOkOvKg78KLuwIu6y8OruqvDy7qLw+u6a8MLu0vDK7srw0u7C8Nru+vCi7vLwqu7q8LLu4vC464Jj7smPO6hJDzucXrwuCfJweOepgaP+yAxeNyHacHjPkoKHvdxSvC4ZxKCxz2bDjzuE8nA4z6ZCjzupxKBx/10GvC4n0kCHvezKcDjnpMAPO551R8e99xqD497fnWHx/2cag6P+3nVGx73c6s1PO7nV2d43KdUY3jcp1VfeNynVlt43KdXV3jcZ1RTeNxnVU943GdWS3jcZ1dHeNznqG7wbdznq2bw7Sjbc/Aj4EXzHj5oRQWDL9pt5OfMc/gYPSo6JV/CPne+wff3Xjej41MTHcNUPWrbLD9oxe6nxkWnTvjCmKUDW/N1Nt/gT54dR4i9Ziw6ZA+2rwQ7Hwet7Pv5wTiz0glTfprMM/h311aXbnTCCPXlUey+ZRrR8eFGEDy+2/h679DENUfjBuS9pu15u5dn8OHx8/34GMF/EuyuX9oM7iw/SuCDrcbuzcP4TtBbG41L4bngc/IM/tXS9dW1Ifzoit9uBE+u3s3CD8al5skrgSbzDL6/n9y2T+6ZD4Nxu+vGNHY+Msu3h/CDcQn8yWdHlmftYp7Bj2sFObVsz8qffIXPdUd+/oAXDXjRgBcNeNGAF81XeB7nLhjwonkLnyeP+/wBL5q/8GflcV8gj+FPy+O+SB7Dt8dbr2J23BfKX/hkn9WpzZY0d97CD/fXTWyvprnzFZ5d1BfMU3jcL5qf8LhfOC/hcb94PsLjXkAewuNeRP7B415I3sHjXky+weNeUJ7B415UfsHjXlheweNeXD7B415gHsHjXmT+wONeaN7A415svsDjXnCewONedH7A4154XsDjXnw+wONeQh7A415G7sPjXkrOw+NeTq7D415SjsPjXlZuw+NeWk7D415eLsPjXmIOw+NeZu7C415qzsLjXm6OwvOviJWdm/Cwl56T8LiXn4vwuFeQg/C4V5F78LhXknPwuFeTa/C4V5Rj8LhXlVvwuFeWU/C4V5dL8LhXmEPwuFeZO/C4V5oz8LhXmyvwuFecI/C4V50b8LhXnhPwuFefC/C4W8gBeNxtZB8edytZh8fdTrbhcbeUZXjcbWUXHndrWYXH3V424XG3mEV43G1mCb6Nu+VswfPXYS1nB74NvO2qgg9aUcHwqzbytqsGPkaPik7p17hbrwr4VD0toUfdfiXB9/deN5NTJ3IfqW+b5UdBK+ueGdd/aprlTIZyKgn+5NnxQRj2zEon634l2Pk4uujzx/WaycuEqqkc+HfXVpdudJIrOXHfMo3o+HAjCB7fbezePDRxzYlx4eu/nHwOfGWVdMUfP9+PTwn87vqlzeBOdJOP4YOtGD6+uHtrE+OiF4H5WTmToZzKgX+1dH01du3vPQjGV/x2I3hyNbrif397CD8e1wmje/7Lo1JmQzmVA9/f7yVv1IbwabvrxjR2PjLLI/jxOK74iiv5cS7zIJetNft3UrkBLxrwogEvGvCiAS9a2R/S5Mrjbj/gRSv9Y9kcedwdCHjRyt+IcUYedxeqYAdOC3cHs7L1iuxnZ7MlWc/O9mqynu3/MQJZCnjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNGAFw140YAXDXjRgBcNeNH+D9QZcqye+qrLAAAAAElFTkSuQmCC" alt="plot of chunk unnamed-chunk-17"/></p>
+
 <h2><a name="adding_stats"></a>Adding graph statistics</h2>
-<p>Some overall statistics about the hierarchy can be added to the individual companies by using the <em>add_company_hierarchy_stats</em> function. This function will add the following attributes * <em>is_tree</em> - A logical indicating whether the company hierarchy is a tree (which should always be the case). * <em>qty_comapny_hierarchy</em> - The the number of companies in the hierarchy. * <em>id_company_top</em> - The company ID of the highest company in the hierachy (ultimate mother). * <em>distance_to_top</em> - The number of companies between the current company and the ultimate mother company * <em>qty_child_companies</em> - The number of child companies. * <em>qty_sister_companies</em> - The number of sibling companies.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">add_company_hierarchy_stats</span>(graph_company_hierarchy)</code></pre></div>
-<p>Let’s look at the statistics:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">df_single_hierarchy &lt;-<span class="st"> </span><span class="kw">hierarchy_as_data_frame</span>(graph_company_hierarchy)</code></pre></div>
-<table>
-<thead>
-<tr class="header">
+
+<p>Some overall statistics about the hierarchy can be added to the individual companies by using the <em>add_company_hierarchy_stats</em> function. This function will add the following attributes</p>
+
+<ul>
+<li><em>is_tree</em> - A logical indicating whether the company hierarchy is a tree (which should always be the case).</li>
+<li><em>qty_comapny_hierarchy</em> - The the number of companies in the hierarchy.</li>
+<li><em>id_company_top</em> - The company ID of the highest company in the hierachy (ultimate mother).</li>
+<li><em>distance_to_top</em> - The number of companies between the current company and the ultimate mother company</li>
+<li><em>qty_child_companies</em> - The number of child companies.</li>
+<li><em>qty_sister_companies</em> - The number of sibling companies.</li>
+</ul>
+
+<pre><code class="r">graph_company_hierarchy &lt;- add_company_hierarchy_stats(graph_company_hierarchy)
+</code></pre>
+
+<p>Let&#39;s look at the statistics:</p>
+
+<pre><code class="r">df_single_hierarchy &lt;- hierarchy_as_data_frame(graph_company_hierarchy)
+</code></pre>
+
+<table><thead>
+<tr>
 <th align="left">name</th>
 <th align="right">id_company_parent</th>
 <th align="left">code_sbi</th>
@@ -300,9 +479,8 @@ graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">find_comp
 <th align="right">qty_child_companies</th>
 <th align="right">qty_sister_companies</th>
 </tr>
-</thead>
-<tbody>
-<tr class="odd">
+</thead><tbody>
+<tr>
 <td align="left">1003667</td>
 <td align="right">931238099</td>
 <td align="left">7022</td>
@@ -317,7 +495,7 @@ graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">find_comp
 <td align="right">0</td>
 <td align="right">2</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">931238099</td>
 <td align="right">933898487</td>
 <td align="left">6420</td>
@@ -332,7 +510,7 @@ graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">find_comp
 <td align="right">2</td>
 <td align="right">1</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">933898487</td>
 <td align="right">911277358</td>
 <td align="left">7022</td>
@@ -347,7 +525,7 @@ graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">find_comp
 <td align="right">1</td>
 <td align="right">1</td>
 </tr>
-<tr class="even">
+<tr>
 <td align="left">936298138</td>
 <td align="right">931238099</td>
 <td align="left">7311</td>
@@ -362,7 +540,7 @@ graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">find_comp
 <td align="right">0</td>
 <td align="right">2</td>
 </tr>
-<tr class="odd">
+<tr>
 <td align="left">911277358</td>
 <td align="right">NA</td>
 <td align="left">6420</td>
@@ -377,119 +555,121 @@ graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">find_comp
 <td align="right">1</td>
 <td align="right">0</td>
 </tr>
-</tbody>
-</table>
-</div>
-<div id="marking-companies" class="section level2">
+</tbody></table>
+
 <h2><a name="marking"></a>Marking companies</h2>
-<p>You can mark companies within a graphthat meet certain categorical criteria with the function <em>mark_companies_logical</em>. This can be useful for derivations or coloring graphs. As a somewhat travial example, let’s mark the companies that have SBI codes (from <em>code_sbi</em>) that are a associated with holdings (that are in the vector <em>vec_sbi_holdings</em>). The new company attribute name will be <em>is_holding</em>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">vec_sbi_holdings &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;64&quot;</span>, <span class="st">&quot;642&quot;</span>, <span class="st">&quot;6420&quot;</span>)
 
-graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">mark_companies_logical</span>(graph_company_hierarchy,
-                                                  <span class="dt">name_logical =</span> <span class="st">&quot;is_holding&quot;</span>,
-                                                  <span class="dt">name_filter =</span> <span class="st">&quot;code_sbi&quot;</span>,
-                                                  <span class="dt">set_criteria =</span> vec_sbi_holdings)</code></pre></div>
-</div>
-<div id="sister-companies" class="section level2">
+<p>You can mark companies within a graphthat meet certain categorical  criteria with the function <em>mark_companies_logical</em>. This can be useful for derivations or coloring graphs. As a somewhat travial  example, let&#39;s mark the companies that have SBI codes (from <em>code_sbi</em>) that are a associated with holdings (that are in the vector <em>vec_sbi_holdings</em>). The new company attribute name will be <em>is_holding</em>.</p>
+
+<pre><code class="r">vec_sbi_holdings &lt;- c(&quot;64&quot;, &quot;642&quot;, &quot;6420&quot;)
+
+graph_company_hierarchy &lt;- mark_companies_logical(graph_company_hierarchy,
+                                                  name_logical = &quot;is_holding&quot;,
+                                                  name_filter = &quot;code_sbi&quot;,
+                                                  set_criteria = vec_sbi_holdings)
+</code></pre>
+
 <h2><a name="sister_companies"></a>Sister companies</h2>
-<p>You can get the siblings IDs of a company using the function <em>get_sibling_ids</em>, which in turn can be used to mark companies and plot them.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">id_siblings &lt;-<span class="st"> </span><span class="kw">get_sibling_ids</span>(graph_company_hierarchy, <span class="st">&quot;1003667&quot;</span>)
 
-graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">mark_companies_logical</span>(graph_company_hierarchy,
-                                                  <span class="dt">name_logical =</span> <span class="st">&quot;is_sibling&quot;</span>, 
-                                                  <span class="dt">name_filter =</span> <span class="st">&quot;id_company&quot;</span>,
-                                                  <span class="dt">set_criteria =</span> id_siblings
+<p>You can get the siblings IDs of a company using the function <em>get_sibling_ids</em>, which in turn can be used to mark companies and plot them.</p>
+
+<pre><code class="r">id_siblings &lt;- get_sibling_ids(graph_company_hierarchy, &quot;1003667&quot;)
+
+graph_company_hierarchy &lt;- mark_companies_logical(graph_company_hierarchy,
+                                                  name_logical = &quot;is_sibling&quot;, 
+                                                  name_filter = &quot;id_company&quot;,
+                                                  set_criteria = id_siblings
                                                   )
 
-igraph<span class="op">::</span><span class="kw">V</span>(graph_company_hierarchy)<span class="op">$</span>label &lt;-<span class="st"> </span>igraph<span class="op">::</span><span class="kw">V</span>(graph_company_hierarchy)<span class="op">$</span>name
-<span class="kw">V</span>(graph_company_hierarchy)<span class="op">$</span>color &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">V</span>(graph_company_hierarchy)<span class="op">$</span>is_sibling,
-                                                   col_graydon[<span class="dv">2</span>],
-                                                   col_graydon[<span class="dv">4</span>])
+igraph::V(graph_company_hierarchy)$label &lt;- igraph::V(graph_company_hierarchy)$name
+V(graph_company_hierarchy)$color &lt;- ifelse(V(graph_company_hierarchy)$is_sibling,
+                                                   col_graydon[2],
+                                                   col_graydon[4])
 
-<span class="kw">plot_graydon_graph</span>(graph_company_hierarchy)</code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+plot_graydon_graph(graph_company_hierarchy)
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-22"/></p>
+
 <p>Remember the table of customers? If we want to get all siblings of those companies we can use the function <em>get_siblings_df</em>.</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">tbl_siblings &lt;-<span class="st"> </span><span class="kw">get_siblings_df</span>(graph_company_hierarchies, tbl_customers<span class="op">$</span>id_company)</code></pre></div>
-<p>Below you can see a sample of the resulting data-frame, where you can see the company with it’s siblings and the <em>qty_siblings</em> indicating the total number of siblings the company of <em>id_company</em> has.</p>
-<table>
-<thead>
-<tr class="header">
+
+<pre><code class="r">tbl_siblings &lt;- get_siblings_df(graph_company_hierarchies, tbl_customers$id_company)
+</code></pre>
+
+<p>Below you can see a sample of the resulting data-frame, where you can see the company with it&#39;s siblings and the <em>qty_siblings</em> indicating the total number of siblings the company of <em>id_company</em> has.</p>
+
+<table><thead>
+<tr>
 <th align="left">id_company</th>
 <th align="left">id_sibling</th>
 <th align="right">qty_siblings</th>
 </tr>
-</thead>
-<tbody>
-<tr class="odd">
-<td align="left">929175654</td>
-<td align="left">928091716</td>
+</thead><tbody>
+<tr>
+<td align="left">909955883</td>
+<td align="left">907243592</td>
+<td align="right">2</td>
+</tr>
+<tr>
+<td align="left">909955883</td>
+<td align="left">927320150</td>
+<td align="right">2</td>
+</tr>
+<tr>
+<td align="left">930950860</td>
+<td align="left">898804388</td>
 <td align="right">4</td>
 </tr>
-<tr class="even">
-<td align="left">929175654</td>
-<td align="left">929173996</td>
+<tr>
+<td align="left">930950860</td>
+<td align="left">928357236</td>
 <td align="right">4</td>
 </tr>
-<tr class="odd">
-<td align="left">929175654</td>
-<td align="left">929174275</td>
+<tr>
+<td align="left">930950860</td>
+<td align="left">930555589</td>
 <td align="right">4</td>
 </tr>
-<tr class="even">
-<td align="left">929175654</td>
-<td align="left">929175522</td>
+<tr>
+<td align="left">930950860</td>
+<td align="left">930943619</td>
 <td align="right">4</td>
 </tr>
-<tr class="odd">
-<td align="left">893911054</td>
-<td align="left">44910</td>
-<td align="right">36</td>
-</tr>
-<tr class="even">
-<td align="left">893911054</td>
-<td align="left">217844</td>
-<td align="right">36</td>
-</tr>
-</tbody>
-</table>
-</div>
-<div id="recoding-holdings" class="section level2">
+</tbody></table>
+
 <h2><a name="recode_holdings"></a>Recoding holdings</h2>
-<p>When dealing with customers you’ll ofen encounter them having economic activity codes that mark them as financial holdings. This is often the case because this is the company you send the bills too. But this is not really informative when analysing the type of companies you have as customers. In this case you might want to recode them to better reflect what kind of business they are really in.</p>
+
+<p>When dealing with customers you&#39;ll ofen encounter them having economic activity codes that mark them as financial holdings. This is often the case because this is the company you send the bills too. But this is not really informative when analysing the type of companies you have as customers. In this case you might want to recode them to better reflect what kind of business they are really in.</p>
+
 <p>Here you see an example of a company hierarchy with some holdings, which are colored orange here:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">vec_sbi_holdings &lt;-<span class="st"> </span><span class="kw">c</span>(<span class="st">&quot;64&quot;</span>, <span class="st">&quot;642&quot;</span>, <span class="st">&quot;6420&quot;</span>)
 
-graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">mark_companies_logical</span>(graph_company_hierarchy,
-                                                  <span class="dt">name_logical =</span> <span class="st">&quot;is_holding&quot;</span>,
-                                                  <span class="dt">name_filter =</span> <span class="st">&quot;code_sbi&quot;</span>,
-                                                  <span class="dt">set_criteria =</span> vec_sbi_holdings)
+<pre><code class="r">vec_sbi_holdings &lt;- c(&quot;64&quot;, &quot;642&quot;, &quot;6420&quot;)
 
-igraph<span class="op">::</span><span class="kw">V</span>(graph_company_hierarchy)<span class="op">$</span>label &lt;-<span class="st"> </span>igraph<span class="op">::</span><span class="kw">V</span>(graph_company_hierarchy)<span class="op">$</span>code_sbi
-<span class="kw">V</span>(graph_company_hierarchy)<span class="op">$</span>color &lt;-<span class="st"> </span><span class="kw">ifelse</span>(<span class="kw">V</span>(graph_company_hierarchy)<span class="op">$</span>is_holding,
-                                                   col_graydon[<span class="dv">2</span>],
-                                                   col_graydon[<span class="dv">4</span>])
+graph_company_hierarchy &lt;- mark_companies_logical(graph_company_hierarchy,
+                                                  name_logical = &quot;is_holding&quot;,
+                                                  name_filter = &quot;code_sbi&quot;,
+                                                  set_criteria = vec_sbi_holdings)
 
-<span class="kw">plot_graydon_graph</span>(graph_company_hierarchy)</code></pre></div>
-<p><img src="data:image/png;base64,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" /><!-- --></p>
+igraph::V(graph_company_hierarchy)$label &lt;- igraph::V(graph_company_hierarchy)$code_sbi
+V(graph_company_hierarchy)$color &lt;- ifelse(V(graph_company_hierarchy)$is_holding,
+                                                   col_graydon[2],
+                                                   col_graydon[4])
+
+plot_graydon_graph(graph_company_hierarchy)
+</code></pre>
+
+<p><img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-25"/></p>
+
 <p>You can use the function <em>recode_holding_codes</em> to recode the holdings so they reflect the economic activity codes of the majority of the children:</p>
-<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">graph_company_hierarchy &lt;-<span class="st"> </span><span class="kw">recode_holding_codes</span>(graph_company_hierarchy, 
-                                                <span class="dt">name_activity_code =</span> <span class="st">&quot;code_sbi&quot;</span>, 
-                                                <span class="dt">vec_holding_codes =</span> <span class="kw">c</span>(<span class="st">&quot;64&quot;</span>, <span class="st">&quot;642&quot;</span>, <span class="st">&quot;6420&quot;</span>))</code></pre></div>
-<p>This would result in this recoded company hierarchy: <img src="data:image/png;base64,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" /><!-- --></p>
-</div>
-</div>
 
+<pre><code class="r">graph_company_hierarchy &lt;- recode_holding_codes(graph_company_hierarchy, 
+                                                name_activity_code = &quot;code_sbi&quot;, 
+                                                vec_holding_codes = c(&quot;64&quot;, &quot;642&quot;, &quot;6420&quot;))
+</code></pre>
 
-
-<!-- dynamically load mathjax for compatibility with self-contained -->
-<script>
-  (function () {
-    var script = document.createElement("script");
-    script.type = "text/javascript";
-    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
-    document.getElementsByTagName("head")[0].appendChild(script);
-  })();
-</script>
+<p>This would result in this recoded company hierarchy:
+<img src="data:image/png;base64,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" alt="plot of chunk unnamed-chunk-27"/></p>
 
 </body>
+
 </html>

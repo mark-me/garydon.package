@@ -1,0 +1,158 @@
+---
+title: "Vignette Title"
+author: "Mark Zwart"
+date: "`r Sys.Date()`"
+output: 
+  rmarkdown::html_vignette:
+    css: graydon.css
+    df_print: paged
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+* [Regular string formatting](#regular)
+* [Formatting numbers](#numbers)
+    - [Plain numbers](#plain)
+    - [Currency](#currency)
+    - [Percentages](#percent)
+* [Making intervals](#intervals)
+    - [Quantiles](#quantiles)
+    - [Intervals with equal width](#equal_width)
+    - [Intervals based on the number of desired groups](#number_groups)
+
+
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+library(ggplot2)
+library(dplyr)
+```
+```{r setup, include = FALSE}
+library(graydon.package)
+```
+
+## <a name="regular"></a>Regular string formatting
+
+Some of the easier Excel functions for string manipulation are missing from the [stringr](https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html) package (or at least: as far as I know). Some of those are added here.
+
+You can 'regularize' strings by making all letters lower-case, but the first letter having upper - case
+```{r}
+str_firstup("ThIs iS One uGLy sTRIng!")
+```
+
+Who didn't need to get some mid part of a text at one time or another?
+```{r}
+str_mid("ThIs iS One uGLy sTRIng!", idx_start = 13, qty_characters = 4)
+```
+
+Or the right part of a string:
+```{r}
+str_right("ThIs iS One uGLy sTRIng!", qty_characters = 7) 
+```
+
+## <a name="numbers"></a>Formatting numbers
+
+### <a name="plain"></a>Plain numbers
+
+You can turn numeric results into presentable formats by using the _format_number_ function. Besides taking a number as input, it also takes the following input variables: 
+
+* _number_decimals_ - which, unsurprisingly, allows you to manipulate how many decimals should be shown. The default value is 2. 
+* _format_EN_ - which speficifies whether the thousands and decimal seperators should be UK style or European style. The default value is FALSE (EU style)
+* _scale_ - The scale which you can use to abbreviate numbers. You could display the numers in thousands ("k") or Millions ("M"). The deault value is "normal" however.
+
+Here are some examples:
+```{r, warning=FALSE}
+format_number(sum(mtcars$disp), number_decimals = 2)
+```
+```{r}
+format_number(sum(mtcars$disp), number_decimals = 2, format_EN = TRUE, scale = "k")
+```
+```{r}
+format_number(sum(mtcars$disp), scale = "k")
+```
+
+### <a name="currency"></a>Currency
+
+You can use the _format_currency_ function to create currency formatted values. Besides taking a number as input, it also takes the following input variables: 
+
+* _currency_ - This specifies whether the currency is Euro ("EUR") or Pounds ("GBP"). This also speficifies whether the thousands and decimal seperators should be UK style or European style. The default value is "EUR".
+* _number_decimals_ - which, unsurprisingly, allows you to manipulate how many decimals should be shown. The default value is 2. 
+* _scale_ - The scale which you can use to abbreviate numbers. You could display the numers in thousands ("k") or Millions ("M"). The deault value is "normal" however.
+
+Some examples:
+```{r, warning=FALSE}
+format_currency(mean(diamonds$price), number_decimals = 2)
+```
+```{r}
+format_currency(sum(diamonds$price), number_decimals = 1, currency = "GBP", scale = "M")
+```
+
+### <a name="percentage"></a>Percentages
+
+You can use the _format_percent_ function to create percentage formatted values. Besides taking a number as input, it also takes the following input variables: 
+
+* _number_decimals_ - which, unsurprisingly, allows you to manipulate how many decimals should be shown. The default value is 1. 
+* _format_EN_ - which speficifies whether the thousands and decimal seperators should be UK style or European style. The default value is FALSE (EU style)
+
+Some examples:
+
+```{r}
+format_percent(mean(diamonds$carat), number_decimals = 1)
+```
+
+```{r}
+format_percent(mean(diamonds$carat), number_decimals = 2, format_EN = TRUE)
+```
+
+## <a name="intervals"></a>Making intervals
+
+R has several methods for creating intervals from continuous data, but the downside of these methods is they result in interval-labels which are not easy to read. The functions in this section are replacements that create more easily readable labels. The functions work together with the _format_number_, _format_currency_ and _format_percent_ functions to provide the best readable labels. 
+
+### <a name="quantiles"></a>Quantiles
+
+With the function _ntiles_labeled_ you can group a value so they contain an equal number of observations per group.
+
+```{r}
+diamonds %>% 
+  mutate(ntile_values = ntiles_labeled(carat,
+                                       qty_ntiles = 5,
+                                       FUN = format_percent,
+                                       number_decimals = 2,
+                                       format_EN = TRUE)) %>% 
+  group_by(ntile_values) %>% 
+  summarise(qty = n()) %>% 
+  knitr::kable()
+```
+
+### <a name="equal_width"></a>Intervals with equal width
+
+With the function _bin_width_labeled_ you can group a value so they contain an equal widths on values.
+
+```{r}
+diamonds %>%
+  mutate(binned_values = bin_width_labeled(price,
+                                           width = 2500,
+                                           FUN = format_currency,
+                                           number_decimals = 2,
+                                           currency = "GBP")) %>%
+  group_by(binned_values) %>%
+  summarise(qty = n()) %>%
+  knitr::kable()
+```
+
+### <a name="number_groups"></a>Intervals based on the number of desired groups
+
+With the function _bin_quantity_labeled_ you can group a value in a number of bins chosen by you. The widths are made equal.
+
+```{r}
+diamonds %>%
+  mutate(binned_values = bin_quantity_labeled(price,
+                                              qty_bins = 5,
+                                              FUN = format_currency,
+                                              number_decimals = 2,
+                                              currency = "EUR")) %>%
+  group_by(binned_values) %>%
+  summarise(qty = n()) %>%
+  knitr::kable()
+```
+

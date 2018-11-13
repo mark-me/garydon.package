@@ -448,7 +448,7 @@ recode_holding_codes <- function(graph_company_hierarchy, name_activity_code, ve
 #' plot_graydon_graph(graph)
 plot_graydon_graph <- function(graph, ...){
 
-  igraph_options(
+  igraph::igraph_options(
     vertex.color = col_graydon[4],
     vertex.label.family = "Roboto",
     vertex.label.cex = .7,

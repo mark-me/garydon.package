@@ -2,6 +2,7 @@
 library(magrittr)
 library(ggplot2)
 library(dplyr)
+library(igraph)
 knitr::opts_chunk$set(
   collapse = TRUE,
   comment = "#>"
@@ -15,31 +16,29 @@ data.frame(`Column names` = names(tbl_SBI_count)) %>%
   knitr::kable()
 
 ## ---- message=FALSE, warning=FALSE---------------------------------------
-#tbl_hierarchy_clean <- clean_hierarchy(tbl_SBI_count,
-#                                       col_code = "code_SBI",
-#                                       col_code_parent = "code_SBI_parent",
-#                                       col_layer_no = "hierarchy_layer",
-#                                       col_value = "qty_companies")
+graph_SBI <- create_economic_activity_graph(tbl_SBI_count, 
+                                            col_id = "code_SBI", 
+                                            col_id_parent = "code_SBI_parent")
+
+## ---- message=FALSE, warning=FALSE, fig.height=6, fig.width=6------------
+plot_graydon_graph(graph_SBI, 
+                   vertex.label = "", 
+                   vertex.size = 3, 
+                   edge.arrow.size = 0)
 
 ## ---- message=FALSE, warning=FALSE---------------------------------------
-#plot_hierarchy(tbl_hierarchy_clean, title = "Original",
-#               col_code = "code_SBI",
-#               col_code_parent = "code_SBI_parent",
-#               col_layer_no = "hierarchy_layer",
-#               col_value = "qty_companies")
+graph_SBI_rolled <- roll_up_hierarchy_by_minimum(graph_tree = graph_SBI, 
+                                                 name_attribute = "qty_companies", 
+                                                 name_propagated = "qty_companies_cum", 
+                                                 threshold = 5000)
 
-## ---- message=FALSE, warning=FALSE---------------------------------------
-# Rolling up NACE hierarchy
-# tbl_translation <- roll_up_hierarchy(tbl_hierarchy_clean, 100000)
+## ---- message=FALSE, warning=FALSE, fig.height=6, fig.width=6------------
+V(graph_SBI_rolled)$color <- ifelse(V(graph_SBI_rolled)$is_root, 1, 2)
 
-## ---- message=FALSE, warning=FALSE---------------------------------------
-# Pushing back numbers to the complete NACE hierarchy ----
-# tbl_hierarchy_rolled <- tbl_hierarchy_clean %>% 
-#   select(-value) %>% 
-#   left_join(tbl_translation, by = c("code" = "code_new")) %>% 
-#   group_by(code, code_parent, layer_no) %>% 
-#   summarise(value = sum(value, na.rm = TRUE)) %>% 
-#   ungroup()
+plot_graydon_graph(graph_SBI_rolled, 
+                   vertex.label = "", 
+                   vertex.size = 3, 
+                   edge.arrow.size = 0)
 
 ## ---- message=FALSE, warning=FALSE---------------------------------------
 # Cleaning hierarchy by removing codes that have a 0 value and are non connective (don't have children that contain values)

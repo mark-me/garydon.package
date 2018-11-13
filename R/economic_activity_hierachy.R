@@ -1,12 +1,10 @@
-# Aggregating tree value ----
-
 #' Add the distance to each vertex to the graph's root
 #'
 #' @param graph The graph to do the searhing in
 #' @param vertex_attribute the name you want the vertex distance attribute to have
 #' @return Graph
 #' @keywords SBI NACE SIC
-#' @examples
+#' @example
 #' vertex_names <- get_incoming_vertice_names(graph, threshold = 500)
 vertices_add_distance_to_root <- function(graph, vertex_attribute = "dist_to_root"){
 
@@ -26,8 +24,7 @@ vertices_add_distance_to_root <- function(graph, vertex_attribute = "dist_to_roo
 #' @param order The number of connections to search through to get the children
 #' @return List of vertex names that are incoming
 #' @keywords SBI NACE SIC
-#' @export
-#' @examples
+#' @example
 #' vertex_names <- get_incoming_vertice_names(graph, threshold = 500)
 get_incoming_vertice_names <- function(graph, name_vertex, order = 1){
 
@@ -57,8 +54,11 @@ get_incoming_vertice_names <- function(graph, name_vertex, order = 1){
 #' @return A data frame containing the original economic activity code, the new activity code and the quantity/value that the new code would contain if aggregated
 #' @keywords SBI NACE SIC
 #' @export
-#' @examples
-#' graph_propagated <- roll_up_hierarchy_by_minimum(tbl_hierarchy, threshold = 500)
+#' @example
+#' graph_SBI_rolled <- roll_up_hierarchy_by_minimum(graph_tree = graph_SBI,
+#'                                                  name_attribute = "qty_companies",
+#'                                                  name_propagated = "qty_companies_cum",
+#'                                                  threshold = 5000)
 roll_up_hierarchy_by_minimum <- function(graph_tree, name_attribute, name_propagated, threshold){
 
   # Create new variable, name_propagated, filling with 0's
@@ -87,6 +87,9 @@ roll_up_hierarchy_by_minimum <- function(graph_tree, name_attribute, name_propag
                                                       v = igraph::V(graph_tree)[name_inward],
                                                       mode = "in"))
     graph_tree <- igraph::delete.edges(graph_tree, edges = edges_1st_degree)
+
+    # Remove all second degree edges where the first degree nodes have cumulative value lower than threshold
+    is_cum_below <- igraph::vertex_attr(graph_tree, name_propagated) < threshold
 
     # Gather all vertices without outgoing connections and lower than threshold values
     idx_no_connections <- igraph::V(graph_tree)[igraph::degree(graph_tree, mode = 'out') == 0]$name
@@ -128,6 +131,12 @@ roll_up_hierarchy_by_minimum <- function(graph_tree, name_attribute, name_propag
   igraph::edge_attr(graph_tree, name_propagated, index = edges) <-
     igraph::vertex_attr(graph_tree, name_propagated, index = edges)
 
+  # Marking root vertices
+  vertx_roots <- get_root_vertex_names(graph_tree)
+  graph_tree <- mark_companies_logical(graph_tree,
+                                       "is_root",
+                                       "name",
+                                       vertx_roots)
   return(graph_tree)
 }
 
@@ -141,7 +150,7 @@ roll_up_hierarchy_by_minimum <- function(graph_tree, name_attribute, name_propag
 #' @return a data frame containing the original economic activity code and the new activity code
 #' @keywords SBI NACE SIC
 #' @export
-#' @examples
+#' @example
 #' hierarchy_code_level(tbl_hierarchy, level_no = 2)
 hierarchy_code_level <- function(tbl_hierarchy,
                                  level_no,
@@ -198,7 +207,7 @@ hierarchy_code_level <- function(tbl_hierarchy,
 #' @return A graph containing only the codes with other values than NA and are non-connecting
 #' @keywords SBI NACE SIC
 #' @export
-#' @examples
+#' @example
 #' graph_SBI_clean <- graph_remove_empty_non_connecting(graph_SBI, name_attribute = "qty_companies")
 graph_remove_empty_non_connecting <- function(graph_tree, name_attribute) {
 
@@ -239,8 +248,8 @@ graph_remove_empty_non_connecting <- function(graph_tree, name_attribute) {
 #' @return The vertext that is the root of the graph
 #' @keywords SBI NACE SIC
 #' @export
-#' @examples
-#' graph_SBI <- create_economic_activity_graph(tbl_SBI_count, col_id = "code_SBI", col_id_parent = "code_SBI_parent")
+#' @example
+#' graph_SBI <- get_root_vertex(graph_SBI)
 get_root_vertex <- function(tree_graph){
 
   # Find root node
@@ -253,76 +262,28 @@ get_root_vertex <- function(tree_graph){
   return(vertx_root)
 }
 
-#' Making a graph of a economic activity hierarchy data-frame.
+#' Get the root node of a tree
 #'
-#' @param tbl_hierarchy The data frame containing all codes and references to their parents.
-#' @param col_id The name of the column that is the economic activity code
-#' @param col_id_parent The name of the column that is the parent's code of the economic activity code
-#' @return Graph representation of the economic activity hierarchy
+#' @param tree_graph The graph containing the hierarchical tree
+#' @return The vertext that is the root of the graph
 #' @keywords SBI NACE SIC
 #' @export
-#' @examples
-#' graph_SBI <- create_economic_activity_graph(tbl_SBI_count, col_id = "code_SBI", col_id_parent = "code_SBI_parent")
-create_economic_activity_graph <- function(tbl_hierarchy, col_id = "code", col_id_parent = "code_parent") {
+#' @example
+#' vertx_roots <- get_root_vertex_names(tbl_SBI_count)
+get_root_vertex_names <- function(tree_graph){
 
-  # Rename columns for processing within the function
-  names(tbl_hierarchy)[which(names(tbl_hierarchy) == col_id)] <- "code"
-  names(tbl_hierarchy)[which(names(tbl_hierarchy) == col_id_parent)] <- "code_parent"
+  # Find root nodes
+  tree_graph <- igraph::simplify(tree_graph)
 
-  # Create vertices
-  vertices <- with(tbl_hierarchy, unique(c(code, code_parent)))
-  tbl_vertices <- data.frame(code = vertices) %>%
-    dplyr::left_join(tbl_hierarchy, by = "code")
+  idx_roots <- which(
+    sapply(
+      sapply(igraph::V(tree_graph),
+             function(x) igraph::neighbors(tree_graph,x, mode="out")
+      ),
+      length)
+    == 0)
 
-  # Create edges
-  tbl_edges <- tbl_hierarchy %>% dplyr::select(code, code_parent, everything())
+  vertx_roots <- igraph::V(tree_graph)[idx_roots]$name
 
-  # Create graph
-  graph_hierarchy <- igraph::graph_from_data_frame(d = tbl_edges,
-                                                   vertices = tbl_vertices,
-                                                   directed = TRUE)
-
-  graph_hierarchy <- vertices_add_distance_to_root(graph_hierarchy) # Add layer information
-
-  return(graph_hierarchy)
+  return(vertx_roots)
 }
-
-#' Plotting hierarchies based on a single value, mostly for example puroposes
-#'
-#' @param graph The graph made of a economic activity tree (usually created with the create_economic_activity_graph function)
-#' @param title The title you want displayed in the plot
-#' @param label The name of the vertex attribute you want to use as a label
-#' @param size The name of the vertex attribute you want to use for size
-#' @keywords SBI NACE SIC
-#' @export
-#' @examples
-#' plot_econ_hierarchy(graph_SBI)
-plot_econ_hierarchy <- function(graph, title = "", label = NA, size = NA, ...){
-
-  # Layout
-  vertx_root <- get_root_vertex(graph)
-  graph_layout <- igraph::layout_as_tree(graph, root = vertx_root, circular = T, mode = "in")
-
-  # Vertex attributes
-  igraph::V(graph)$color <- igraph::vertex_attr(graph, "dist_to_root")
-  # ifelse(is.na(size),
-  #        igraph::vertex_attr(graph, "size") <- 8,
-  #        igraph::vertex_attr(graph, "size") <- scale(igraph::vertex_attr(graph, size), center = FALSE)
-  # )
-  ifelse(is.na(label),
-         igraph::vertex_attr(graph, "label") <- "",
-         igraph::vertex_attr(graph, "label") <- paste0(igraph::vertex_attr(graph, "name"), " - ",
-                                                       igraph::vertex_attr(graph, label))
-  )
-  #igraph::V(graph)$label.family <- "Roboto"
-  igraph::V(graph)$label.cex <- 0.8
-  igraph::E(graph)$arrow.size <- 0.1
-
-  # Create plot
-  p_hierarchy <- igraph::plot.igraph(graph,
-                                     palette = col_graydon,
-                                     main = title)
-
-  return(p_hierarchy)
-}
-
