@@ -17,9 +17,6 @@ Graph
 \description{
 Add the distance to each vertex to the graph's root
 }
-\examples{
-vertex_names <- get_incoming_vertice_names(graph, threshold = 500)
-}
 \keyword{NACE}
 \keyword{SBI}
 \keyword{SIC}

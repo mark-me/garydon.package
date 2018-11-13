@@ -5,7 +5,7 @@
 \title{Formats a number into a currency string}
 \usage{
 format_currency(amount, currency = c("EUR", "GBP"),
-  number_decimals = 2, scale = NA)
+  number_decimals = 2, scale = c("normal", "k", "M"))
 }
 \arguments{
 \item{amount}{The number you want to format as euros}

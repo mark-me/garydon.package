@@ -71,11 +71,55 @@ install_graydon_packages <- function() {
   list_of_packages <- c("ggplot2", "dplyr", "magrittr", "purrr", "fst", "ggmap", "ggthemes", "reshape2", "scales", "xlsx",
                         "stringr", "RColorBrewer", "qgraph", "Hmisc", "factoextra", "cluster", "kimisc", "ggrepel", "class",
                         "lubridate", "tidyr", "broom", "funr", "htmltools", "outliers", "readr", "janitor", "ggmosaic",
-                        "extrafont", "gridExtra", "DT", "formattable", "data.table", "bit64", "igraph")
+                        "extrafont", "gridExtra", "DT", "formattable", "data.table", "bit64", "igraph", "rgdal", "tmap", "roxygen2")
   new_packages <- list_of_packages[!(list_of_packages %in% installed.packages()[,"Package"])]
 
   if(length(new_packages)) install.packages(new_packages, dependencies = TRUE)
 
   rm(list_of_packages, new_packages)
+}
 
+#' Creates a subdirectory and/or sets the working directory of a project. ----
+#'
+#' @param project_name The name of the subdirectory for the project you use/create
+#' @param dir_base The directory where you want to have the project created in. The default is the current working directory
+#' @examples
+#' open_project("My project")
+#' open_project("My project" , "~/R Scripts")
+open_project <- function(project_name, dir_base = NULL) {
+
+  #this_file_location <- "~/R Scripts/project.r"
+  name_project <- project_name
+  dir_base <- ifelse(is.na(dir_base), getwd(), dir_base)
+
+  # Project directory
+  dir.create(file.path(dir_base, name_project), showWarnings = FALSE)
+  setwd(file.path(dir_base, name_project))
+  dir_project <<- paste0(dir_base, "/", name_project)
+
+  # Data directory
+  dir.create(file.path(dir_project, "Input"), showWarnings = FALSE)
+  dir_input <<- paste0(dir_project, "/", "Input")
+
+  # Output data directory
+  dir.create(file.path(dir_project, "Output data"), showWarnings = FALSE)
+  dir_output_data <<- paste0(dir_project, "/", "Output data")
+
+  # Output plot directory
+  dir.create(file.path(dir_project, "Output plots"), showWarnings = FALSE)
+  dir_output_plots <<- paste0(dir_project, "/", "Output plots")
+
+  # Presentation directory
+  dir.create(file.path(dir_project, "Presentation"), showWarnings = FALSE)
+
+  # Make a copy of the current file
+  #file.copy(this_file_location, dir_project)
+
+  # Create a project file called 'main.r'
+  if (!file.exists("main.r")) {
+    fileConn<-file("main.r")
+    cmd_open_project = paste0("open_project(\"",name_project, "\", \"", dir_base, "\")" )
+    writeLines(c("source(\"project.r\")", cmd_open_project), fileConn)
+    close(fileConn)
+  }
 }

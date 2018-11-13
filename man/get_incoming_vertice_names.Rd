@@ -19,9 +19,6 @@ List of vertex names that are incoming
 \description{
 Get the names of the vertices that are children of the given vertex
 }
-\examples{
-vertex_names <- get_incoming_vertice_names(graph, threshold = 500)
-}
 \keyword{NACE}
 \keyword{SBI}
 \keyword{SIC}

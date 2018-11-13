@@ -24,9 +24,6 @@ This function can be used to aggregate a NACE or SBI code economic activity tree
 so the codes represent enough of something for example number of companies, number of customers or
 revenue.
 }
-\examples{
-graph_propagated <- roll_up_hierarchy_by_minimum(tbl_hierarchy, threshold = 500)
-}
 \keyword{NACE}
 \keyword{SBI}
 \keyword{SIC}

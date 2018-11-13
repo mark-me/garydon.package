@@ -4,16 +4,16 @@
 \alias{ntiles_labeled}
 \title{Creates a vector of human readable ntiles}
 \usage{
-ntiles_labeled(vec_values, qty_ntiles, FUN, ...)
+ntiles_labeled(values, qty_ntiles, FUN, ...)
 }
 \arguments{
-\item{vec_values}{The vector/column of values you want to 'ntile'}
-
 \item{qty_ntiles}{The number of ntiles you want to have}
 
 \item{FUN}{The function you want to use to apply formatting}
 
 \item{...}{The parameters you'd want to pass on to the formatting function supplied to FUN}
+
+\item{vec_values}{The vector/column of values you want to 'ntile'}
 }
 \value{
 Ordered factor
