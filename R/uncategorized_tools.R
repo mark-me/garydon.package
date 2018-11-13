@@ -83,8 +83,8 @@ install_graydon_packages <- function() {
 #'
 #' @param project_name The name of the subdirectory for the project you use/create
 #' @param dir_base The directory where you want to have the project created in. The default is the current working directory
+#' @export
 #' @examples
-#' open_project("My project")
 #' open_project("My project" , "~/R Scripts")
 open_project <- function(project_name, dir_base = NULL) {
 
@@ -118,8 +118,9 @@ open_project <- function(project_name, dir_base = NULL) {
   # Create a project file called 'main.r'
   if (!file.exists("main.r")) {
     fileConn<-file("main.r")
-    cmd_open_project = paste0("open_project(\"",name_project, "\", \"", dir_base, "\")" )
-    writeLines(c("source(\"project.r\")", cmd_open_project), fileConn)
+    cmd_load_library <- "library(graydon.package)"
+    cmd_open_project <- paste0("open_project(\"",name_project, "\", \"", dir_base, "\")" )
+    writeLines(c(cmd_load_library, cmd_open_project), fileConn)
     close(fileConn)
   }
 }
