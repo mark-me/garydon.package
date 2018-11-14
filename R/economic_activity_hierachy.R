@@ -29,6 +29,9 @@ create_economic_activity_graph <- function(tbl_hierarchy, col_id = "code", col_i
 
   graph_hierarchy <- vertices_add_distance_to_root(graph_hierarchy) # Add layer information
 
+  # Remove 0 SBI code (which has no meaning anyway)
+  #graph_hierarchy <- igraph::delete_vertices(graph_hierarchy, igraph::V(graph_hierarchy)["0"])
+
   return(graph_hierarchy)
 }
 
@@ -122,8 +125,14 @@ roll_up_hierarchy_by_minimum <- function(graph_tree, name_attribute, name_propag
                                                       mode = "in"))
     graph_tree <- igraph::delete.edges(graph_tree, edges = edges_1st_degree)
 
-    # Remove all second degree edges where the first degree nodes have cumulative value lower than threshold
+    # Remove all edges from nodes have cumulative value lower than threshold
     is_cum_below <- igraph::vertex_attr(graph_tree, name_propagated) < threshold
+    idx_cum_below <- igraph::vertex_attr(graph_tree, "name")[is_cum_below]
+    idx_cum_below <- idx_cum_below[idx_cum_below %in% idx_incoming]
+    edges_below <- unlist(igraph::incident_edges(graph_tree,
+                                                 v = igraph::V(graph_tree)[idx_cum_below],
+                                                 mode = "in"))
+    graph_tree <- igraph::delete.edges(graph_tree, edges = edges_below)
 
     # Gather all vertices without outgoing connections and lower than threshold values
     idx_no_connections <- igraph::V(graph_tree)[igraph::degree(graph_tree, mode = 'out') == 0]$name
@@ -158,12 +167,14 @@ roll_up_hierarchy_by_minimum <- function(graph_tree, name_attribute, name_propag
   new_edges <- as.vector(rbind(idx_no_connections, idx_no_connections))
   graph_tree <- igraph::add.edges(graph_tree, edges = new_edges)
 
-  # Assign values to edges
-  edges <- igraph::E(graph_tree)[inc(igraph::V(graph_tree))]
-  igraph::edge_attr(graph_tree, name_attribute, index = edges) <-
-    igraph::vertex_attr(graph_tree, name_attribute, index = edges)
-  igraph::edge_attr(graph_tree, name_propagated, index = edges) <-
-    igraph::vertex_attr(graph_tree, name_propagated, index = edges)
+  # Reassign parent codes to reflect new structure
+  for (vertx in igraph::V(graph_tree)$name){
+    igraph::vertex_attr(graph_tree,
+                        "code_parent",
+                        index = igraph::V(graph_tree)[vertx]) <- igraph::neighbors(graph_tree,
+                                                                                   v = igraph::V(graph_tree)[vertx],
+                                                                                   mode = "out")$name
+  }
 
   # Marking root vertices
   vertx_roots <- get_root_vertex_names(graph_tree)

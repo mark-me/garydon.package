@@ -15,6 +15,5 @@ open_project(project_name, dir_base = NULL)
 Creates a subdirectory and/or sets the working directory of a project. ----
 }
 \examples{
-open_project("My project")
 open_project("My project" , "~/R Scripts")
 }

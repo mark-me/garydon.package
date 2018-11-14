@@ -1,7 +1,7 @@
 ---
 title: "Handling of company hierarchies"
 author: "Mark Zwart"
-date: "2018-11-09"
+date: "2018-11-14"
 output: 
   rmarkdown::html_vignette:
     css: graydon.css
@@ -112,7 +112,7 @@ list_selected_hierarchies <- select_graph_hierarchies(graph_company_hierarchies,
                                                       tbl_customers$id_company)
 ```
 
-Note that the _tbl_customers_ data-frame contains 300, while the _list_selected_hierarchies_ contains 252 graphs; this is because there are customers that fall within the same company hierarchy. The companies in the graphs in this list now also contain an extra logical attribute, _is_searched_company_, which indicates whether the company was in the _id_company_ column. Let's take a look at one of the graphs that contain multiple customers. The customer 'vertices' are colored orange here:
+Note that the _tbl_customers_ data-frame contains 300, while the _list_selected_hierarchies_ contains 251 graphs; this is because there are customers that fall within the same company hierarchy. The companies in the graphs in this list now also contain an extra logical attribute, _is_searched_company_, which indicates whether the company was in the _id_company_ column. Let's take a look at one of the graphs that contain multiple customers. The customer 'vertices' are colored orange here:
 
 ```r
 igraph::V(graph_example)$color <- ifelse(igraph::V(graph_example)$is_searched_company,
@@ -171,11 +171,11 @@ It might come in handy to cumulate values in the hierarchy bottom up; this is wh
 
 ```r
 graph_company_hierarchy <- 
-  aggregate_company_hierarchy_value(graph = graph_company_hierarchy, 
-                                    name_attribute = "qty_employees",
-                                    name_aggregate = "qty_employees_cum",
-                                    FUN = sum, 
-                                    na.rm = TRUE)
+  aggregate_hierarchy_value(graph = graph_company_hierarchy, 
+                            name_attribute = "qty_employees",
+                            name_aggregate = "qty_employees_cum",
+                            FUN = sum, 
+                            na.rm = TRUE)
 ```
 The result can be found can be shown in a graph, where we can see the original values and the rolled up values.
 
@@ -263,12 +263,12 @@ Below you can see a sample of the resulting data-frame, where you can see the co
 
 |id_company |id_sibling | qty_siblings|
 |:----------|:----------|------------:|
-|909955883  |907243592  |            2|
-|909955883  |927320150  |            2|
-|930950860  |898804388  |            4|
-|930950860  |928357236  |            4|
-|930950860  |930555589  |            4|
-|930950860  |930943619  |            4|
+|894618067  |80248      |           21|
+|894618067  |235051     |           21|
+|894618067  |255912     |           21|
+|894618067  |343927     |           21|
+|894618067  |688639     |           21|
+|894618067  |714089     |           21|
 
 ## <a name="recode_holdings"></a>Recoding holdings
 

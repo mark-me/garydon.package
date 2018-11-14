@@ -90,11 +90,11 @@ df_selected_hierarchies <- hierarchy_list_as_data_frame(list_selected_hierarchie
 
 ## ------------------------------------------------------------------------
 graph_company_hierarchy <- 
-  aggregate_company_hierarchy_value(graph = graph_company_hierarchy, 
-                                    name_attribute = "qty_employees",
-                                    name_aggregate = "qty_employees_cum",
-                                    FUN = sum, 
-                                    na.rm = TRUE)
+  aggregate_hierarchy_value(graph = graph_company_hierarchy, 
+                            name_attribute = "qty_employees",
+                            name_aggregate = "qty_employees_cum",
+                            FUN = sum, 
+                            na.rm = TRUE)
 
 ## ---- message=FALSE, warning=FALSE---------------------------------------
 igraph::V(graph_company_hierarchy)$label <- paste0("# ",

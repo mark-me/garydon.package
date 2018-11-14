@@ -354,8 +354,8 @@ add_company_hierarchy_stats <- function(graph){
 #' @keywords graph company hierarchy
 #' @export
 #' @examples
-#' graph <- aggregate_company_hierarchy_value(graph, name_attribute = "qty_employees", name_aggregate = "qty_employees_cum", FUN = sum, na.rm = TRUE)
-aggregate_company_hierarchy_value <- function(graph, name_attribute, name_aggregate, FUN, ...){
+#' graph <- aggregate_hierarchy_value(graph, name_attribute = "qty_employees", name_aggregate = "qty_employees_cum", FUN = sum, na.rm = TRUE)
+aggregate_hierarchy_value <- function(graph, name_attribute, name_aggregate, FUN, ...){
 
   # Create new variable, name_propagated, filling with 0's
   igraph::vertex_attr(graph, name_aggregate) <- igraph::vertex_attr(graph, name_attribute)

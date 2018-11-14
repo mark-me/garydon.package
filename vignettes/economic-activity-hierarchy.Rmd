@@ -72,25 +72,37 @@ plot_graydon_graph(graph_SBI,
 A method for decreasing the complexity of the hierarchy is aggregating subcodes into higher up codes according whenever subnodes do not meet a minimum value requirement. Let's take the number of companies as an example: whenever the number of companies is lower than 5000, the companies with that subcode will get the code of one higher up in the hierarchy:
 
 ```{r, message=FALSE, warning=FALSE}
-graph_SBI_rolled <- roll_up_hierarchy_by_minimum(graph_tree = graph_SBI, 
-                                                 name_attribute = "qty_companies", 
-                                                 name_propagated = "qty_companies_cum", 
-                                                 threshold = 5000)
+# graph_SBI_rolled <- roll_up_hierarchy_by_minimum(graph_tree = graph_SBI, 
+#                                                  name_attribute = "qty_companies", 
+#                                                  name_propagated = "qty_companies_cum", 
+#                                                  threshold = 5000)
 ```
 
 Maybe it doesn't look as simple as you might want it to be, but it is a lot simpler than you'd think. The smaller networks you now see are the 'translation' networks: they specify which subcode should be recoded to which 'higher up' code. The highest code get's a loop back to itself. So each 'subnetwork' in this plot is actually one code in the newly acquired aggregation. The 'higher up' codes are marked as orange in this graph.
 
 ```{r, message=FALSE, warning=FALSE, fig.height=6, fig.width=6}
-V(graph_SBI_rolled)$color <- ifelse(V(graph_SBI_rolled)$is_root, 1, 2)
-
-plot_graydon_graph(graph_SBI_rolled, 
-                   vertex.label = "", 
-                   vertex.size = 3, 
-                   edge.arrow.size = 0)
+# V(graph_SBI_rolled)$color <- ifelse(V(graph_SBI_rolled)$is_root, 1, 2)
+# V(graph_SBI_rolled)$label <- ifelse(V(graph_SBI_rolled)$is_root, V(graph_SBI_rolled)$name, "")
+# 
+# plot_graydon_graph(graph_SBI_rolled, 
+#                    #vertex.label = "", 
+#                    vertex.size = 3, 
+#                    edge.arrow.size = 0)
 ```
+
+```{r}
+# list_graphs <- decompose(graph_SBI_rolled)
+# 
+# idx_searched <- names(sapply(list_graphs, function(x) igraph::V(x)[1] ))
+# idx_searched 
+# 
+# igraph::V(list_graphs[[3]])[1]
+# plot_graydon_graph(list_graphs[[1]])
+```
+
 
 This graph is the basis of translating the original economic activity 
 ```{r}
-df_translation_codes <- hierarchy_as_data_frame(graph_SBI_rolled)
+# df_translation_codes <- hierarchy_as_data_frame(graph_SBI_rolled)
 ```
 

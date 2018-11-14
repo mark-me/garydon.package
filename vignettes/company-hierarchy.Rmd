@@ -178,11 +178,11 @@ df_selected_hierarchies <- hierarchy_list_as_data_frame(list_selected_hierarchie
 It might come in handy to cumulate values in the hierarchy bottom up; this is where the _aggregate_company_hierarchy_value_ function comes in handy. In this example the companies will get a new attribute _qty_employees_cum_ which will contain the sum of all the _qty_employees_ of the companies that below the company within the hierarchy.
 ```{r}
 graph_company_hierarchy <- 
-  aggregate_company_hierarchy_value(graph = graph_company_hierarchy, 
-                                    name_attribute = "qty_employees",
-                                    name_aggregate = "qty_employees_cum",
-                                    FUN = sum, 
-                                    na.rm = TRUE)
+  aggregate_hierarchy_value(graph = graph_company_hierarchy, 
+                            name_attribute = "qty_employees",
+                            name_aggregate = "qty_employees_cum",
+                            FUN = sum, 
+                            na.rm = TRUE)
 ```
 The result can be found can be shown in a graph, where we can see the original values and the rolled up values.
 ```{r, message=FALSE, warning=FALSE}
