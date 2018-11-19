@@ -15,6 +15,9 @@ The vertext that is the root of the graph
 \description{
 Get the root node of a tree
 }
+\examples{
+get_root_vertex_names(graph_SBI)
+}
 \keyword{NACE}
 \keyword{SBI}
 \keyword{SIC}

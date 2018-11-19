@@ -13,10 +13,7 @@
 #' @keywords anonymization demo
 #' @export
 #' @examples
-#' tbl_companies_uk_anon <- anonymize_tbl(tbl_companies_uk,
-#'                                        vec_col_names = c("LONGITUDE_RA",
-#'                                                          "LATITUDE_RA",
-#'                                                          "ESTABLISHMENT_DATE"))
+#' tbl_companies_uk_anon <- anonymize_tbl(tbl_companies_uk, vec_col_names = c("LONGITUDE_RA", "LATITUDE_RA", "ESTABLISHMENT_DATE"))
 anonymize_tbl <- function(tbl_in, vec_col_names, perc_dev = 0.2) {
 
   set.seed(42)

@@ -19,6 +19,9 @@ List of vertex names that are incoming
 \description{
 Get the names of the vertices that are children of the given vertex
 }
+\examples{
+get_incoming_vertice_names(graph = graph_SBI, name_vertex = "42", order = 1)
+}
 \keyword{NACE}
 \keyword{SBI}
 \keyword{SIC}

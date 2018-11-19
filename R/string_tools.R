@@ -99,10 +99,11 @@ format_currency <- function(amount,
   return(paste0(currency_symbol, formatted_number))
 }
 
-#' Formats a number to percentage by adding . for thousands, "," for decimals and % to the number
+#' Formats a number to percentage by adding "." for thousands, "," for decimals and "\%" to the number
 #'
 #' @param percentage The number you want to format
-#' @param num_digits The number of decimal places you want shown. Default is 1
+#' @param number_decimals The number of decimal places you want shown. Default is 1
+#' @param format_EN Indicate whether the formatting should be done UK style. Default is FALSE
 #' @return A string containing the formatted number
 #' @export
 #' @examples

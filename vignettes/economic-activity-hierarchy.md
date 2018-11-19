@@ -1,7 +1,7 @@
 ---
 title: "Traversing economic activity hierarchies like NACE, SBI and SIC"
 author: "Mark Zwart"
-date: "2018-11-14"
+date: "2018-11-19"
 output: 
   rmarkdown::html_vignette:
     css: graydon.css
@@ -80,40 +80,68 @@ A method for decreasing the complexity of the hierarchy is aggregating subcodes 
 
 
 ```r
-# graph_SBI_rolled <- roll_up_hierarchy_by_minimum(graph_tree = graph_SBI, 
-#                                                  name_attribute = "qty_companies", 
-#                                                  name_propagated = "qty_companies_cum", 
-#                                                  threshold = 5000)
+graph_SBI_rolled <- roll_up_hierarchy_by_minimum(graph_tree = graph_SBI,
+                                                 name_attribute = "qty_companies",
+                                                 name_propagated = "qty_companies_cum",
+                                                 threshold = 5000)
 ```
 
 Maybe it doesn't look as simple as you might want it to be, but it is a lot simpler than you'd think. The smaller networks you now see are the 'translation' networks: they specify which subcode should be recoded to which 'higher up' code. The highest code get's a loop back to itself. So each 'subnetwork' in this plot is actually one code in the newly acquired aggregation. The 'higher up' codes are marked as orange in this graph.
 
 
 ```r
-# V(graph_SBI_rolled)$color <- ifelse(V(graph_SBI_rolled)$is_root, 1, 2)
-# V(graph_SBI_rolled)$label <- ifelse(V(graph_SBI_rolled)$is_root, V(graph_SBI_rolled)$name, "")
-# 
-# plot_graydon_graph(graph_SBI_rolled, 
-#                    #vertex.label = "", 
-#                    vertex.size = 3, 
-#                    edge.arrow.size = 0)
+V(graph_SBI_rolled)$color <- ifelse(V(graph_SBI_rolled)$is_root, 1, 2)
+V(graph_SBI_rolled)$label <- ifelse(V(graph_SBI_rolled)$is_root, V(graph_SBI_rolled)$name, "")
+
+plot_graydon_graph(graph_SBI_rolled,
+                   vertex.size = 3,
+                   edge.arrow.size = 0)
+#> Warning in text.default(x, y, labels = labels, col = label.color, family =
+#> label.family, : font family not found in Windows font database
 ```
 
+![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
 
 ```r
-# list_graphs <- decompose(graph_SBI_rolled)
-# 
-# idx_searched <- names(sapply(list_graphs, function(x) igraph::V(x)[1] ))
-# idx_searched 
-# 
-# igraph::V(list_graphs[[3]])[1]
-# plot_graydon_graph(list_graphs[[1]])
+V(graph_SBI_rolled)$label <- format_number(V(graph_SBI_rolled)$qty_companies_cum)
+V(graph_SBI_rolled)$label <- ifelse(V(graph_SBI_rolled)$label == 0, "", V(graph_SBI_rolled)$label)
+
+plot_graydon_graph(graph_SBI_rolled,
+                   vertex.size = 3,
+                   edge.arrow.size = 0)
+#> Warning in text.default(x, y, labels = labels, col = label.color, family =
+#> label.family, : font family not found in Windows font database
 ```
 
+![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
+
+We could isolate these clusters and inspect them further if we wanted to:
+
+```r
+list_graphs <- decompose(graph_SBI_rolled)
+
+# Getting all ending activity codes
+idx_searched <- names(sapply(list_graphs, function(x) igraph::V(x)[1] ))
+
+plot_graydon_graph(list_graphs[[1]])
+#> Warning in text.default(x, y, labels = labels, col = label.color, family =
+#> label.family, : font family not found in Windows font database
+```
+
+![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)
 
 This graph is the basis of translating the original economic activity 
 
 ```r
-# df_translation_codes <- hierarchy_as_data_frame(graph_SBI_rolled)
+df_translation_codes <- rolled_up_as_data_frame(graph_SBI_rolled)
 ```
+
+|code |code_parent |description_SBI                                                     | hierarchy_layer| qty_companies| dist_to_root| qty_companies_cum|is_root | color|label  |
+|:----|:-----------|:-------------------------------------------------------------------|---------------:|-------------:|------------:|-----------------:|:-------|-----:|:------|
+|A    |A           |Landbouw, bosbouw en visserij                                       |               1|             0|            1|              7879|TRUE    |     1|7.879  |
+|C    |C           |Industrie                                                           |               1|             0|            1|             33298|TRUE    |     1|33.298 |
+|10   |10          |Vervaardiging van voedingsmiddelen                                  |               2|             0|            2|              7962|TRUE    |     1|7.962  |
+|13   |13          |Vervaardiging van textiel                                           |               2|             0|            2|              5281|TRUE    |     1|5.281  |
+|23   |23          |Vervaardiging van overige niet-metaalhoudende minerale producten    |               2|             0|            2|              5703|TRUE    |     1|5.703  |
+|25   |25          |Vervaardiging van producten van metaal (geen machines en apparaten) |               2|             0|            2|              7693|TRUE    |     1|7.693  |
 

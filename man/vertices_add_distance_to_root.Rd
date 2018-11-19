@@ -17,6 +17,9 @@ Graph
 \description{
 Add the distance to each vertex to the graph's root
 }
+\examples{
+vertices_add_distance_to_root(graph = graph_SBI, vertex_attribute = "qty_hops_to_root")
+}
 \keyword{NACE}
 \keyword{SBI}
 \keyword{SIC}

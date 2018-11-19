@@ -23,10 +23,7 @@ The data frame will be anonymized by doing 3 things:
 }
 }
 \examples{
-tbl_companies_uk_anon <- anonymize_tbl(tbl_companies_uk,
-                                       vec_col_names = c("LONGITUDE_RA",
-                                                         "LATITUDE_RA",
-                                                         "ESTABLISHMENT_DATE"))
+tbl_companies_uk_anon <- anonymize_tbl(tbl_companies_uk, vec_col_names = c("LONGITUDE_RA", "LATITUDE_RA", "ESTABLISHMENT_DATE"))
 }
 \keyword{anonymization}
 \keyword{demo}

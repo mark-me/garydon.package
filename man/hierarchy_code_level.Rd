@@ -24,6 +24,9 @@ a data frame containing the original economic activity code and the new activity
 \description{
 A function for enriching each of the codes from it's chosen level's code value
 }
+\examples{
+hierarchy_code_level(tbl_hierarchy, level_no = 2)
+}
 \keyword{NACE}
 \keyword{SBI}
 \keyword{SIC}

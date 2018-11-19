@@ -70,13 +70,17 @@ install_graydon_packages <- function() {
   # Installing and loading libraries
   list_of_packages <- c("ggplot2", "dplyr", "magrittr", "purrr", "fst", "ggmap", "ggthemes", "reshape2", "scales", "xlsx",
                         "stringr", "RColorBrewer", "qgraph", "Hmisc", "factoextra", "cluster", "kimisc", "ggrepel", "class",
-                        "lubridate", "tidyr", "broom", "funr", "htmltools", "outliers", "readr", "janitor", "ggmosaic",
+                        "lubridate", "tidyr", "broom", "funr", "htmltools", "outliers", "readr", "janitor", "ggmosaic", "tictoc",
                         "extrafont", "gridExtra", "DT", "formattable", "data.table", "bit64", "igraph", "rgdal", "tmap", "roxygen2")
   new_packages <- list_of_packages[!(list_of_packages %in% installed.packages()[,"Package"])]
 
+  print("Installing packages")
   if(length(new_packages)) install.packages(new_packages, dependencies = TRUE)
 
   rm(list_of_packages, new_packages)
+
+  print("Fonts")
+  extrafont::font_import()
 }
 
 #' Creates a subdirectory and/or sets the working directory of a project. ----

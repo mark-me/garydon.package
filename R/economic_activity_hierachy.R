@@ -6,8 +6,8 @@
 #' @return Graph representation of the economic activity hierarchy
 #' @keywords SBI NACE SIC
 #' @export
-#' @example
-#' graph_SBI <- create_economic_activity_graph(tbl_SBI_count, col_id = "code_SBI", col_id_parent = "code_SBI_parent")
+#' @examples
+#' create_economic_activity_graph(tbl_hierarchy = tbl_SBI_count, col_id = "code_SBI", col_id_parent = "code_SBI_parent")
 create_economic_activity_graph <- function(tbl_hierarchy, col_id = "code", col_id_parent = "code_parent") {
 
   # Rename columns for processing within the function
@@ -16,7 +16,7 @@ create_economic_activity_graph <- function(tbl_hierarchy, col_id = "code", col_i
 
   # Create vertices
   vertices <- with(tbl_hierarchy, unique(c(code, code_parent)))
-  tbl_vertices <- data.frame(code = vertices) %>%
+  tbl_vertices <- data.frame(code = vertices, stringsAsFactors = FALSE) %>%
     dplyr::left_join(tbl_hierarchy, by = "code")
 
   # Create edges
@@ -26,11 +26,7 @@ create_economic_activity_graph <- function(tbl_hierarchy, col_id = "code", col_i
   graph_hierarchy <- igraph::graph_from_data_frame(d = tbl_edges,
                                                    vertices = tbl_vertices,
                                                    directed = TRUE)
-
   graph_hierarchy <- vertices_add_distance_to_root(graph_hierarchy) # Add layer information
-
-  # Remove 0 SBI code (which has no meaning anyway)
-  #graph_hierarchy <- igraph::delete_vertices(graph_hierarchy, igraph::V(graph_hierarchy)["0"])
 
   return(graph_hierarchy)
 }
@@ -41,8 +37,8 @@ create_economic_activity_graph <- function(tbl_hierarchy, col_id = "code", col_i
 #' @param vertex_attribute the name you want the vertex distance attribute to have
 #' @return Graph
 #' @keywords SBI NACE SIC
-#' @example
-#' vertex_names <- get_incoming_vertice_names(graph, threshold = 500)
+#' @examples
+#' vertices_add_distance_to_root(graph = graph_SBI, vertex_attribute = "qty_hops_to_root")
 vertices_add_distance_to_root <- function(graph, vertex_attribute = "dist_to_root"){
 
   vertx_root <- get_root_vertex(graph) # Determine the root vertice
@@ -61,8 +57,8 @@ vertices_add_distance_to_root <- function(graph, vertex_attribute = "dist_to_roo
 #' @param order The number of connections to search through to get the children
 #' @return List of vertex names that are incoming
 #' @keywords SBI NACE SIC
-#' @example
-#' vertex_names <- get_incoming_vertice_names(graph, threshold = 500)
+#' @examples
+#' get_incoming_vertice_names(graph = graph_SBI, name_vertex = "42", order = 1)
 get_incoming_vertice_names <- function(graph, name_vertex, order = 1){
 
   # Create a small subnetwork of the vertx_hierarchy and it's child vertices
@@ -91,11 +87,8 @@ get_incoming_vertice_names <- function(graph, name_vertex, order = 1){
 #' @return A data frame containing the original economic activity code, the new activity code and the quantity/value that the new code would contain if aggregated
 #' @keywords SBI NACE SIC
 #' @export
-#' @example
-#' graph_SBI_rolled <- roll_up_hierarchy_by_minimum(graph_tree = graph_SBI,
-#'                                                  name_attribute = "qty_companies",
-#'                                                  name_propagated = "qty_companies_cum",
-#'                                                  threshold = 5000)
+#' @examples
+#' roll_up_hierarchy_by_minimum(graph_tree = graph_SBI, name_attribute = "qty_companies", name_propagated = "qty_companies_cum", threshold = 5000)
 roll_up_hierarchy_by_minimum <- function(graph_tree, name_attribute, name_propagated, threshold){
 
   # Create new variable, name_propagated, filling with 0's
@@ -153,7 +146,7 @@ roll_up_hierarchy_by_minimum <- function(graph_tree, name_attribute, name_propag
     value_vertx <- igraph::vertex_attr(graph_tree,
                                        name_propagated,
                                        index = igraph::V(graph_tree)[name_inward])
-    value_cumulative <- sum(values_cumulative + value_vertx)
+    value_cumulative <- sum(values_cumulative + value_vertx, na.rm = TRUE)
     rm(values_cumulative, value_vertx)
     if (value_cumulative >= threshold & !is.na(value_cumulative)) {
       igraph::vertex_attr(graph_tree,
@@ -176,12 +169,75 @@ roll_up_hierarchy_by_minimum <- function(graph_tree, name_attribute, name_propag
                                                                                    mode = "out")$name
   }
 
+  # Set cumulative value only on the destination codes
+  igraph::vertex_attr(graph_tree, name_propagated) <-
+    ifelse(igraph::vertex_attr(graph_tree, "name") == igraph::vertex_attr(graph_tree, "code_parent") |
+             igraph::vertex_attr(graph_tree, "name") == "0",
+           igraph::vertex_attr(graph_tree, name_propagated),
+           0)
+
   # Marking root vertices
   vertx_roots <- get_root_vertex_names(graph_tree)
   graph_tree <- mark_companies_logical(graph_tree,
                                        "is_root",
                                        "name",
                                        vertx_roots)
+  return(graph_tree)
+}
+
+#' Roll up economic activity hierarchy to a certain level in the tree
+#'
+#' This function can be used to aggregate a NACE or SBI code economic activity tree,
+#' so the codes represent enough of something for example number of companies, number of customers or
+#' revenue.
+#'
+#' @param graph_tree Graph representing the economic activity hierarchy
+#' @param level_to The level to which you want to move the nodes in the hierarchy
+#' @param name_attribute The name of the attribute you want to check for values
+#' @return A data frame containing the original economic activity code, the new activity code and the quantity/value that the new code would contain if aggregated
+#' @keywords SBI NACE SIC
+#' @export
+#' @examples
+#' graph_SBI_rolled <- roll_up_hierarchy_by_level(graph_tree = graph_SBI,
+#'                                                level_to = 2
+#'                                                name_attribute = "qty_companies")
+roll_up_hierarchy_by_level <- function(graph_tree, level_to, name_attribute){
+
+  vertx_root <- get_root_vertex(graph_tree)
+  graph_tree <- vertices_add_distance_to_root(graph_tree)
+
+  # Vertices with 0 values
+  is_vertx_0 <- igraph::vertex_attr(graph_tree, name_attribute) == 0
+  idx_vertx_0 <- igraph::vertex_attr(graph_tree, "name")[is_vertx_0]
+  rm(is_vertx_0)
+
+  # Vertices in the 'to_level'
+  idx_to_vertices <- igraph::V(graph_tree)$name[igraph::V(graph_tree)$dist_to_root == level_to]
+
+  # Iterate through vertices in the 'to_level'
+  for(idx_to in idx_to_vertices) {
+
+    # All vertices below current vertex idx_to
+    idx_below_to <- igraph::ego(graph_tree, order = 10, nodes = igraph::V(graph_tree)[idx_to], mode = "in")[[1]]$name
+    idx_below_to <- idx_below_to[!idx_below_to %in% idx_to]
+
+    # Remove all edges with nodes lower than the selected level
+    edges_below_degree <- unlist(igraph::incident_edges(graph_tree,
+                                                        v = igraph::V(graph_tree)[idx_below_to],
+                                                        mode = "out"))
+    graph_tree <- igraph::delete.edges(graph_tree, edges = edges_below_degree)
+
+    # All vertices that can be removed (below idx_to and having 0 value)
+    idx_remove <- idx_below_to[idx_below_to %in% idx_vertx_0]
+    graph_tree <- igraph::delete.vertices(graph_tree, v = igraph::V(graph_tree)[idx_remove])
+
+    # All the vertices that have to be reconnected to vertex idx_to
+    idx_reconnect<- idx_below_to[!idx_below_to %in% idx_vertx_0]
+    # Reconnect vertices
+    new_edges <- as.vector(rbind(idx_reconnect, rep(idx_to, length(idx_reconnect))))
+    graph_tree <- igraph::add.edges(graph_tree, edges = new_edges)
+  }
+
   return(graph_tree)
 }
 
@@ -195,7 +251,7 @@ roll_up_hierarchy_by_minimum <- function(graph_tree, name_attribute, name_propag
 #' @return a data frame containing the original economic activity code and the new activity code
 #' @keywords SBI NACE SIC
 #' @export
-#' @example
+#' @examples
 #' hierarchy_code_level(tbl_hierarchy, level_no = 2)
 hierarchy_code_level <- function(tbl_hierarchy,
                                  level_no,
@@ -252,8 +308,8 @@ hierarchy_code_level <- function(tbl_hierarchy,
 #' @return A graph containing only the codes with other values than NA and are non-connecting
 #' @keywords SBI NACE SIC
 #' @export
-#' @example
-#' graph_SBI_clean <- graph_remove_empty_non_connecting(graph_SBI, name_attribute = "qty_companies")
+#' @examples
+#' graph_remove_empty_non_connecting(graph_SBI, name_attribute = "qty_companies")
 graph_remove_empty_non_connecting <- function(graph_tree, name_attribute) {
 
   vertx_root <- get_root_vertex(graph_tree) # Determine the root vertice
@@ -293,8 +349,8 @@ graph_remove_empty_non_connecting <- function(graph_tree, name_attribute) {
 #' @return The vertext that is the root of the graph
 #' @keywords SBI NACE SIC
 #' @export
-#' @example
-#' graph_SBI <- get_root_vertex(graph_SBI)
+#' @examples
+#' get_root_vertex(graph_SBI)
 get_root_vertex <- function(tree_graph){
 
   # Find root node
@@ -313,22 +369,38 @@ get_root_vertex <- function(tree_graph){
 #' @return The vertext that is the root of the graph
 #' @keywords SBI NACE SIC
 #' @export
-#' @example
-#' vertx_roots <- get_root_vertex_names(tbl_SBI_count)
+#' @examples
+#' get_root_vertex_names(graph_SBI)
 get_root_vertex_names <- function(tree_graph){
 
   # Find root nodes
   tree_graph <- igraph::simplify(tree_graph)
 
-  idx_roots <- which(
-    sapply(
-      sapply(igraph::V(tree_graph),
-             function(x) igraph::neighbors(tree_graph,x, mode="out")
-      ),
-      length)
-    == 0)
+  idx_roots <- which(sapply(sapply(igraph::V(tree_graph),
+                                   function(x) igraph::neighbors(tree_graph,x, mode="out")),
+                            length) == 0)
 
   vertx_roots <- igraph::V(tree_graph)[idx_roots]$name
 
   return(vertx_roots)
+}
+
+#' Converts a company hierarchy graph to a data frame
+#'
+#' @param graph The graph containing all the hierarchical company trees
+#' @return A data frame with company hierarchy data
+#' @keywords graph company hierarchy
+#' @export
+#' @examples
+#' df_hierarchy <- hierarchy_as_data_frame(graph_hierarchy)
+rolled_up_as_data_frame <- function(graph){
+
+  df_hierarchy <- igraph::as_data_frame(graph, what = "vertices")
+  df_hierarchy <- df_hierarchy %>%
+    dplyr::rename(code = name) %>%
+    dplyr::filter(code != "0")
+
+  row.names(df_hierarchy) <- NULL
+
+  return(df_hierarchy)
 }

@@ -17,6 +17,9 @@ A graph containing only the codes with other values than NA and are non-connecti
 \description{
 cleans up all nace codes from the hierarchy that contain a NA value and are non-connective
 }
+\examples{
+graph_remove_empty_non_connecting(graph_SBI, name_attribute = "qty_companies")
+}
 \keyword{NACE}
 \keyword{SBI}
 \keyword{SIC}

@@ -1,6 +1,11 @@
-# Graydon theming ----
-extrafont::font_import(pattern = "Roboto", prompt = FALSE)
-extrafont::loadfonts(device="win")
+# Font loading ----
+suppressWarnings(
+  suppressMessages(
+    extrafont::font_import(pattern = "Roboto", prompt = FALSE)
+    )
+  )
+extrafont::loadfonts(device="win", quiet = TRUE)
+windowsFonts("Roboto" = windowsFont("Roboto"))
 
 #' A function for applying a Graydon theme to a ggplot
 #'
