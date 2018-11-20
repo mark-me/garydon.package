@@ -4,11 +4,10 @@
 \alias{recode_holding_codes}
 \title{Determine holding SBI replacement}
 \usage{
-recode_holding_codes(graph_company_hierarchy, name_activity_code,
-  vec_holding_codes)
+recode_holding_codes(graph, name_activity_code, vec_holding_codes)
 }
 \arguments{
-\item{graph_company_hierarchy}{A graph with the company hierarchy}
+\item{graph}{A graph with the company hierarchy}
 
 \item{name_activity_code}{The name of the value attribute that contains the economic activity code}
 
@@ -21,7 +20,7 @@ A graph where all the nodes contain aggregated value
 Determine holding SBI replacement
 }
 \examples{
-graph_company_hierarchy <- recode_holding_codes(graph_company_hierarchy, name_activity_code = "code_sbi", vec_holding_codes = c("64", "642", "6420"))
+graph <- recode_holding_codes(graph, name_activity_code = "code_sbi", vec_holding_codes = c("64", "642", "6420"))
 }
 \keyword{company}
 \keyword{graph}

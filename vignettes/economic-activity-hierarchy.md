@@ -76,7 +76,7 @@ plot_graydon_graph(graph_SBI,
 
 ## <a name="roll_up"></a>Rolling up the hierarchy on values
 
-A method for decreasing the complexity of the hierarchy is aggregating subcodes into higher up codes according whenever subnodes do not meet a minimum value requirement. Let's take the number of companies as an example: whenever the number of companies is lower than 5000, the companies with that subcode will get the code of one higher up in the hierarchy:
+A method for decreasing the complexity of the hierarchy is aggregating subcodes into higher up codes according whenever subnodes do not meet a minimum value requirement. Let's take the number of companies as an example: whenever the number of companies is lower than 5.000, the companies with that subcode will get the code of one higher up in the hierarchy:
 
 
 ```r
@@ -96,8 +96,6 @@ V(graph_SBI_rolled)$label <- ifelse(V(graph_SBI_rolled)$is_root, V(graph_SBI_rol
 plot_graydon_graph(graph_SBI_rolled,
                    vertex.size = 3,
                    edge.arrow.size = 0)
-#> Warning in text.default(x, y, labels = labels, col = label.color, family =
-#> label.family, : font family not found in Windows font database
 ```
 
 ![plot of chunk unnamed-chunk-6](figure/unnamed-chunk-6-1.png)
@@ -109,8 +107,6 @@ V(graph_SBI_rolled)$label <- ifelse(V(graph_SBI_rolled)$label == 0, "", V(graph_
 plot_graydon_graph(graph_SBI_rolled,
                    vertex.size = 3,
                    edge.arrow.size = 0)
-#> Warning in text.default(x, y, labels = labels, col = label.color, family =
-#> label.family, : font family not found in Windows font database
 ```
 
 ![plot of chunk unnamed-chunk-7](figure/unnamed-chunk-7-1.png)
@@ -124,8 +120,6 @@ list_graphs <- decompose(graph_SBI_rolled)
 idx_searched <- names(sapply(list_graphs, function(x) igraph::V(x)[1] ))
 
 plot_graydon_graph(list_graphs[[1]])
-#> Warning in text.default(x, y, labels = labels, col = label.color, family =
-#> label.family, : font family not found in Windows font database
 ```
 
 ![plot of chunk unnamed-chunk-8](figure/unnamed-chunk-8-1.png)

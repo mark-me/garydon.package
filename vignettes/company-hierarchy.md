@@ -1,7 +1,7 @@
 ---
 title: "Handling of company hierarchies"
 author: "Mark Zwart"
-date: "2018-11-14"
+date: "2018-11-20"
 output: 
   rmarkdown::html_vignette:
     css: graydon.css
@@ -112,7 +112,7 @@ list_selected_hierarchies <- select_graph_hierarchies(graph_company_hierarchies,
                                                       tbl_customers$id_company)
 ```
 
-Note that the _tbl_customers_ data-frame contains 300, while the _list_selected_hierarchies_ contains 251 graphs; this is because there are customers that fall within the same company hierarchy. The companies in the graphs in this list now also contain an extra logical attribute, _is_searched_company_, which indicates whether the company was in the _id_company_ column. Let's take a look at one of the graphs that contain multiple customers. The customer 'vertices' are colored orange here:
+Note that the _tbl_customers_ data-frame contains 300, while the _list_selected_hierarchies_ contains 252 graphs; this is because there are customers that fall within the same company hierarchy. The companies in the graphs in this list now also contain an extra logical attribute, _is_searched_company_, which indicates whether the company was in the _id_company_ column. Let's take a look at one of the graphs that contain multiple customers. The customer 'vertices' are colored orange here:
 
 ```r
 igraph::V(graph_example)$color <- ifelse(igraph::V(graph_example)$is_searched_company,
@@ -132,7 +132,6 @@ For whatever reason, you might want to creating a list of all of the seperate co
 ```r
 list_all_graphs <- list_company_hierarchy_graphs(graph_company_hierarchies)
 ```
-
 
 # <a name="convert_graph"></a>Converting company hierarchy graphs to data-frames 
 
@@ -210,13 +209,13 @@ Let's look at the statistics:
 df_single_hierarchy <- hierarchy_as_data_frame(graph_company_hierarchy)
 ```
 
-|name      | id_company_parent|code_sbi | size_company| qty_employees|is_searched_company | qty_employees_cum|is_tree | qty_comapny_hierarchy|id_company_top | distance_to_top| qty_child_companies| qty_sister_companies|
-|:---------|-----------------:|:--------|------------:|-------------:|:-------------------|-----------------:|:-------|---------------------:|:--------------|---------------:|-------------------:|--------------------:|
-|1003667   |         931238099|7022     |            2|            15|FALSE               |                15|TRUE    |                     5|911277358      |               3|                   0|                    2|
-|931238099 |         933898487|6420     |            1|             0|TRUE                |                17|TRUE    |                     5|911277358      |               2|                   2|                    1|
-|933898487 |         911277358|7022     |            1|             0|FALSE               |                17|TRUE    |                     5|911277358      |               1|                   1|                    1|
-|936298138 |         931238099|7311     |            2|             2|FALSE               |                 2|TRUE    |                     5|911277358      |               3|                   0|                    2|
-|911277358 |                NA|6420     |            2|             1|FALSE               |                18|TRUE    |                     5|911277358      |               0|                   1|                    0|
+|name      | id_company_parent|code_sbi | size_company| qty_employees|is_searched_company | qty_employees_cum|is_tree | qty_hierarchy_companies|id_company_top | distance_to_top| qty_child_companies| qty_sister_companies|
+|:---------|-----------------:|:--------|------------:|-------------:|:-------------------|-----------------:|:-------|-----------------------:|:--------------|---------------:|-------------------:|--------------------:|
+|1003667   |         931238099|7022     |            2|            15|FALSE               |                15|TRUE    |                       5|911277358      |               3|                   0|                    2|
+|931238099 |         933898487|6420     |            1|             0|TRUE                |                17|TRUE    |                       5|911277358      |               2|                   2|                    1|
+|933898487 |         911277358|7022     |            1|             0|FALSE               |                17|TRUE    |                       5|911277358      |               1|                   1|                    1|
+|936298138 |         931238099|7311     |            2|             2|FALSE               |                 2|TRUE    |                       5|911277358      |               3|                   0|                    2|
+|911277358 |                NA|6420     |            2|             1|FALSE               |                18|TRUE    |                       5|911277358      |               0|                   1|                    0|
 
 ## <a name="marking"></a>Marking companies
 
@@ -263,12 +262,12 @@ Below you can see a sample of the resulting data-frame, where you can see the co
 
 |id_company |id_sibling | qty_siblings|
 |:----------|:----------|------------:|
-|894618067  |80248      |           21|
-|894618067  |235051     |           21|
-|894618067  |255912     |           21|
-|894618067  |343927     |           21|
-|894618067  |688639     |           21|
-|894618067  |714089     |           21|
+|939620014  |939601621  |            4|
+|939620014  |939620073  |            4|
+|939620014  |939620308  |            4|
+|939620014  |939620391  |            4|
+|745630     |922126127  |            1|
+|470942     |1144496    |            1|
 
 ## <a name="recode_holdings"></a>Recoding holdings
 
@@ -294,6 +293,39 @@ plot_graydon_graph(graph_company_hierarchy)
 
 ![plot of chunk unnamed-chunk-25](figure/unnamed-chunk-25-1.png)
 
+```r
+vec_sbi_holdings <- c("64", "642", "6420")
+library("png")
+ 
+img_holding <- readPNG("~/R scripts/hierarchy_changes/money-svg-hand-icon-png-3.png")
+img_regular <- readPNG("~/R scripts/hierarchy_changes/vector-apartments-business-building-6.png")
+
+graph_company_hierarchy <- mark_companies_logical(graph_company_hierarchy,
+                                                  name_logical = "is_holding",
+                                                  name_filter = "code_sbi",
+                                                  set_criteria = vec_sbi_holdings)
+
+V(graph_company_hierarchy)$raster <- list(img_regular, img_holding)[V(graph_company_hierarchy)$is_holding+1]
+
+plot_graydon_graph(graph_company_hierarchy, 
+                   vertex.shape="raster", 
+                   vertex.label=NA,
+                   vertex.size=24, 
+                   vertex.size2=24, 
+                   edge.width=2)
+```
+
+![plot of chunk unnamed-chunk-26](figure/unnamed-chunk-26-1.png)
+
+You can count the number of financial holdings in a company hierarchy like this:
+
+```r
+count_companies_by_set(graph = graph_company_hierarchy,
+                       name_filter = "code_sbi",
+                       set_criteria = vec_sbi_holdings)
+#> [1] 2
+```
+
 You can use the function _recode_holding_codes_ to recode the holdings so they reflect the economic activity codes of the majority of the children:
 
 ```r
@@ -303,4 +335,4 @@ graph_company_hierarchy <- recode_holding_codes(graph_company_hierarchy,
 ```
 
 This would result in this recoded company hierarchy:
-![plot of chunk unnamed-chunk-27](figure/unnamed-chunk-27-1.png)
+![plot of chunk unnamed-chunk-29](figure/unnamed-chunk-29-1.png)

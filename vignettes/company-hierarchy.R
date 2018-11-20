@@ -162,6 +162,32 @@ V(graph_company_hierarchy)$color <- ifelse(V(graph_company_hierarchy)$is_holding
 
 plot_graydon_graph(graph_company_hierarchy)
 
+## ---- message=FALSE, warning=FALSE---------------------------------------
+vec_sbi_holdings <- c("64", "642", "6420")
+library("png")
+ 
+img_holding <- readPNG("~/R scripts/hierarchy_changes/money-svg-hand-icon-png-3.png")
+img_regular <- readPNG("~/R scripts/hierarchy_changes/vector-apartments-business-building-6.png")
+
+graph_company_hierarchy <- mark_companies_logical(graph_company_hierarchy,
+                                                  name_logical = "is_holding",
+                                                  name_filter = "code_sbi",
+                                                  set_criteria = vec_sbi_holdings)
+
+V(graph_company_hierarchy)$raster <- list(img_regular, img_holding)[V(graph_company_hierarchy)$is_holding+1]
+
+plot_graydon_graph(graph_company_hierarchy, 
+                   vertex.shape="raster", 
+                   vertex.label=NA,
+                   vertex.size=24, 
+                   vertex.size2=24, 
+                   edge.width=2)
+
+## ------------------------------------------------------------------------
+count_companies_by_set(graph = graph_company_hierarchy,
+                       name_filter = "code_sbi",
+                       set_criteria = vec_sbi_holdings)
+
 ## ------------------------------------------------------------------------
 graph_company_hierarchy <- recode_holding_codes(graph_company_hierarchy, 
                                                 name_activity_code = "code_sbi", 

@@ -30,9 +30,6 @@ create_graph_company_hierarchies <- function(tbl_company_relations) {
     igraph::graph_from_data_frame(d = tbl_edges,
                                   vertices = tbl_vertices,
                                   directed = TRUE)
-
-  #igraph::V(graph_hierarchies)$id_company <- igraph::V(graph_hierarchies)$name # Set id_companies attribute
-
   return(graph_hierarchies)
 }
 
@@ -78,8 +75,8 @@ find_company_hierarchy <- function(graph_all_companies, id_company){
 #' @keywords graph company hierarchy
 #' @export
 #' @examples
-#' graph_company_hierarchy <- find_company_hierarchy(graph_company_hierarchies, "931238099")
-select_graph_hierarchies <- function(graph_company_hierarchies, id_companies){
+#' graph_company_hierarchy <- find_company_hierarchy(graph_all_companies, "931238099")
+select_graph_hierarchies <- function(graph_all_companies, id_companies){
 
   list_selected <- list() # Will contain the list of selected graphs
   graph_keys <- vector(mode = "character", length = length(id_companies))
@@ -89,7 +86,7 @@ select_graph_hierarchies <- function(graph_company_hierarchies, id_companies){
 
     id_company <- id_companies[i]
     # Find the graph associated with the company
-    current_graph <- find_company_hierarchy(graph_company_hierarchies, id_company)
+    current_graph <- find_company_hierarchy(graph_all_companies, id_company)
     id_graph <- get_root_vertex_name(current_graph) # Get the root vertex (as id) of the graph
     # Only add when the graph isn't present yet
     if(is.na(match(id_graph, graph_keys))) {
@@ -137,10 +134,10 @@ get_root_vertex_name <- function(tree_graph){
 #' @export
 #' @examples
 #' list_graphs <- list_company_hierarchy_graphs(graph_company_hierarchies)
-list_company_hierarchy_graphs <- function(graph_company_hierarchies){
+list_company_hierarchy_graphs <- function(graph_all_companies){
 
   # Create list of company hierarchy graphs
-  list_graphs <- igraph::decompose.graph(graph_company_hierarchies)
+  list_graphs <- igraph::decompose.graph(graph_all_companies)
 
   list_graphs <- lapply(list_graphs, add_company_hierarchy_stats)
 
@@ -294,7 +291,7 @@ get_qty_siblings <- function(graph, vertx) {
 #' @keywords graph company hierarchy
 #' @export
 #' @examples
-#' graph <- mark_companies_logical(graph, "is_holding", "code_SBI", "64", "642", "6420"))
+#' graph <- mark_companies_logical(graph, "is_holding", "code_SBI", c("64", "642", "6420"))
 mark_companies_logical <- function(graph, name_logical, name_filter , set_criteria){
 
   name_filter <- ifelse(name_filter == "id_company", "name", name_filter)
@@ -304,6 +301,26 @@ mark_companies_logical <- function(graph, name_logical, name_filter , set_criter
     igraph::vertex_attr(graph, name_filter) %in% set_criteria
 
   return(graph)
+}
+
+
+#' Add a logical variable to the companies in a hierarchy when one of it's
+#' attributes match one of a set of values
+#'
+#' @param graph A graph
+#' @param name_filter The name of the attribute which values are compared to the criteria
+#' @param set_criteria The set of criteria in a vector to which the values are compared
+#' @return A graph where all the nodes contain the newly created attribute
+#' @keywords graph company hierarchy
+#' @export
+#' @examples
+#' count_companies_by_set(graph = graph_company, "code_SBI", "64", "642", "6420"))
+count_companies_by_set <- function(graph, name_filter, set_criteria){
+
+  name_filter <- ifelse(name_filter == "id_company", "name", name_filter)
+  qty_companies <- sum(igraph::vertex_attr(graph, name_filter) %in% set_criteria)
+
+  return(qty_companies)
 }
 
 #' Add hierarchy stats to all the vertices of a company hierarchy graph
@@ -318,23 +335,18 @@ add_company_hierarchy_stats <- function(graph){
 
   # Determine company hierarchy is a hierarchical tree
   igraph::vertex_attr(graph, "is_tree") <- igraph::is_dag(graph)
-
   # Determine the number of companies in the company hierarchies
-  igraph::vertex_attr(graph, "qty_comapny_hierarchy") <- igraph::vcount(graph)
-
+  igraph::vertex_attr(graph, "qty_hierarchy_companies") <- igraph::vcount(graph)
   # Determine top company
   igraph::vertex_attr(graph, "id_company_top") <- get_root_vertex_name(graph)
-
   # Distances between root and nodes in the hierarchy
   igraph::vertex_attr(graph, "distance_to_top") <-
     igraph::distances(graph, v = igraph::V(graph), to = get_root_vertex(graph))
-
   # Number of child companies for each company
   igraph::vertex_attr(graph, "qty_child_companies") <-
     sapply(sapply(igraph::V(graph),
                   function(x) igraph::neighbors(graph, x, mode="in")),
            length)
-
   # Number of sister companues
   igraph::vertex_attr(graph, "qty_sister_companies") <-
     sapply(igraph::V(graph),
@@ -382,43 +394,41 @@ aggregate_hierarchy_value <- function(graph, name_attribute, name_aggregate, FUN
 
 #' Determine holding SBI replacement
 #'
-#' @param graph_company_hierarchy A graph with the company hierarchy
+#' @param graph A graph with the company hierarchy
 #' @param name_activity_code The name of the value attribute that contains the economic activity code
 #' @param vec_holding_codes A vector of codes that represent holdings
 #' @return A graph where all the nodes contain aggregated value
 #' @keywords graph company hierarchy
 #' @export
 #' @examples
-#' graph_company_hierarchy <- recode_holding_codes(graph_company_hierarchy, name_activity_code = "code_sbi", vec_holding_codes = c("64", "642", "6420"))
-recode_holding_codes <- function(graph_company_hierarchy, name_activity_code, vec_holding_codes){
+#' graph <- recode_holding_codes(graph, name_activity_code = "code_sbi", vec_holding_codes = c("64", "642", "6420"))
+recode_holding_codes <- function(graph, name_activity_code, vec_holding_codes){
 
   # Determine the ultimate mother company
-  vertx_root <- get_root_vertex(graph_company_hierarchy)
+  vertx_root <- get_root_vertex(graph)
   # Determine the order of the companies by sorting them in distance from the ultimate mother
-  vertex_distances <- igraph::distances(graph_company_hierarchy,
-                                        v = igraph::V(graph_company_hierarchy),
+  vertex_distances <- igraph::distances(graph,
+                                        v = igraph::V(graph),
                                         to = vertx_root)[, 1]
   idx_by_distances <- names(sort(vertex_distances, decreasing = TRUE))
 
   # Iterate through each company in the network
   for(idx_company in idx_by_distances) {
 
-    #idx_company <- ""
     # The company vertice
-    vertex_company <- igraph::V(graph_company_hierarchy)[idx_company]
+    vertex_company <- igraph::V(graph)[idx_company]
 
     # Determine wether the node is a holding
-    is_holding <- igraph::vertex_attr(graph_company_hierarchy,
+    is_holding <- igraph::vertex_attr(graph,
                                       name_activity_code,
-                                      index = igraph::V(graph_company_hierarchy)[idx_company]
+                                      index = igraph::V(graph)[idx_company]
     ) %in% vec_holding_codes
     if(is_holding){
 
-      idx_children <- get_incoming_vertice_names(graph_company_hierarchy, idx_company)
-      children_code <- igraph::vertex_attr(graph = graph_company_hierarchy,
+      idx_children <- get_incoming_vertice_names(graph, idx_company)
+      children_code <- igraph::vertex_attr(graph = graph,
                                            name_activity_code,
-                                           index = igraph::V(graph_company_hierarchy)[idx_children])
-
+                                           index = igraph::V(graph)[idx_children])
       children_code <- children_code[!children_code %in% vec_holding_codes] # Remove holding SBI codes for children
       children_code <- children_code[!is.na(children_code)]                 # Remove empty SBI codes for children
 
@@ -427,15 +437,13 @@ recode_holding_codes <- function(graph_company_hierarchy, name_activity_code, ve
         code_2 <- stringr::str_sub(children_code, 1, 2) # Shorten SBI code to first 2 digits
         freq_2 <- table(code_2)                         # Count SBI code 2-digit occurence
         code_new <- names(freq_2)[which.max(freq_2)][1] # Get first of maximum values
-        igraph::vertex_attr(graph_company_hierarchy,
+        igraph::vertex_attr(graph,
                             name_activity_code,
-                            index = igraph::V(graph_company_hierarchy)[idx_company]) <- code_new
+                            index = igraph::V(graph)[idx_company]) <- code_new
       }
-
     }
   }
-
-  return(graph_company_hierarchy)
+  return(graph)
 }
 
 #' Plots a company hierarchy graph
@@ -447,6 +455,8 @@ recode_holding_codes <- function(graph_company_hierarchy, name_activity_code, ve
 #' @examples
 #' plot_graydon_graph(graph)
 plot_graydon_graph <- function(graph, ...){
+
+  extrafont::loadfonts(device="win", quiet = TRUE)
 
   igraph::igraph_options(
     vertex.color = col_graydon[4],

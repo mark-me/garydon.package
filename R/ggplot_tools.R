@@ -19,6 +19,8 @@ windowsFonts("Roboto" = windowsFont("Roboto"))
 #' theme_graydon("grid")
 theme_graydon <- function(type = c("grid", "horizontal", "vertical", "blank")) {
 
+  extrafont::loadfonts(device="win", quiet = TRUE)
+
   graydon_theme <-
     ggthemes::theme_gdocs() +
     ggplot2::theme(axis.title = element_text(face = "plain"),
@@ -209,9 +211,7 @@ save_plot_to_png <- function(plot, file_name, squared = FALSE) {
       pointsize = 18,
       res = 300
     )
-
     invisible(print({plot}))
-
     invisible(dev.off())
 
   } else {
@@ -226,9 +226,7 @@ save_plot_to_png <- function(plot, file_name, squared = FALSE) {
       pointsize = 18,
       res = 300
     )
-
     print({plot})
-
     invisible(dev.off())
 
   }
