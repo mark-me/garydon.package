@@ -144,6 +144,33 @@ list_company_hierarchy_graphs <- function(graph_all_companies){
   return(list_graphs)
 }
 
+#' Combining graphs from a list to a single graph
+#'
+#' @param list_graphs A list of graphs
+#' @return A graph containing all deduplicated graphs
+#' @keywords graph company hierarchy
+#' @export
+#' @examples
+#' graph_total <- combine_graphs(list_graphs)
+combine_graphs <- function(list_graphs){
+
+
+  df_vertices <- do.call(rbind, lapply(list_graphs,
+                                       igraph::as_data_frame,
+                                       what = "vertices"))
+  df_edges <- do.call(rbind, lapply(list_graphs,
+                                    igraph::as_data_frame,
+                                    what = "edges"))
+
+  df_vertices <- unique(df_vertices)
+  df_edges <- unique(df_edges)
+
+  graphs_combined <- igraph::graph_from_data_frame(d = df_edges,
+                                                   vertices = df_vertices,
+                                                   directed = TRUE)
+  return(graphs_combined)
+}
+
 #' Converts a list of company hierarchy graphs to a data frame
 #'
 #' @param list_graphs The graph containing all the hierarchical company trees
