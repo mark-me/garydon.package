@@ -60,6 +60,16 @@ remove_redundant_columns <- function(tbl_primary, tbl_secondary, vec_key_columns
   col_names_duplicate <- col_names_duplicate[col_names_duplicate %nin% vec_key_columns]
 }
 
+#' Getting the list of packages that are regularly used by Tailored Analytics
+#'
+get_library_names <- function(){
+  list_of_packages <- c("ggplot2", "dplyr", "magrittr", "purrr", "fst", "ggmap", "ggthemes", "reshape2", "scales", "xlsx",
+                        "stringr", "RColorBrewer", "qgraph", "Hmisc", "factoextra", "cluster", "kimisc", "ggrepel", "class",
+                        "lubridate", "tidyr", "broom", "funr", "htmltools", "outliers", "readr", "janitor", "ggmosaic", "tictoc",
+                        "extrafont", "gridExtra", "DT", "formattable", "data.table", "bit64", "igraph", "rgdal", "tmap", "roxygen2")
+  return(list_of_packages)
+}
+
 #' Installing regularly used packages
 #'
 #' @export
@@ -68,10 +78,7 @@ remove_redundant_columns <- function(tbl_primary, tbl_secondary, vec_key_columns
 install_graydon_packages <- function() {
 
   # Installing and loading libraries
-  list_of_packages <- c("ggplot2", "dplyr", "magrittr", "purrr", "fst", "ggmap", "ggthemes", "reshape2", "scales", "xlsx",
-                        "stringr", "RColorBrewer", "qgraph", "Hmisc", "factoextra", "cluster", "kimisc", "ggrepel", "class",
-                        "lubridate", "tidyr", "broom", "funr", "htmltools", "outliers", "readr", "janitor", "ggmosaic", "tictoc",
-                        "extrafont", "gridExtra", "DT", "formattable", "data.table", "bit64", "igraph", "rgdal", "tmap", "roxygen2")
+  list_of_packages <- get_library_names()
   new_packages <- list_of_packages[!(list_of_packages %in% installed.packages()[,"Package"])]
 
   print("Installing packages")
@@ -127,4 +134,8 @@ open_project <- function(project_name, dir_base = NULL) {
     writeLines(c(cmd_load_library, cmd_open_project), fileConn)
     close(fileConn)
   }
+
+  # Load standard libraries
+  libs <- get_library_names()
+  lapply(libs, library, character.only = TRUE)
 }

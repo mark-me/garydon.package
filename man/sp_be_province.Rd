@@ -4,7 +4,7 @@
 \name{sp_be_province}
 \alias{sp_be_province}
 \title{Map outlining the Belgium province borders}
-\format{An object of class \code{SpatialPolygonsDataFrame} with 192 rows and 14 columns.}
+\format{An object of class \code{SpatialPolygonsDataFrame} with 12 rows and 14 columns.}
 \usage{
 sp_be_province
 }
