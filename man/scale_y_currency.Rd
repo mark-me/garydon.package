@@ -5,7 +5,7 @@
 \title{A function to create a continuous y-axis for formatted currency}
 \usage{
 scale_y_currency(currency = c("EUR", "GBP"), number_decimals = 2,
-  scale = c("normal", "k", "M"))
+  scale = c("normal", "k", "M"), ...)
 }
 \description{
 A function to create a continuous y-axis for formatted currency

@@ -4,7 +4,8 @@
 \alias{ntiles_labeled}
 \title{Creates a vector of human readable ntiles}
 \usage{
-ntiles_labeled(values, qty_ntiles, FUN, ...)
+ntiles_labeled(values, qty_ntiles, use_intervals = FALSE,
+  format_EN = FALSE, FUN, ...)
 }
 \arguments{
 \item{qty_ntiles}{The number of ntiles you want to have}

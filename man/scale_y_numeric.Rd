@@ -5,10 +5,10 @@
 \title{A function to create a continuous x-axis for formatted numbers}
 \usage{
 scale_y_numeric(number_decimals = 0, format_EN = FALSE,
-  scale = c("normal", "k", "M"))
+  scale = c("normal", "k", "M"), ...)
 
 scale_y_numeric(number_decimals = 0, format_EN = FALSE,
-  scale = c("normal", "k", "M"))
+  scale = c("normal", "k", "M"), ...)
 }
 \description{
 A function to create a continuous x-axis for formatted numbers

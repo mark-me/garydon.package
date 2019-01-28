@@ -4,7 +4,7 @@
 \alias{scale_x_percent}
 \title{A function to create a continuous x-axis for formatted percentages}
 \usage{
-scale_x_percent(number_decimals = 1, format_EN = FALSE)
+scale_x_percent(number_decimals = 1, format_EN = FALSE, ...)
 }
 \description{
 A function to create a continuous x-axis for formatted percentages

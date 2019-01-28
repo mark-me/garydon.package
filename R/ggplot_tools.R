@@ -72,25 +72,25 @@ theme_graydon <- function(type = c("grid", "horizontal", "vertical", "blank")) {
 #'
 #' @keywords ggplot2
 #' @export
-scale_color_graydon <- function(){
-  return(ggplot2::scale_color_manual(values = col_graydon))
+scale_color_graydon <- function(...){
+  return(ggplot2::scale_color_manual(values = col_graydon, ...))
 }
 
 #' A function to include in a ggplot so the fill aesthetics make use of the Graydon color palette
 #'
 #' @keywords ggplot2
 #' @export
-scale_fill_graydon <- function(){
-  return(ggplot2::scale_fill_manual(values = col_graydon))
+scale_fill_graydon <- function(...){
+  return(ggplot2::scale_fill_manual(values = col_graydon, ...))
 }
 
 #' A function to include in a ggplot so color and fill aesthetics make use of the Graydon color palette
 #'
 #' @keywords ggplot2
 #' @export
-scale_gradient_graydon <- function(){
+scale_gradient_graydon <- function(...){
   return(ggplot2::scale_fill_gradient(low = col_graydon_low, high = col_graydon_high) +
-           ggplot2::scale_color_gradient(low = col_graydon_low, high = col_graydon_high))
+           ggplot2::scale_color_gradient(low = col_graydon_low, high = col_graydon_high), ...)
 }
 
 #' A function to create a continuous x-axis for formatted numbers
@@ -111,13 +111,13 @@ scale_y_numeric <- function(number_decimals = 0, format_EN = FALSE, scale = c("n
 #'
 #' @keywords ggplot2
 #' @export
-scale_y_numeric <- function(number_decimals = 0, format_EN = FALSE, scale = c("normal", "k", "M")) {
+scale_y_numeric <- function(number_decimals = 0, format_EN = FALSE, scale = c("normal", "k", "M"), ...) {
 
   return(
     ggplot2::scale_y_continuous(labels = function(x) format_number(x,
                                                           number_decimals,
                                                           format_EN,
-                                                          scale))
+                                                          scale), ...)
   )
 }
 
@@ -127,13 +127,14 @@ scale_y_numeric <- function(number_decimals = 0, format_EN = FALSE, scale = c("n
 #' @export
 scale_x_currency <- function(currency = c("EUR", "GBP"),
                              number_decimals = 2,
-                             scale = c("normal", "k", "M")) {
+                             scale = c("normal", "k", "M"), ...) {
 
   return(
     ggplot2::scale_x_continuous(labels = function(x) format_currency(x,
                                                                      currency,
                                                                      number_decimals,
-                                                                     scale))
+                                                                     scale
+                                                                     ), ...)
   )
 }
 
@@ -143,13 +144,13 @@ scale_x_currency <- function(currency = c("EUR", "GBP"),
 #' @export
 scale_y_currency <- function(currency = c("EUR", "GBP"),
                              number_decimals = 2,
-                             scale = c("normal", "k", "M")) {
+                             scale = c("normal", "k", "M"), ...) {
 
   return(
     ggplot2::scale_y_continuous(labels = function(x) format_currency(x,
                                                           currency,
                                                           number_decimals,
-                                                          scale))
+                                                          scale), ...)
   )
 }
 
@@ -158,12 +159,12 @@ scale_y_currency <- function(currency = c("EUR", "GBP"),
 #' @keywords ggplot2
 #' @export
 scale_x_percent <- function(number_decimals = 1,
-                            format_EN = FALSE) {
+                            format_EN = FALSE, ...) {
 
   return(
     ggplot2::scale_x_continuous(labels = function(x) format_percent(x,
                                                                     number_decimals,
-                                                                    format_EN))
+                                                                    format_EN), ...)
   )
 }
 
@@ -172,12 +173,12 @@ scale_x_percent <- function(number_decimals = 1,
 #' @keywords ggplot2
 #' @export
 scale_y_percent <- function(number_decimals = 1,
-                            format_EN = FALSE) {
+                            format_EN = FALSE, ...) {
 
   return(
     ggplot2::scale_y_continuous(labels = function(x) format_percent(x,
                                                                     number_decimals,
-                                                                    format_EN))
+                                                                    format_EN), ...)
   )
 }
 

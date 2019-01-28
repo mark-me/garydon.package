@@ -4,7 +4,7 @@
 \alias{scale_gradient_graydon}
 \title{A function to include in a ggplot so color and fill aesthetics make use of the Graydon color palette}
 \usage{
-scale_gradient_graydon()
+scale_gradient_graydon(...)
 }
 \description{
 A function to include in a ggplot so color and fill aesthetics make use of the Graydon color palette

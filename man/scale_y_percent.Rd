@@ -4,7 +4,7 @@
 \alias{scale_y_percent}
 \title{A function to create a continuous y-axis for formatted percentages}
 \usage{
-scale_y_percent(number_decimals = 1, format_EN = FALSE)
+scale_y_percent(number_decimals = 1, format_EN = FALSE, ...)
 }
 \description{
 A function to create a continuous y-axis for formatted percentages
