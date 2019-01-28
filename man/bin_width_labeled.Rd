@@ -4,7 +4,7 @@
 \alias{bin_width_labeled}
 \title{Creates a vector of human readable bins based on width}
 \usage{
-bin_width_labeled(values, width, FUN, ...)
+bin_width_labeled(values, width, boundary = 0, FUN, ...)
 }
 \arguments{
 \item{values}{The vector/column of values you want to 'ntile'}

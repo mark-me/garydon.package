@@ -2,12 +2,12 @@
 % Please edit documentation in R/string_tools.R
 \name{bin_quantity_labeled}
 \alias{bin_quantity_labeled}
-\title{Creates a vector of human readable bins based on width}
+\title{Creates a vector of human readable bins based by specifying the number of bins in advance}
 \usage{
-bin_quantity_labeled(values, qty_bins, FUN, ...)
+bin_quantity_labeled(values, qty_bins, boundary = 0, FUN, ...)
 }
 \arguments{
-\item{values}{The vector/column of values you want to 'ntile'}
+\item{values}{The vector/column of values you want to bin}
 
 \item{qty_bins}{The number of ntiles you want to have}
 
@@ -19,7 +19,7 @@ bin_quantity_labeled(values, qty_bins, FUN, ...)
 Ordered factor
 }
 \description{
-Creates a vector of human readable bins based on width
+Creates a vector of human readable bins based by specifying the number of bins in advance
 }
 \examples{
 bin_quantity_labeled(values = mtcars$mpg, qty_ntiles = 4, FUN = format_currency, currency = "GBP")
