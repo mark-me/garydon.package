@@ -32,7 +32,7 @@ graph_SBI_rolled <- roll_up_hierarchy_by_minimum(graph_tree = graph_SBI,
                                                  name_propagated = "qty_companies_cum",
                                                  threshold = 5000)
 
-## ---- fig.height=6, fig.width=6------------------------------------------
+## ---- fig.height=6, fig.width=6, warning=FALSE---------------------------
 V(graph_SBI_rolled)$color <- ifelse(V(graph_SBI_rolled)$is_root, 1, 2)
 V(graph_SBI_rolled)$label <- ifelse(V(graph_SBI_rolled)$is_root, V(graph_SBI_rolled)$name, "")
 
@@ -62,5 +62,14 @@ df_translation_codes <- rolled_up_as_data_frame(graph_SBI_rolled)
 ## ---- echo=FALSE---------------------------------------------------------
 df_translation_codes %>% 
   head() %>% 
+  knitr::kable()
+
+## ------------------------------------------------------------------------
+tbl_NACE_recoded <- hierarchy_get_higher_level(tbl_NACE, level_no = 2,
+                                               col_code= "code_NACE", col_code_parent = "code_NACE_parent", 
+                                               col_layer_no = "hierarchy_layer")
+
+tbl_NACE_recoded %>% 
+  head(10) %>% 
   knitr::kable()
 

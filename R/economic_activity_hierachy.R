@@ -20,7 +20,7 @@ create_economic_activity_graph <- function(tbl_hierarchy, col_id = "code", col_i
     dplyr::left_join(tbl_hierarchy, by = "code")
 
   # Create edges
-  tbl_edges <- tbl_hierarchy %>% dplyr::select(code, code_parent, everything())
+  tbl_edges <- tbl_hierarchy %>% dplyr::select(code, code_parent, tidyselect::everything())
 
   # Create graph
   graph_hierarchy <- igraph::graph_from_data_frame(d = tbl_edges,
@@ -300,6 +300,71 @@ hierarchy_code_level <- function(tbl_hierarchy,
 
   return(tbl_hierarchy)
 }
+
+#' A function for enriching each of the codes from it's chosen level's code value
+#'
+#' @param tbl_hierarchy A data frame that should contain the entire NACE or SBI hierarchy.
+#' @param level_no The hierarchy level that you'd want to add the code and description of
+#' @param col_code The name of the column containing the NACE, SBI or SIC code.
+#' @param col_code_parent The name of the column  that contains a NACE, SBI or SIC code that refers to the direct parent code.
+#' @param col_layer_no The name of the column that contains an integer indicating the hierarchy's level, 1 being the top level
+#' @return a data frame containing the original economic activity code and the new activity code
+#' @keywords SBI NACE SIC
+#' @export
+#' @examples
+#' hierarchy_get_higher_level(tbl_hierarchy, level_no = 2, col_code = "code_NACE", col_code_parent = "code_NACE_parent", col_layer_no = "hierarchy_layer")
+hierarchy_get_higher_level <- function(tbl_hierarchy, level_no,
+                                       col_code= "code", col_code_parent = "code_parent", col_layer_no = "layer_no"){
+
+  # Rename columns for processing within the function
+  names(tbl_hierarchy)[which(names(tbl_hierarchy) == col_code)] <- "code"
+  names(tbl_hierarchy)[which(names(tbl_hierarchy) == col_code_parent)] <- "code_parent"
+  names(tbl_hierarchy)[which(names(tbl_hierarchy) == col_layer_no)] <- "layer_no"
+
+  graph_hierarchy <- create_economic_activity_graph(tbl_hierarchy)
+
+  igraph::V(graph_hierarchy)$dist_to_level = igraph::V(graph_hierarchy)$layer_no - level_no
+
+  max_distance <- max(igraph::V(graph_hierarchy)$dist_to_level, na.rm = TRUE)
+
+  name_to <- igraph::V(graph_hierarchy)$name[igraph::V(graph_hierarchy)$dist_to_level == 0]
+  name_to <- name_to[!is.na(name_to)]
+
+  for(name in name_to) {
+
+    # Get max_distance layers of incoming vertices
+    names_below <- get_incoming_vertice_names(graph_hierarchy, name, order = max_distance)
+
+    # Remove all edges with nodes lower than the selected level
+    edges_below_degree <- unlist(igraph::incident_edges(graph_hierarchy,
+                                                        v = igraph::V(graph_hierarchy)[names_below],
+                                                        mode = "out"))
+    graph_hierarchy <- igraph::delete.edges(graph_hierarchy, edges = edges_below_degree)
+
+    # Reconnect vertices
+    new_edges <- as.vector(rbind(names_below, rep(name, length(names_below))))
+    graph_hierarchy <- igraph::add.edges(graph_hierarchy, edges = new_edges)
+
+  }
+
+  col_name_new <- paste0(col_code, "_higher_level")
+  tbl_hierarchy_new <- igraph::as_data_frame(graph_hierarchy, what = "edges")
+  names(tbl_hierarchy_new)[which(names(tbl_hierarchy_new) == "from")] <- col_code
+  names(tbl_hierarchy_new)[which(names(tbl_hierarchy_new) == "to")] <- col_name_new
+
+  tbl_hierarchy_new <- tbl_hierarchy_new %>%
+    select(c(col_code, col_name_new))
+  tbl_hierarchy_new <- merge(tbl_hierarchy_new, tbl_hierarchy, by.x = col_name_new, by.y = "code")
+  tbl_hierarchy_new <- tbl_hierarchy_new %>%
+    filter(layer_no == level_no) %>%
+    select(-code_parent, -layer_no)
+
+  names(tbl_hierarchy_new)[which(!names(tbl_hierarchy_new) %in% c(col_code, col_name_new))] <-
+    paste0(names(tbl_hierarchy_new)[which(!names(tbl_hierarchy_new) %in% c(col_code, col_name_new))], "_higher_level")
+
+  return(tbl_hierarchy_new)
+}
+
 
 #' cleans up all nace codes from the hierarchy that contain a NA value and are non-connective
 #'
