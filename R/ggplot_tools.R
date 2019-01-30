@@ -47,7 +47,7 @@ theme_graydon <- function(type = c("grid", "horizontal", "vertical", "blank")) {
 
   } else if (type == "blank") {
 
-    graydon_theme <- ggthemes::theme_gdocs() +
+    graydon_theme <- graydon_theme +
       theme(axis.title.x = element_blank(),
             axis.title.y = element_blank(),
             panel.border = element_blank(),
