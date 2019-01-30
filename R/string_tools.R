@@ -172,6 +172,8 @@ str_right <- function(text, qty_characters) {
 #'
 #' @param vec_values The vector/column of values you want to 'ntile'
 #' @param qty_ntiles The number of ntiles you want to have
+#' @param use_intervals Do you want the labels to contain the value intervals or the ntile naming?
+#' @param format_EN Determines whether the named ntiles are English or Dutch.
 #' @param FUN The function you want to use to apply formatting
 #' @param ... The parameters you'd want to pass on to the formatting function supplied to FUN
 #' @return Ordered factor

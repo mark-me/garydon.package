@@ -116,6 +116,7 @@ With the function _ntiles_labeled_ you can group a value so they contain an equa
 diamonds %>% 
   mutate(ntile_values = ntiles_labeled(carat,
                                        qty_ntiles = 5,
+                                       use_intervals = TRUE,
                                        FUN = format_percent,
                                        number_decimals = 2,
                                        format_EN = TRUE)) %>% 
