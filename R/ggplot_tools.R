@@ -61,7 +61,7 @@ theme_graydon <- function(type = c("grid", "horizontal", "vertical", "blank")) {
             axis.line.y = element_blank(),
             rect = element_blank(),
             text = element_text(family = "Roboto Medium",
-                                col_graydon_axis)
+                                color = col_graydon_axis)
       )
 
   }
