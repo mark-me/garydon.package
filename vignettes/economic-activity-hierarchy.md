@@ -1,7 +1,7 @@
 ---
 title: "Traversing economic activity hierarchies like NACE, SBI and SIC"
 author: "Mark Zwart"
-date: "2018-11-19"
+date: "2019-01-30"
 output: 
   rmarkdown::html_vignette:
     css: graydon.css
@@ -17,6 +17,7 @@ vignette: >
 * [Creating a economic activity graph](#create_graph)
     - [Visualizing the hierarchy](#visualize)
 * [Rolling up the hierarchy on values](#roll_up)
+* [Getting higher level code information](#get_higher_level)
 
 
 
@@ -139,3 +140,36 @@ df_translation_codes <- rolled_up_as_data_frame(graph_SBI_rolled)
 |23   |23          |Vervaardiging van overige niet-metaalhoudende minerale producten    |               2|             0|            2|              5703|TRUE    |     1|5.703  |
 |25   |25          |Vervaardiging van producten van metaal (geen machines en apparaten) |               2|             0|            2|              7693|TRUE    |     1|7.693  |
 
+## <a name="get_higher_level"></a>Getting higher level codes
+
+When looking at which sectors a bunch of companies occupy, you'll quickly get drowned in data when looking the most specific NACE or SBI level. In this case you might want to go up the tree a few notches. The funcion _hierarchy_get_higher_level_ helps you doing this. It takes a economic activity hierarchy, SBI (tbl_SBI) or NACE (tbl_NACE), and delivers a data-frame with the recoding and descriptions of the higher specified level.
+
+Let's take an example, where we want all NACE codes that are level 2 or lower, have the information of that level 2:
+
+
+```r
+tbl_NACE_recoded <- hierarchy_get_higher_level(tbl_NACE, level_no = 2,
+                                               col_code= "code_NACE", col_code_parent = "code_NACE_parent", 
+                                               col_layer_no = "hierarchy_layer")
+
+tbl_NACE_recoded %>% 
+  head(10) %>% 
+  knitr::kable()
+```
+
+
+
+|code_NACE_higher_level |code_NACE |description_NACE_nl_higher_level                                                 |description_NACE_fr_higher_level                          |description_NACE_de_higher_level                      |description_NACE_en_higher_level                                   |
+|:----------------------|:---------|:--------------------------------------------------------------------------------|:---------------------------------------------------------|:-----------------------------------------------------|:------------------------------------------------------------------|
+|01                     |011       |Teelt van gewassen, veeteelt, jacht en diensten in verband met deze activiteiten |Culture et production animale, chasse et services annexes |Landwirtschaft, Jagd und damit verbundene Tätigkeiten |Crop and animal production, hunting and related service activities |
+|01                     |012       |Teelt van gewassen, veeteelt, jacht en diensten in verband met deze activiteiten |Culture et production animale, chasse et services annexes |Landwirtschaft, Jagd und damit verbundene Tätigkeiten |Crop and animal production, hunting and related service activities |
+|01                     |013       |Teelt van gewassen, veeteelt, jacht en diensten in verband met deze activiteiten |Culture et production animale, chasse et services annexes |Landwirtschaft, Jagd und damit verbundene Tätigkeiten |Crop and animal production, hunting and related service activities |
+|01                     |014       |Teelt van gewassen, veeteelt, jacht en diensten in verband met deze activiteiten |Culture et production animale, chasse et services annexes |Landwirtschaft, Jagd und damit verbundene Tätigkeiten |Crop and animal production, hunting and related service activities |
+|01                     |015       |Teelt van gewassen, veeteelt, jacht en diensten in verband met deze activiteiten |Culture et production animale, chasse et services annexes |Landwirtschaft, Jagd und damit verbundene Tätigkeiten |Crop and animal production, hunting and related service activities |
+|01                     |016       |Teelt van gewassen, veeteelt, jacht en diensten in verband met deze activiteiten |Culture et production animale, chasse et services annexes |Landwirtschaft, Jagd und damit verbundene Tätigkeiten |Crop and animal production, hunting and related service activities |
+|01                     |017       |Teelt van gewassen, veeteelt, jacht en diensten in verband met deze activiteiten |Culture et production animale, chasse et services annexes |Landwirtschaft, Jagd und damit verbundene Tätigkeiten |Crop and animal production, hunting and related service activities |
+|01                     |0111      |Teelt van gewassen, veeteelt, jacht en diensten in verband met deze activiteiten |Culture et production animale, chasse et services annexes |Landwirtschaft, Jagd und damit verbundene Tätigkeiten |Crop and animal production, hunting and related service activities |
+|01                     |0112      |Teelt van gewassen, veeteelt, jacht en diensten in verband met deze activiteiten |Culture et production animale, chasse et services annexes |Landwirtschaft, Jagd und damit verbundene Tätigkeiten |Crop and animal production, hunting and related service activities |
+|01                     |0113      |Teelt van gewassen, veeteelt, jacht en diensten in verband met deze activiteiten |Culture et production animale, chasse et services annexes |Landwirtschaft, Jagd und damit verbundene Tätigkeiten |Crop and animal production, hunting and related service activities |
+
+Here you see that you get the original code _code_NACE_ with all the oher fields from the higher level code _code_NACE_higher_level_.

@@ -17,6 +17,7 @@ vignette: >
 * [Creating a economic activity graph](#create_graph)
     - [Visualizing the hierarchy](#visualize)
 * [Rolling up the hierarchy on values](#roll_up)
+* [Getting higher level code information](#get_higher_level)
 
 
 ```{r setup, include = FALSE}
@@ -80,7 +81,7 @@ graph_SBI_rolled <- roll_up_hierarchy_by_minimum(graph_tree = graph_SBI,
 
 Maybe it doesn't look as simple as you might want it to be, but it is a lot simpler than you'd think. The smaller networks you now see are the 'translation' networks: they specify which subcode should be recoded to which 'higher up' code. The highest code get's a loop back to itself. So each 'subnetwork' in this plot is actually one code in the newly acquired aggregation. The 'higher up' codes are marked as orange in this graph.
 
-```{r, fig.height=6, fig.width=6}
+```{r, fig.height=6, fig.width=6, warning=FALSE}
 V(graph_SBI_rolled)$color <- ifelse(V(graph_SBI_rolled)$is_root, 1, 2)
 V(graph_SBI_rolled)$label <- ifelse(V(graph_SBI_rolled)$is_root, V(graph_SBI_rolled)$name, "")
 
@@ -117,3 +118,20 @@ df_translation_codes %>%
   knitr::kable()
 ```
 
+## <a name="get_higher_level"></a>Getting higher level codes
+
+When looking at which sectors a bunch of companies occupy, you'll quickly get drowned in data when looking the most specific NACE or SBI level. In this case you might want to go up the tree a few notches. The funcion _hierarchy_get_higher_level_ helps you doing this. It takes a economic activity hierarchy, SBI (tbl_SBI) or NACE (tbl_NACE), and delivers a data-frame with the recoding and descriptions of the higher specified level.
+
+Let's take an example, where we want all NACE codes that are level 2 or lower, have the information of that level 2:
+
+```{r}
+tbl_NACE_recoded <- hierarchy_get_higher_level(tbl_NACE, level_no = 2,
+                                               col_code= "code_NACE", col_code_parent = "code_NACE_parent", 
+                                               col_layer_no = "hierarchy_layer")
+
+tbl_NACE_recoded %>% 
+  head(10) %>% 
+  knitr::kable()
+```
+
+Here you see that you get the original code _code_NACE_ with all the oher fields from the higher level code _code_NACE_higher_level_.
