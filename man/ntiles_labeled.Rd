@@ -10,6 +10,10 @@ ntiles_labeled(values, qty_ntiles, use_intervals = FALSE,
 \arguments{
 \item{qty_ntiles}{The number of ntiles you want to have}
 
+\item{use_intervals}{Do you want the labels to contain the value intervals or the ntile naming?}
+
+\item{format_EN}{Determines whether the named ntiles are English or Dutch.}
+
 \item{FUN}{The function you want to use to apply formatting}
 
 \item{...}{The parameters you'd want to pass on to the formatting function supplied to FUN}
