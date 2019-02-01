@@ -121,7 +121,6 @@
 #'
 #' @format A data frame with 1.455 rows and 4 variables:
 #' \describe{
-#'   \item{id}{Just and ID}
 #'   \item{postcode_4}{4 digit postcode}
 #'   \item{town}{Town}
 #'   \item{town_alternative}{Town name alternative}
