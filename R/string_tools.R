@@ -75,12 +75,10 @@ format_currency <- function(amount,
                             currency = c("EUR", "GBP"),
                             number_decimals = 2,
                             scale = c("normal", "k", "M")) {
-  print(amount)
   scale <- ifelse(length(scale) > 1, "normal", scale)
   amount <- round(amount, digits = 2)
-  # Set default currency symbol (EURO)
-  currency_symbol <- intToUtf8(8364)
-  #if(stringr::str_length(currency) > 1) currency <- "EUR"
+
+  currency_symbol <- intToUtf8(8364) # Set default currency symbol (EURO)
 
   # Determine number format (seperators)
   if(currency == "EUR") {
