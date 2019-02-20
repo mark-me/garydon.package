@@ -2,17 +2,12 @@
 % Please edit documentation in R/ggplot_tools.R
 \name{scale_y_numeric}
 \alias{scale_y_numeric}
-\title{A function to create a continuous x-axis for formatted numbers}
+\title{A function to create a continuous y-axis for formatted numbers}
 \usage{
-scale_y_numeric(number_decimals = 0, format_EN = FALSE,
-  scale = c("normal", "k", "M"), ...)
-
 scale_y_numeric(number_decimals = 0, format_EN = FALSE,
   scale = c("normal", "k", "M"), ...)
 }
 \description{
-A function to create a continuous x-axis for formatted numbers
-
 A function to create a continuous y-axis for formatted numbers
 }
 \keyword{ggplot2}

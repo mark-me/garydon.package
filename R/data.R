@@ -123,7 +123,6 @@
 #' \describe{
 #'   \item{postcode_4}{4 digit postcode}
 #'   \item{town}{Town}
-#'   \item{town_alternative}{Town name alternative}
 #'   \item{municipality}{Municipality}
 #'   \item{province}{Province}
 #'   \item{code_telephone_area}{Telephone area code}
@@ -131,7 +130,7 @@
 #'   \item{lon}{Longitude}
 #'   \item{type_of_address}{Type of postcode use}
 #' }
-"tbl_postcode_nl"
+"tbl_postcode_4_nl"
 
 #' A sample of 1.835 UK companies
 #'

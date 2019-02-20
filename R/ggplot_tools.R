@@ -26,7 +26,8 @@ theme_graydon <- function(type = c("grid", "horizontal", "vertical", "blank")) {
     ggplot2::theme(axis.title = element_text(face = "plain"),
           panel.grid.major = element_line(colour = col_graydon_grid),
           plot.background = element_blank(),
-          axis.line = element_line(colour = col_graydon_axis),
+          axis.line.x = element_line(colour = col_graydon_axis),
+          axis.line.y = element_line(colour = col_graydon_axis),
           text = element_text(family = "Roboto Medium",
                               color = col_graydon_axis)
     )
@@ -97,7 +98,7 @@ scale_gradient_graydon <- function(...){
 #'
 #' @keywords ggplot2
 #' @export
-scale_y_numeric <- function(number_decimals = 0, format_EN = FALSE, scale = c("normal", "k", "M")) {
+scale_x_numeric <- function(number_decimals = 0, format_EN = FALSE, scale = c("normal", "k", "M"), ...) {
 
   return(
     ggplot2::scale_x_continuous(labels = function(x) format_number(x,
