@@ -37,6 +37,7 @@ create_economic_activity_graph <- function(tbl_hierarchy, col_id = "code", col_i
 #' @param vertex_attribute the name you want the vertex distance attribute to have
 #' @return Graph
 #' @keywords SBI NACE SIC
+#' @export
 #' @examples
 #' vertices_add_distance_to_root(graph = graph_SBI, vertex_attribute = "qty_hops_to_root")
 vertices_add_distance_to_root <- function(graph, vertex_attribute = "dist_to_root"){
