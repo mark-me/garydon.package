@@ -105,6 +105,53 @@ select_graph_hierarchies <- function(graph_all_companies, id_companies){
   return(list_selected)
 }
 
+
+#' Function to find the companies neighboring a company in a hierarchy for a list of companies, sometimes
+#' called [ego graphs](http://mathworld.wolfram.com/NeighborhoodGraph.html)
+#'
+#' This function searches the graphs of a vector of companies for their complete
+#' hierarchies from a graph containing containing a multitude of company hierarchies.
+#'
+#' The graphs will contain a vertex attribute is_searched_company
+#' which specifies whether it the vertex represents a company which was selected
+#' @param graph_all_companies A graph containing all company/company relations data.
+#' @param id_companies A vector of company id's of which you want to retrieve the whole hierarchy
+#' @param distance The number of 'hops' in the company network that should be included, default = 1
+#' @param only_children A boolean indicating whether only children should be included or (grand)parents as well
+#' @return A list of graphs containing the graphs the ego graph of the specific companies
+#' @keywords graph company hierarchy ego graph
+#' @export
+#' @examples
+#' lst_company_ego_graphs <- select_ego_graphs(graph_all_companies, "910716048")
+select_ego_graphs <- function(graph_companies, id_companies, distance = 1, only_children = FALSE){
+
+  list_selected <- list() # Will contain the list of selected graphs
+  graph_keys <- vector(mode = "character", length = length(id_companies))
+  i <- 1
+  search_mode <- ifelse(only_children, "in", "all")
+
+  while(i <= length(id_companies)){
+
+    id_company <- id_companies[i]
+    # Find the graph associated with the company
+    current_graph <- find_company_hierarchy(graph_companies, id_company)
+    current_graph <- igraph::make_ego_graph(graph = current_graph,
+                                            nodes = igraph::V(current_graph)[id_company],
+                                            order = distance,
+                                            mode = search_mode)[[1]]
+    # Mark all companies that are being searched for in the retrieved graph
+    current_graph <- mark_companies_logical(current_graph,
+                                            "is_searched_company",
+                                            "id_company",
+                                            id_company)
+
+    list_selected[[id_company]] <- current_graph # Add to selected list
+    i <- i + 1
+  }
+
+  return(list_selected)
+}
+
 #' Get the root node's name of a tree
 #'
 #' @param tree_graph The graph containing the hierarchical tree
@@ -382,6 +429,34 @@ add_company_hierarchy_stats <- function(graph){
   return(graph)
 }
 
+#' Adds an total value to the vertices of a company hierarchy
+#'
+#' @param graph A graph
+#' @param name_attribute The name of the value attribute to be aggregated
+#' @param name_total The name of the attribute where the total value is stored
+#' @param FUN the function which is used to calculate total value
+#' @param ... The parameters passed to the function specified in FUN
+#' @return A graph where all the nodes contain aggregated value
+#' @keywords graph company hierarchy
+#' @export
+#' @examples
+#' graph <- total_hierarchy_value(graph, name_attribute = "qty_employees", name_total = "qty_employees_sum", FUN = sum, na.rm = TRUE)
+total_hierarchy_value <- function(graph, name_attribute, name_total, FUN, ...){
+
+  # Create new variable, name_propagated, filling with 0's
+  igraph::vertex_attr(graph, name_total) <- igraph::vertex_attr(graph, name_attribute)
+
+  values_aggregate <- igraph::vertex_attr(graph,
+                                          name_total,
+                                          index = igraph::V(graph))
+  value_aggregate <- FUN(values_aggregate, ...)
+
+  igraph::vertex_attr(graph,
+                      name_total,
+                      index = igraph::V(graph)) <- value_aggregate
+  return(graph)
+}
+
 #' Adds an aggregate value to the vertices of a company hierarchy
 #'
 #' @param graph A graph
@@ -497,6 +572,6 @@ plot_graydon_graph <- function(graph, ...){
     edge.arrow.size = 0.5
   )
 
-  igraph::plot.igraph(graph, ...)
+  return(igraph::plot.igraph(graph, ...))
 }
 

@@ -54,10 +54,8 @@ qty_graphs <- length(list_selected_hierarchies)
 qty_graph_selected <- sapply(
   lapply(list_selected_hierarchies, 
          igraph::vertex_attr, 
-         name = "is_searched_company"
-         ), 
-  sum
-  ) 
+         name = "is_searched_company"), 
+  sum) 
 
 id_graph_multiple <- names(qty_graph_selected[qty_graph_selected > 2])
 qty_vertices <- sapply(list_selected_hierarchies, igraph::vcount)
@@ -71,9 +69,25 @@ rm(qty_graph_selected, id_graph_multiple, qty_vertices, id_graph_6_vertices, id_
 igraph::V(graph_example)$color <- ifelse(igraph::V(graph_example)$is_searched_company,
                                                    col_graydon[2],
                                                    col_graydon[4])
+plot_graydon_graph(graph_example, vertex.label = "")
 
-plot_graydon_graph(graph_example,
-                   vertex.label = "")
+## ------------------------------------------------------------------------
+lst_results <- select_ego_graphs(graph_company_hierarchies, 
+                                 id_companies = c("169072", "910716048"), 
+                                 distance = 2, 
+                                 only_children = TRUE)
+
+## ---- echo=FALSE---------------------------------------------------------
+color_vertices <- function(x){
+  V(x)$color <- ifelse(V(x)$is_searched_company, col_graydon[2], col_graydon[4])
+  return(x)
+}
+lst_graphs <- lapply(lst_results, color_vertices)
+rm(color_vertices)
+plot_graydon_graph(lst_graphs[[1]])
+
+## ---- echo=FALSE---------------------------------------------------------
+plot_graydon_graph(lst_graphs[[2]])
 
 ## ---- message=FALSE, warning=FALSE---------------------------------------
 list_all_graphs <- list_company_hierarchy_graphs(graph_company_hierarchies)
@@ -87,6 +101,19 @@ df_single_hierarchy %>%
 
 ## ------------------------------------------------------------------------
 df_selected_hierarchies <- hierarchy_list_as_data_frame(list_selected_hierarchies)
+
+## ------------------------------------------------------------------------
+graph_company_hierarchy <- total_hierarchy_value(graph_company_hierarchy, 
+                                                 name_attribute = "qty_employees", name_total = "qty_employees_sum", 
+                                                 FUN = sum, na.rm = TRUE)
+
+## ---- message=FALSE, warning=FALSE---------------------------------------
+igraph::V(graph_company_hierarchy)$label <- paste0("# ",
+                                                   igraph::V(graph_company_hierarchy)$qty_employees,
+                                                   " -> Sum # ",
+                                                   igraph::V(graph_company_hierarchy)$qty_employees_sum)
+
+plot_graydon_graph(graph_company_hierarchy)
 
 ## ------------------------------------------------------------------------
 graph_company_hierarchy <- 
