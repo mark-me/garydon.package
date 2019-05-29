@@ -63,10 +63,11 @@ remove_redundant_columns <- function(tbl_primary, tbl_secondary, vec_key_columns
 #' Getting the list of packages that are regularly used by Tailored Analytics
 #'
 get_library_names <- function(){
-  list_of_packages <- c("ggplot2", "dplyr", "magrittr", "purrr", "ggmap", "ggthemes", "reshape2", "scales", "yaml",
+  list_of_packages <- c("ggplot2", "dplyr", "magrittr", "purrr", "ggmap", "ggthemes", "reshape2", "scales", "yaml", "feather",
                         "stringr", "RColorBrewer", "qgraph", "Hmisc", "factoextra", "cluster", "kimisc", "ggrepel", "class",
                         "lubridate", "tidyr", "broom", "funr", "htmltools", "outliers", "readr", "janitor", "ggmosaic", "tictoc",
-                        "extrafont", "gridExtra", "DT", "formattable", "data.table", "bit64", "igraph", "rgdal", "tmap", "roxygen2")
+                        "extrafont", "gridExtra", "DT", "formattable", "data.table", "bit64", "igraph", "rgdal", "tmap", "roxygen2",
+                        "", "")
   return(list_of_packages)
 }
 
@@ -77,6 +78,7 @@ get_library_names <- function(){
 #' install_graydon_packages()
 install_graydon_packages <- function() {
 
+  devtools::install_github("hrbrmstr/hyphenatr")
   # Installing and loading libraries
   list_of_packages <- get_library_names()
   new_packages <- list_of_packages[!(list_of_packages %in% installed.packages()[,"Package"])]
