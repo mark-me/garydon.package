@@ -13,6 +13,7 @@ vignette: >
 ---
 
 * [Regular string formatting](#regular)
+    - [Wrapping strings with hyphenation](#hyphenation_wrap)
 * [Formatting numbers](#numbers)
     - [Plain numbers](#plain)
     - [Currency](#currency)
@@ -48,6 +49,19 @@ str_mid("ThIs iS One uGLy sTRIng!", idx_start = 13, qty_characters = 4)
 Or the right part of a string:
 ```{r}
 str_right("ThIs iS One uGLy sTRIng!", qty_characters = 7) 
+```
+
+### <a name="hyphenation_wrap"></a> Wrapping strings with hyphenation
+
+The [stringr](https://cran.r-project.org/web/packages/stringr/vignettes/stringr.html) package provides a _str_wrap_ function, but in some cases words are so long that they make wrapping words almost useless (looking at you, Dutch). In this case hyphenation comes in handy. The function _str_wrap_hyphenate_ combines hyphenation and string wrapping. It uses a Ducth hyphenation dictionary by default, but it can also be switched to other languages using language ISO codes.
+
+Here hyphenation wrapping is performed on a Dutch SBI code description:
+```{r}
+tbl_SBI %>% 
+  filter(code_SBI == "02") %>% 
+  mutate(description_SBI_wrapped = str_wrap_hyphenate(description_SBI, 25, html_format = TRUE)) %>% 
+  select(code_SBI, description_SBI_wrapped) %>% 
+  knitr::kable()
 ```
 
 ## <a name="numbers"></a>Formatting numbers

@@ -66,8 +66,7 @@ get_library_names <- function(){
   list_of_packages <- c("ggplot2", "dplyr", "magrittr", "purrr", "ggmap", "ggthemes", "reshape2", "scales", "yaml", "feather",
                         "stringr", "RColorBrewer", "qgraph", "Hmisc", "factoextra", "cluster", "kimisc", "ggrepel", "class",
                         "lubridate", "tidyr", "broom", "funr", "htmltools", "outliers", "readr", "janitor", "ggmosaic", "tictoc",
-                        "extrafont", "gridExtra", "DT", "formattable", "data.table", "bit64", "igraph", "rgdal", "tmap", "roxygen2",
-                        "", "")
+                        "extrafont", "gridExtra", "DT", "formattable", "data.table", "bit64", "igraph", "rgdal", "tmap", "roxygen2")
   return(list_of_packages)
 }
 
