@@ -4,12 +4,15 @@
 \alias{select_graph_hierarchies}
 \title{Function to find the hierarchies of a list of companies}
 \usage{
-select_graph_hierarchies(graph_all_companies, id_companies)
+select_graph_hierarchies(graph_all_companies, id_companies,
+  unique = TRUE)
 }
 \arguments{
 \item{graph_all_companies}{A graph containing all company/company relations data.}
 
 \item{id_companies}{A vector of company id's of which you want to retrieve the whole hierarchy}
+
+\item{unique}{Boolean specifying whether only the unique company hierarchies should be returned when asked for multiple companies from the same network}
 }
 \value{
 A list of graphs containing the grawith the company hierarchy of the specifief company
@@ -23,7 +26,7 @@ The graphs will be unique, and contain a vertex attribute is_searched_company
 which specifies whether it the vertex represents a company which was selected
 }
 \examples{
-graph_company_hierarchy <- find_company_hierarchy(graph_all_companies, "931238099")
+select_graph_hierarchies <- find_company_hierarchy(graph_all_companies, "931238099")
 }
 \keyword{company}
 \keyword{graph}

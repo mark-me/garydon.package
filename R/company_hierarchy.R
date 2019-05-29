@@ -15,15 +15,16 @@ create_graph_company_hierarchies <- function(tbl_company_relations) {
 
   # Create edges
   tbl_edges <- tbl_company_relations[,c(1,2)]
-  tbl_edges <- tbl_edges[!is.na(tbl_edges[,2]),]
   colname_vertices <- names(tbl_edges)[1]
 
   # Create vertices
-  tbl_vertices <- data.frame(unique(c(tbl_edges[][[1]],tbl_edges[][[2]])),
-                             stringsAsFactors = FALSE)
+  tbl_vertices <- tibble(unique(c(tbl_edges[][[1]],tbl_edges[][[2]])))
   names(tbl_vertices) <- colname_vertices
   tbl_vertices <- tbl_vertices %>%
     dplyr::left_join(tbl_company_relations, by = colname_vertices)
+
+  # Remove 'edges' that don't have an end point
+  tbl_edges <- tbl_edges[!is.na(tbl_edges[,2]),]
 
   # Create a graph containing all companies
   graph_hierarchies <-
@@ -70,40 +71,43 @@ find_company_hierarchy <- function(graph_all_companies, id_company){
 #' which specifies whether it the vertex represents a company which was selected
 #' @param graph_all_companies A graph containing all company/company relations data.
 #' @param id_companies A vector of company id's of which you want to retrieve the whole hierarchy
+#' @param unique Boolean specifying whether only the unique company hierarchies should be returned when asked for multiple companies from the same network
 #' @return A list of graphs containing the grawith the company hierarchy of the specifief company
 #' @importFrom magrittr "%>%"
 #' @keywords graph company hierarchy
 #' @export
 #' @examples
-#' graph_company_hierarchy <- find_company_hierarchy(graph_all_companies, "931238099")
-select_graph_hierarchies <- function(graph_all_companies, id_companies){
+#' select_graph_hierarchies <- find_company_hierarchy(graph_all_companies, "931238099")
+select_graph_hierarchies <- function(graph_all_companies, id_companies, unique=TRUE){
 
   list_selected <- list() # Will contain the list of selected graphs
-  graph_keys <- vector(mode = "character", length = length(id_companies))
-  i <- 1
+  graph_keys <- character(0) # Graph for checking company ids
 
-  while(i <= length(id_companies)){
+  for(id_company in id_companies){
 
-    id_company <- id_companies[i]
-    # Find the graph associated with the company
-    current_graph <- find_company_hierarchy(graph_all_companies, id_company)
-    id_graph <- get_root_vertex_name(current_graph) # Get the root vertex (as id) of the graph
+    current_graph <- find_company_hierarchy(graph_all_companies, id_company) # Find the graph associated with the company
+    id_graph <- get_root_vertex_name(current_graph)                          # Get the root vertex (as id) of the graph
+
     # Only add when the graph isn't present yet
-    if(is.na(match(id_graph, graph_keys))) {
+    if(unique & is.na(match(id_graph, graph_keys))) {
 
-      # Add the root identifier to the graph
-      graph_keys[i] <- id_graph
       # Mark all companies that are being searched for in the retrieved graph
-      current_graph <- mark_companies_logical(current_graph,
-                                              "is_searched_company",
-                                              "id_company",
-                                              id_companies)
-      list_selected[[id_company]] <- current_graph # Add to selected list
+      current_graph <- mark_companies_logical(current_graph, "is_searched_company", "id_company", id_companies)
+      list_selected[[id_graph]] <- current_graph  # Add to selected list
+      graph_keys <- c(graph_keys, id_graph)       # Add the root identifier to the graph
+
+    } else {
+
+      # Mark all companies that are being searched for in the retrieved graph
+      current_graph <- mark_companies_logical(current_graph, "is_searched_company", "id_company", id_company)
+      list_selected[[id_company]] <- current_graph  # Add to selected list
+
     }
-    i <- i + 1
+
   }
   return(list_selected)
 }
+
 
 
 #' Function to find the companies neighboring a company in a hierarchy for a list of companies, sometimes
@@ -200,7 +204,6 @@ list_company_hierarchy_graphs <- function(graph_all_companies){
 #' @examples
 #' graph_total <- combine_graphs(list_graphs)
 combine_graphs <- function(list_graphs){
-
 
   df_vertices <- do.call(rbind, lapply(list_graphs,
                                        igraph::as_data_frame,
@@ -354,6 +357,48 @@ get_qty_siblings <- function(graph, vertx) {
   return(qty_siblings)
 }
 
+#' Function earmark the companies in the neighbourhood of a company, this neighbourhood is sometimes
+#' called [ego graphs](http://mathworld.wolfram.com/NeighborhoodGraph.html)
+#'
+#' @param graph A graph containing company/company relations data.
+#' @param id_company A company id of which you want to mark the neighbourhood
+#' @param target_attribute The name of the new attribute you want to mark the neighborhood in
+#' @param distance The number of 'hops' in the company network that should be included, default = 1
+#' @param direction The direction to calculate the propagated value from (can be "in", "out", "all")
+#' @return A graph containing the newly added neighbourhood marking attribute
+#' @keywords graph company hierarchy ego graph
+#' @export
+#' @examples
+#' graph_all_companies <- mark_ego_graph(graph_all_companies, id_company = "910716048", target_attribute = "is_neighbour")
+mark_ego_graph <- function(graph, id_company, target_attribute, distance = 1, direction = "in"){
+
+  if(!direction %in% c("in", "out", "all")) { stop("Incorrect direction value") }
+  if(is.infinite(distance) & distance > 0) { distance = 999 }
+
+  vertx_neighbors <- character()
+
+  if(direction %in% c("all", "in")){
+    vertx_neighbors <- c(vertx_neighbors,
+                         igraph::ego(graph,
+                                     order = distance,
+                                     mode = "in",
+                                     nodes = igraph::V(graph)[id_company])[[1]]$name)
+  }
+
+  if(direction %in% c("all", "out")) {
+
+    vertx_neighbors <- c(vertx_neighbors,
+                         igraph::ego(graph,
+                                     order = distance,
+                                     mode = "out",
+                                     nodes = igraph::V(graph)[id_company])[[1]]$name)
+  }
+
+  igraph::vertex_attr(graph, target_attribute) <- igraph::V(graph)$name %in% vertx_neighbors
+
+  return(graph)
+}
+
 #' Add a logical variable to the companies in a hierarchy when one of it's
 #' attributes match one of a set of values
 #'
@@ -454,6 +499,57 @@ total_hierarchy_value <- function(graph, name_attribute, name_total, FUN, ...){
   igraph::vertex_attr(graph,
                       name_total,
                       index = igraph::V(graph)) <- value_aggregate
+  return(graph)
+}
+
+#' Adds an aggregate value to the vertices of a company hierarchy, in which you can vary it's direction and distance
+#'
+#' @param graph A graph
+#' @param name_attribute The name of the value attribute to be aggregated
+#' @param name_propagate The name of the attribute where the aggregated value is stored
+#' @param distance The number of 'hops' in the company network that should be included, default = 1
+#' @param direction The direction to calculate the propagated value from (can be "in", "out", "all")
+#' @param FUN the function which is used to calculate aggregated
+#' @param ... The parameters passed to the function specified in FUN
+#' @return A graph where all the nodes contain aggregated value
+#' @keywords graph company hierarchy
+#' @export
+#' @examples
+#' graph <- propagate_hierarchy_value(graph, name_attribute = "qty_employees", name_propagate = "qty_employees_cum", distance = 1, direction = "in", FUN = sum, na.rm = TRUE)
+propagate_hierarchy_value <- function(graph, name_attribute, name_propagate, distance = 1, direction = "in", FUN, ...){
+
+  if(!direction %in% c("in", "out", "all")) { stop("Incorrect direction value") }
+  if(is.infinite(distance) & distance > 0) { distance = 999 }
+
+  # Create new variable, name_propagated, filling with own value
+  for(id_company in V(graph)$name){
+
+    vertx_neighbors <- character()
+    # Get the 'subgraph'
+    if(direction %in% c("all", "in")){
+      vertx_neighbors <- c(vertx_neighbors,
+                           igraph::ego(graph,
+                                       order = distance,
+                                       mode = "in",
+                                       nodes = igraph::V(graph)[id_company])[[1]]$name)
+    }
+
+    if(direction %in% c("all", "out")) {
+
+      vertx_neighbors <- c(vertx_neighbors,
+                           igraph::ego(graph,
+                                       order = distance,
+                                       mode = "out",
+                                       nodes = igraph::V(graph)[id_company])[[1]]$name)
+    }
+
+    values_to_propagate <- igraph::vertex_attr(graph, name_attribute)[igraph::V(graph)$name %in% vertx_neighbors]
+
+    value_aggregate <- FUN(values_to_propagate, ...)
+    igraph::vertex_attr(graph, name_propagate,
+                        index = igraph::V(graph)[id_company]) <- value_aggregate
+  }
+
   return(graph)
 }
 

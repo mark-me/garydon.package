@@ -20,13 +20,17 @@ vignette: >
     - [Selecting hierarchies with a column of company IDs](#selecting_multiple)
     - [Selecting company neighbourhoods with a column of company IDs](#selecting_ego_graphs)
     - [Listing all hierarchy graphs](#selecting_all)
-* [Converting company hierarchy graphs to data-frames](#selecting)
-    - [Converting a single hierarchy graph](#selecting_single)
-    - [Converting a list of hierarchy graphs](#selecting_multiple)
+* [Converting company hierarchy graphs to data-frames](#convert_graph)
+    - [Converting a single hierarchy graph](#convert_single_graph)
+    - [Converting a list of hierarchy graphs](#convert_list_graphs)
 * [Calculating properties](#calculate)
     - [Summing values](#summing_values)
     - [Propagating values](#propagate_values)
+        - [Bottom-up all companies](#propagate_values_bup_all)
+        - [Top-down 2nd degree companies](#propagate_values_td_2nd)
+        - [All directions 1st degree companies](#propagate_values_ad_1st)
     - [Adding graph statistics](#adding_stats)
+    - [Marking company neighbourhoods](#mark_neighbourhood)
     - [Marking companies](#marking)
     - [Sister companies](#sister_companies)
     - [Recoding holdings](#recode_holdings)
@@ -210,24 +214,62 @@ igraph::V(graph_company_hierarchy)$label <- paste0("# ",
 plot_graydon_graph(graph_company_hierarchy)
 ```
 
-## <a name="propage_values"></a>Propagating values
+## <a name="propagate_values"></a>Propagating values
 
-It might come in handy to cumulate values in the hierarchy bottom up; this is where the _aggregate_company_hierarchy_value_ function comes in handy. In this example the companies will get a new attribute _qty_employees_cum_ which will contain the sum of all the _qty_employees_ of the companies that below the company within the hierarchy.
+It might come in handy to cumulate values in the hierarchy throughout the network in specific directions (bottom-up, top-down or all directions) and across specific distances. For this purpose you can use the _propagate_hierarchy_value_ function. 
+
+### <a name="propagate_values_bup_all"></a>Bottom-up all companies
+
+In this example the companies will get a new attribute _qty_employees_cum_ which will contain the sum of all the _qty_employees_ of the companies that below the company within the hierarchy.
 ```{r}
-graph_company_hierarchy <- 
-  aggregate_hierarchy_value(graph = graph_company_hierarchy, 
-                            name_attribute = "qty_employees",
-                            name_aggregate = "qty_employees_cum",
-                            FUN = sum, 
-                            na.rm = TRUE)
+graph_company_hierarchy <- propagate_hierarchy_value(graph = graph_company_hierarchy,
+                                                     name_attribute = "qty_employees",
+                                                     name_propagate = "qty_employees_cum",
+                                                     distance = Inf,
+                                                     direction = "in",
+                                                     FUN = sum,
+                                                     na.rm = TRUE)
 ```
 The result can be found can be shown in a graph, where we can see the original values and the rolled up values.
-```{r, message=FALSE, warning=FALSE}
-igraph::V(graph_company_hierarchy)$label <- paste0("# ",
-                                                   igraph::V(graph_company_hierarchy)$qty_employees,
-                                                   " -> Cum # ",
-                                                   igraph::V(graph_company_hierarchy)$qty_employees_cum)
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+igraph::V(graph_company_hierarchy)$label <- paste0("# ", igraph::V(graph_company_hierarchy)$qty_employees,
+                                                   " -> Cum # ", igraph::V(graph_company_hierarchy)$qty_employees_cum)
+plot_graydon_graph(graph_company_hierarchy)
+```
 
+### <a name="propagate_values_td_2nd"></a>Top-down 2nd degree companies
+
+In this example the companies will get a new attribute _qty_employees_cum_ which will contain the sum of all the _qty_employees_ of the companies that are 2 companies up-stream within the hierarchy.
+```{r}
+graph_company_hierarchy <- propagate_hierarchy_value(graph = graph_company_hierarchy,
+                                                     name_attribute = "qty_employees",
+                                                     name_propagate = "qty_employees_cum",
+                                                     distance = 2,
+                                                     direction = "out",
+                                                     FUN = sum,
+                                                     na.rm = TRUE)
+```
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+igraph::V(graph_company_hierarchy)$label <- paste0("# ", igraph::V(graph_company_hierarchy)$qty_employees,
+                                                   " -> Cum # ", igraph::V(graph_company_hierarchy)$qty_employees_cum)
+plot_graydon_graph(graph_company_hierarchy)
+```
+
+### <a name="propagate_values_ad_1st"></a>All directions 1st degree companies
+
+In this example the companies will get a new attribute _qty_employees_cum_ which will contain the sum of all the _qty_employees_ of the companies that are 2 companies up-stream within the hierarchy.
+```{r}
+graph_company_hierarchy <- propagate_hierarchy_value(graph = graph_company_hierarchy,
+                                                     name_attribute = "qty_employees",
+                                                     name_propagate = "qty_employees_cum",
+                                                     distance = 1,
+                                                     direction = "all",
+                                                     FUN = sum,
+                                                     na.rm = TRUE)
+```
+```{r, echo=FALSE, message=FALSE, warning=FALSE}
+igraph::V(graph_company_hierarchy)$label <- paste0("# ", igraph::V(graph_company_hierarchy)$qty_employees,
+                                                   " -> Cum # ", igraph::V(graph_company_hierarchy)$qty_employees_cum)
 plot_graydon_graph(graph_company_hierarchy)
 ```
 

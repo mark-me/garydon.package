@@ -1,7 +1,7 @@
 ---
 title: "Handling of company hierarchies"
 author: "Mark Zwart"
-date: "2019-04-10"
+date: "2019-04-17"
 output: 
   rmarkdown::html_vignette:
     css: graydon.css
@@ -20,13 +20,17 @@ vignette: >
     - [Selecting hierarchies with a column of company IDs](#selecting_multiple)
     - [Selecting company neighbourhoods with a column of company IDs](#selecting_ego_graphs)
     - [Listing all hierarchy graphs](#selecting_all)
-* [Converting company hierarchy graphs to data-frames](#selecting)
-    - [Converting a single hierarchy graph](#selecting_single)
-    - [Converting a list of hierarchy graphs](#selecting_multiple)
+* [Converting company hierarchy graphs to data-frames](#convert_graph)
+    - [Converting a single hierarchy graph](#convert_single_graph)
+    - [Converting a list of hierarchy graphs](#convert_list_graphs)
 * [Calculating properties](#calculate)
     - [Summing values](#summing_values)
     - [Propagating values](#propagate_values)
+        - [Bottom-up all companies](#propagate_values_bup_all)
+        - [Top-down 2nd degree companies](#propagate_values_td_2nd)
+        - [All directions 1st degree companies](#propagate_values_ad_1st)
     - [Adding graph statistics](#adding_stats)
+    - [Marking company neighbourhoods](#mark_neighbourhood)
     - [Marking companies](#marking)
     - [Sister companies](#sister_companies)
     - [Recoding holdings](#recode_holdings)
@@ -114,7 +118,7 @@ list_selected_hierarchies <- select_graph_hierarchies(graph_company_hierarchies,
                                                       tbl_customers$id_company)
 ```
 
-Note that the _tbl_customers_ data-frame contains 300, while the _list_selected_hierarchies_ contains 249 graphs; this is because there are customers that fall within the same company hierarchy. The companies in the graphs in this list now also contain an extra logical attribute, _is_searched_company_, which indicates whether the company was in the _id_company_ column. Let's take a look at one of the graphs that contain multiple customers. The customer 'vertices' are colored orange here:
+Note that the _tbl_customers_ data-frame contains 300, while the _list_selected_hierarchies_ contains 248 graphs; this is because there are customers that fall within the same company hierarchy. The companies in the graphs in this list now also contain an extra logical attribute, _is_searched_company_, which indicates whether the company was in the _id_company_ column. Let's take a look at one of the graphs that contain multiple customers. The customer 'vertices' are colored orange here:
 
 ```r
 igraph::V(graph_example)$color <- ifelse(igraph::V(graph_example)$is_searched_company,
@@ -199,30 +203,55 @@ plot_graydon_graph(graph_company_hierarchy)
 
 ![plot of chunk unnamed-chunk-20](figure/unnamed-chunk-20-1.png)
 
-## <a name="propage_values"></a>Propagating values
+## <a name="propagate_values"></a>Propagating values
 
-It might come in handy to cumulate values in the hierarchy bottom up; this is where the _aggregate_company_hierarchy_value_ function comes in handy. In this example the companies will get a new attribute _qty_employees_cum_ which will contain the sum of all the _qty_employees_ of the companies that below the company within the hierarchy.
+It might come in handy to cumulate values in the hierarchy throughout the network in specific directions (bottom-up, top-down or all directions) and across specific distances. For this purpose you can use the _propagate_hierarchy_value_ function. 
+
+### <a name="propagate_values_bup_all"></a>Bottom-up all companies
+
+In this example the companies will get a new attribute _qty_employees_cum_ which will contain the sum of all the _qty_employees_ of the companies that below the company within the hierarchy.
 
 ```r
-graph_company_hierarchy <- 
-  aggregate_hierarchy_value(graph = graph_company_hierarchy, 
-                            name_attribute = "qty_employees",
-                            name_aggregate = "qty_employees_cum",
-                            FUN = sum, 
-                            na.rm = TRUE)
+graph_company_hierarchy <- propagate_hierarchy_value(graph = graph_company_hierarchy,
+                                                     name_attribute = "qty_employees",
+                                                     name_propagate = "qty_employees_cum",
+                                                     distance = Inf,
+                                                     direction = "in",
+                                                     FUN = sum,
+                                                     na.rm = TRUE)
 ```
 The result can be found can be shown in a graph, where we can see the original values and the rolled up values.
+![plot of chunk unnamed-chunk-22](figure/unnamed-chunk-22-1.png)
+
+### <a name="propagate_values_td_2nd"></a>Top-down 2nd degree companies
+
+In this example the companies will get a new attribute _qty_employees_cum_ which will contain the sum of all the _qty_employees_ of the companies that are 2 companies up-stream within the hierarchy.
 
 ```r
-igraph::V(graph_company_hierarchy)$label <- paste0("# ",
-                                                   igraph::V(graph_company_hierarchy)$qty_employees,
-                                                   " -> Cum # ",
-                                                   igraph::V(graph_company_hierarchy)$qty_employees_cum)
-
-plot_graydon_graph(graph_company_hierarchy)
+graph_company_hierarchy <- propagate_hierarchy_value(graph = graph_company_hierarchy,
+                                                     name_attribute = "qty_employees",
+                                                     name_propagate = "qty_employees_cum",
+                                                     distance = 2,
+                                                     direction = "out",
+                                                     FUN = sum,
+                                                     na.rm = TRUE)
 ```
+![plot of chunk unnamed-chunk-24](figure/unnamed-chunk-24-1.png)
 
-![plot of chunk unnamed-chunk-22](figure/unnamed-chunk-22-1.png)
+### <a name="propagate_values_ad_1st"></a>All directions 1st degree companies
+
+In this example the companies will get a new attribute _qty_employees_cum_ which will contain the sum of all the _qty_employees_ of the companies that are 2 companies up-stream within the hierarchy.
+
+```r
+graph_company_hierarchy <- propagate_hierarchy_value(graph = graph_company_hierarchy,
+                                                     name_attribute = "qty_employees",
+                                                     name_propagate = "qty_employees_cum",
+                                                     distance = 1,
+                                                     direction = "all",
+                                                     FUN = sum,
+                                                     na.rm = TRUE)
+```
+![plot of chunk unnamed-chunk-26](figure/unnamed-chunk-26-1.png)
 
 ## <a name="adding_stats"></a>Adding graph statistics
 
@@ -248,9 +277,9 @@ df_single_hierarchy <- hierarchy_as_data_frame(graph_company_hierarchy)
 |:---------|-----------------:|:--------|------------:|-------------:|:-------------------|-----------------:|-----------------:|:-------|-----------------------:|:--------------|---------------:|-------------------:|--------------------:|
 |1003667   |         931238099|7022     |            2|            15|FALSE               |                18|                15|TRUE    |                       5|911277358      |               3|                   0|                    2|
 |931238099 |         933898487|6420     |            1|             0|TRUE                |                18|                17|TRUE    |                       5|911277358      |               2|                   2|                    1|
-|933898487 |         911277358|7022     |            1|             0|FALSE               |                18|                17|TRUE    |                       5|911277358      |               1|                   1|                    1|
+|933898487 |         911277358|7022     |            1|             0|FALSE               |                18|                 1|TRUE    |                       5|911277358      |               1|                   1|                    1|
 |936298138 |         931238099|7311     |            2|             2|FALSE               |                18|                 2|TRUE    |                       5|911277358      |               3|                   0|                    2|
-|911277358 |                NA|6420     |            2|             1|FALSE               |                18|                18|TRUE    |                       5|911277358      |               0|                   1|                    0|
+|911277358 |                NA|6420     |            2|             1|FALSE               |                18|                 1|TRUE    |                       5|911277358      |               0|                   1|                    0|
 
 ## <a name="marking"></a>Marking companies
 
@@ -286,7 +315,7 @@ V(graph_company_hierarchy)$color <- ifelse(V(graph_company_hierarchy)$is_sibling
 plot_graydon_graph(graph_company_hierarchy)
 ```
 
-![plot of chunk unnamed-chunk-27](figure/unnamed-chunk-27-1.png)
+![plot of chunk unnamed-chunk-31](figure/unnamed-chunk-31-1.png)
 
 Remember the table of customers? If we want to get all siblings of those companies we can use the function _get_siblings_df_.
 
@@ -297,12 +326,12 @@ Below you can see a sample of the resulting data-frame, where you can see the co
 
 |id_company |id_sibling | qty_siblings|
 |:----------|:----------|------------:|
-|896363228  |362528     |            4|
-|896363228  |602380     |            4|
-|896363228  |628746     |            4|
-|896363228  |896361535  |            4|
-|906639670  |44910      |           36|
-|906639670  |217844     |           36|
+|942286189  |940892499  |            3|
+|942286189  |942694163  |            3|
+|942286189  |942695313  |            3|
+|917758536  |929312430  |            9|
+|917758536  |931364582  |            9|
+|917758536  |933317948  |            9|
 
 ## <a name="recode_holdings"></a>Recoding holdings
 
@@ -326,7 +355,7 @@ V(graph_company_hierarchy)$color <- ifelse(V(graph_company_hierarchy)$is_holding
 plot_graydon_graph(graph_company_hierarchy)
 ```
 
-![plot of chunk unnamed-chunk-30](figure/unnamed-chunk-30-1.png)
+![plot of chunk unnamed-chunk-34](figure/unnamed-chunk-34-1.png)
 
 ```r
 vec_sbi_holdings <- c("64", "642", "6420")
@@ -350,7 +379,7 @@ plot_graydon_graph(graph_company_hierarchy,
                    edge.width=2)
 ```
 
-![plot of chunk unnamed-chunk-31](figure/unnamed-chunk-31-1.png)
+![plot of chunk unnamed-chunk-35](figure/unnamed-chunk-35-1.png)
 
 You can count the number of financial holdings in a company hierarchy like this:
 
@@ -370,4 +399,4 @@ graph_company_hierarchy <- recode_holding_codes(graph_company_hierarchy,
 ```
 
 This would result in this recoded company hierarchy:
-![plot of chunk unnamed-chunk-34](figure/unnamed-chunk-34-1.png)
+![plot of chunk unnamed-chunk-38](figure/unnamed-chunk-38-1.png)

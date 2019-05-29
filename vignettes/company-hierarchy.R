@@ -116,19 +116,45 @@ igraph::V(graph_company_hierarchy)$label <- paste0("# ",
 plot_graydon_graph(graph_company_hierarchy)
 
 ## ------------------------------------------------------------------------
-graph_company_hierarchy <- 
-  aggregate_hierarchy_value(graph = graph_company_hierarchy, 
-                            name_attribute = "qty_employees",
-                            name_aggregate = "qty_employees_cum",
-                            FUN = sum, 
-                            na.rm = TRUE)
+graph_company_hierarchy <- propagate_hierarchy_value(graph = graph_company_hierarchy,
+                                                     name_attribute = "qty_employees",
+                                                     name_propagate = "qty_employees_cum",
+                                                     distance = Inf,
+                                                     direction = "in",
+                                                     FUN = sum,
+                                                     na.rm = TRUE)
 
-## ---- message=FALSE, warning=FALSE---------------------------------------
-igraph::V(graph_company_hierarchy)$label <- paste0("# ",
-                                                   igraph::V(graph_company_hierarchy)$qty_employees,
-                                                   " -> Cum # ",
-                                                   igraph::V(graph_company_hierarchy)$qty_employees_cum)
+## ---- echo=FALSE, message=FALSE, warning=FALSE---------------------------
+igraph::V(graph_company_hierarchy)$label <- paste0("# ", igraph::V(graph_company_hierarchy)$qty_employees,
+                                                   " -> Cum # ", igraph::V(graph_company_hierarchy)$qty_employees_cum)
+plot_graydon_graph(graph_company_hierarchy)
 
+## ------------------------------------------------------------------------
+graph_company_hierarchy <- propagate_hierarchy_value(graph = graph_company_hierarchy,
+                                                     name_attribute = "qty_employees",
+                                                     name_propagate = "qty_employees_cum",
+                                                     distance = 2,
+                                                     direction = "out",
+                                                     FUN = sum,
+                                                     na.rm = TRUE)
+
+## ---- echo=FALSE, message=FALSE, warning=FALSE---------------------------
+igraph::V(graph_company_hierarchy)$label <- paste0("# ", igraph::V(graph_company_hierarchy)$qty_employees,
+                                                   " -> Cum # ", igraph::V(graph_company_hierarchy)$qty_employees_cum)
+plot_graydon_graph(graph_company_hierarchy)
+
+## ------------------------------------------------------------------------
+graph_company_hierarchy <- propagate_hierarchy_value(graph = graph_company_hierarchy,
+                                                     name_attribute = "qty_employees",
+                                                     name_propagate = "qty_employees_cum",
+                                                     distance = 1,
+                                                     direction = "all",
+                                                     FUN = sum,
+                                                     na.rm = TRUE)
+
+## ---- echo=FALSE, message=FALSE, warning=FALSE---------------------------
+igraph::V(graph_company_hierarchy)$label <- paste0("# ", igraph::V(graph_company_hierarchy)$qty_employees,
+                                                   " -> Cum # ", igraph::V(graph_company_hierarchy)$qty_employees_cum)
 plot_graydon_graph(graph_company_hierarchy)
 
 ## ------------------------------------------------------------------------
