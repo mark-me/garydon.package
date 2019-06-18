@@ -20,7 +20,8 @@ Imports:
     rgdal,
     rgeos,
     stringr,
-    tmap
+    tmap,
+    hyphenatr
 Suggests: knitr,
     rmarkdown,
     testthat
