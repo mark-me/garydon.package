@@ -22,21 +22,21 @@ str_firstup <- function(x) {
 #' @export
 #' @examples
 #' str_wrap_hyphenate(tbl_SBI$description_SBI, 25)
-str_wrap_hyphenate <- function(text, max_length, dictionary = "nl_NL", html_format = FALSE){
+#str_wrap_hyphenate <- function(text, max_length, dictionary = "nl_NL", html_format = FALSE){
 
-  suppressMessages(hyphenatr::switch_dict(dictionary))
+#  suppressMessages(hyphenatr::switch_dict(dictionary))
 
-  text_hyphenated <- hyphenatr::hyphenate(text, simplify="- ")
-  text_wrapped <- stringr::str_wrap(text_hyphenated, max_length)
-  text_cleaned <- stringr::str_remove_all(text_wrapped, "- ")
-  text_cleaned <- stringr::str_replace_all(text_cleaned, " -\n", "\n")
+#  text_hyphenated <- hyphenatr::hyphenate(text, simplify="- ")
+#  text_wrapped <- stringr::str_wrap(text_hyphenated, max_length)
+#  text_cleaned <- stringr::str_remove_all(text_wrapped, "- ")
+#  text_cleaned <- stringr::str_replace_all(text_cleaned, " -\n", "\n")
 
-  if(html_format){
-    text_cleaned <- stringr::str_replace_all(text_cleaned, "\n", "<br>")
-  }
+#  if(html_format){
+#    text_cleaned <- stringr::str_replace_all(text_cleaned, "\n", "<br>")
+#  }
 
-  return(text_cleaned)
-}
+#  return(text_cleaned)
+#}
 
 #' Sets first letter of a string to capital
 #'
