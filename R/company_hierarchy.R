@@ -654,7 +654,7 @@ recode_holding_codes <- function(graph, name_activity_code, vec_holding_codes){
 #' plot_graydon_graph(graph)
 plot_graydon_graph <- function(graph, ...){
 
-  extrafont::loadfonts(device="win", quiet = TRUE)
+  # extrafont::loadfonts(device="win", quiet = TRUE)
 
   igraph::igraph_options(
     vertex.color = col_graydon[4],
