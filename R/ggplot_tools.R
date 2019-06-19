@@ -19,7 +19,7 @@
 #' theme_graydon("grid")
 theme_graydon <- function(type = c("grid", "horizontal", "vertical", "blank")) {
 
-  extrafont::loadfonts(device="win", quiet = TRUE)
+  # extrafont::loadfonts(device="win", quiet = TRUE)
 
   graydon_theme <-
     ggthemes::theme_gdocs() +
