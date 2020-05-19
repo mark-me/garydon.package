@@ -95,34 +95,49 @@ install_graydon_packages <- function() {
 #'
 #' @param project_name The name of the subdirectory for the project you use/create
 #' @param dir_base The directory where you want to have the project created in. The default is the current working directory
+#' @param is_server Indicates whether the project is created on the RServer (default = TRUE)
 #' @export
 #' @examples
-#' open_project("My project" , "~/R Scripts")
-open_project <- function(project_name, dir_base = NULL) {
+#' open_project("My project" , "~/R scripts")
+open_project <- function(project_name, dir_base = "~/R scripts", is_server = TRUE) {
 
-  #this_file_location <- "~/R Scripts/project.r"
   name_project <- project_name
-  dir_base <- ifelse(is.na(dir_base), getwd(), dir_base)
 
   # Project directory
-  dir.create(file.path(dir_base, name_project), showWarnings = FALSE)
-  setwd(file.path(dir_base, name_project))
   dir_project <<- paste0(dir_base, "/", name_project)
+  dir.create(file.path(dir_project), showWarnings = FALSE)
+  setwd(dir_project)
 
-  # Data directory
-  dir.create(file.path(dir_project, "Input"), showWarnings = FALSE)
-  dir_input <<- paste0(dir_project, "/", "Input")
+  if(is_server){
+    # Data directory
+    dir_input <<- paste0("/data/", name_project)
+    dir.create(file.path(dir_input), showWarnings = FALSE)
 
-  # Output data directory
-  dir.create(file.path(dir_project, "Output data"), showWarnings = FALSE)
-  dir_output_data <<- paste0(dir_project, "/", "Output data")
+    # Output data directory
+    dir_output_data <<- paste0(dir_input, "/output_data")
+    dir.create(file.path(dir_output_data), showWarnings = FALSE)
 
-  # Output plot directory
-  dir.create(file.path(dir_project, "Output plots"), showWarnings = FALSE)
-  dir_output_plots <<- paste0(dir_project, "/", "Output plots")
+    # Output plot directory
+    dir_output_plots <<- paste0(dir_input, "/", "output_plots")
+    dir.create(file.path(dir_output_plots), showWarnings = FALSE)
 
-  # Presentation directory
-  dir.create(file.path(dir_project, "Presentation"), showWarnings = FALSE)
+  } else {
+    # Data directory
+    dir.create(file.path(dir_project, "Input"), showWarnings = FALSE)
+    dir_input <<- paste0(dir_project, "/", "Input")
+
+    # Output data directory
+    dir.create(file.path(dir_project, "Output data"), showWarnings = FALSE)
+    dir_output_data <<- paste0(dir_project, "/", "Output data")
+
+    # Output plot directory
+    dir.create(file.path(dir_project, "Output plots"), showWarnings = FALSE)
+    dir_output_plots <<- paste0(dir_project, "/", "Output plots")
+
+    # Presentation directory
+    dir.create(file.path(dir_project, "Presentation"), showWarnings = FALSE)
+
+  }
 
   # Make a copy of the current file
   #file.copy(this_file_location, dir_project)
@@ -136,8 +151,45 @@ open_project <- function(project_name, dir_base = NULL) {
     close(fileConn)
   }
 
+  create_gitignore()
+
   # Load standard libraries
   libs <- get_library_names()
   lapply(libs, library, character.only = TRUE)
   return(NULL)
+}
+
+#' Creates standard gitignore file for a project. ----
+create_gitignore <- function(){
+
+  new_gitignore <- FALSE
+
+  if(file.exists(".gitignore")){
+
+    fileConn<-file(".gitignore")
+    current_gitignore <- readLines(fileConn)
+    new_gitignore <- all.equal(current_gitignore, c(".Rproj.user", ".Rhistory", ".RData", ".Ruserdata"))
+    close(fileConn)
+  } else {
+    new_gitignore <- TRUE
+  }
+
+  if(new_gitignore){
+    vec_gitignore <- c("# History files", ".Rhistory", ".Rapp.history")
+    vec_gitignore <- c(vec_gitignore, "# Session Data files", ".RData")
+    vec_gitignore <- c(vec_gitignore, "# Example code in package build process", "*-Ex.R")
+    vec_gitignore <- c(vec_gitignore, "# Output files from R CMD build", "/*.tar.gz")
+    vec_gitignore <- c(vec_gitignore, "# Output files from R CMD check", "/*.Rcheck/")
+    vec_gitignore <- c(vec_gitignore, "# RStudio files", ".Rproj.user/")
+    vec_gitignore <- c(vec_gitignore, "# produced vignettes", "vignettes/*.html", "vignettes/*.pdf")
+    vec_gitignore <- c(vec_gitignore, "# OAuth2 token, see https://github.com/hadley/httr/releases/tag/v0.3", ".httr-oauth")
+    vec_gitignore <- c(vec_gitignore, "# knitr and R markdown default cache directories",  "/*_cache/", "/cache/")
+    vec_gitignore <- c(vec_gitignore, "# Temporary files created by R markdown", "*.utf8.md", "*.knit.md")
+    vec_gitignore <- c(vec_gitignore, "# Shiny token, see https://shiny.rstudio.com/articles/shinyapps.html", "rsconnect/", ".Rproj.user")
+
+    fileConn<-file(".gitignore")
+    writeLines(vec_gitignore, fileConn)
+    close(fileConn)
+  }
+
 }

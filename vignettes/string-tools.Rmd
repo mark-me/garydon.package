@@ -59,7 +59,7 @@ Here hyphenation wrapping is performed on a Dutch SBI code description:
 ```{r}
 tbl_SBI %>% 
   filter(code_SBI == "02") %>% 
-  mutate(description_SBI_wrapped = str_wrap_hyphenate(description_SBI, 25, html_format = TRUE)) %>% 
+  mutate(description_SBI_wrapped = str_wrap_hyphenate(as.character(description_SBI), 25, html_format = TRUE)) %>% 
   select(code_SBI, description_SBI_wrapped) %>% 
   knitr::kable()
 ```
