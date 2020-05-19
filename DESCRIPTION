@@ -1,7 +1,7 @@
 Package: graydon.package
 Type: Package
 Title: Graydon Toolkit
-Version: 0.5.6
+Version: 0.5.7
 Author: Mark Zwart
 Maintainer: Mark Zwart <m.zwart@graydon.nl>
 Description: Toolkit for faster development
