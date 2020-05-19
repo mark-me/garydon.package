@@ -99,6 +99,21 @@
 #' }
 "tbl_SBI"
 
+#' The SBI codes which which are used to describe a companies main economic activity and the number of companies in nl
+#'
+#' \url{https://sbi.cbs.nl/cbs.typeermodule.typeerservicewebapi/content/angular/app/#/}
+#'
+#' @format A data frame with 1.455 rows and 5 variables:
+#' \describe{
+#'   \item{code_SBI}{Code used to identify economic activities}
+#'   \item{code_SBI_parent}{Code of the economic activity description that is more general}
+#'   \item{description_SBI}{The Dutch description of the economic activity}
+#'   \item{hierarchy_layer}{The hierarchical position of the code in the total economic activity tree;
+#'   the higher the number, the more specific the code is.}
+#'   \item{qty_companies}{The number of companies in The Netherlands}
+#' }
+"tbl_SBI_count"
+
 #' DO NOT USE THIS DATA FRAME. PLEASE USE tbl_SBI
 #'
 #' This data frame is used as a backup.
@@ -159,22 +174,6 @@
 #'   \item{POSTCODE_RA}{Legacy company identifier}
 #' }
 "tbl_companies_uk"
-
-#' The SBI codes which which are used to describe a companies main economic activity and the number of companies in nl
-#'
-#' \url{https://sbi.cbs.nl/cbs.typeermodule.typeerservicewebapi/content/angular/app/#/}
-#'
-#' @format A data frame with 1.455 rows and 5 variables:
-#' \describe{
-#'   \item{code_SBI}{Code used to identify economic activities}
-#'   \item{code_SBI_parent}{Code of the economic activity description that is more general}
-#'   \item{description_SBI}{The Dutch description of the economic activity}
-#'   \item{hierarchy_layer}{The hierarchical position of the code in the total economic activity tree;
-#'   the higher the number, the more specific the code is.}
-#'   \item{qty_companies}{The number of companies in The Netherlands}
-#' }
-"tbl_SBI_count"
-
 
 #' Relations between companies
 #'
