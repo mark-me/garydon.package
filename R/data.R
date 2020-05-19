@@ -85,9 +85,11 @@
 
 #' The SBI codes which which are used to describe a companies main economic activity.
 #'
+#' A dataset correcting character problem of original source
+#'
 #' \url{https://sbi.cbs.nl/cbs.typeermodule.typeerservicewebapi/content/angular/app/#/}
 #'
-#' @format A data frame with 1.455 rows and 4 variables:
+#' @format A data frame with 1.887 rows and 4 variables (previously 1.455 rows):
 #' \describe{
 #'   \item{code_SBI}{Code used to identify economic activities}
 #'   \item{code_SBI_parent}{Code of the economic activity description that is more general}
@@ -96,6 +98,12 @@
 #'   the higher the number, the more specific the code is.}
 #' }
 "tbl_SBI"
+
+#' DO NOT USE THIS DATA FRAME. PLEASE USE tbl_SBI
+#'
+#' This data frame is used as a backup.
+#'
+"tbl_SBI_new"
 
 #' The 2008 NACE codes which which are used to describe a companies main economic activity.
 #'

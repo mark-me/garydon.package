@@ -4,7 +4,7 @@
 \name{tbl_SBI}
 \alias{tbl_SBI}
 \title{The SBI codes which which are used to describe a companies main economic activity.}
-\format{A data frame with 1.455 rows and 4 variables:
+\format{A data frame with 1.887 rows and 4 variables (previously 1.455 rows):
 \describe{
   \item{code_SBI}{Code used to identify economic activities}
   \item{code_SBI_parent}{Code of the economic activity description that is more general}
@@ -16,6 +16,9 @@
 tbl_SBI
 }
 \description{
+A dataset correcting character problem of original source
+}
+\details{
 \url{https://sbi.cbs.nl/cbs.typeermodule.typeerservicewebapi/content/angular/app/#/}
 }
 \keyword{datasets}
