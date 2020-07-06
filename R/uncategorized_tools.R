@@ -169,6 +169,7 @@ create_gitignore <- function(){
     fileConn<-file(".gitignore")
     current_gitignore <- readLines(fileConn)
     new_gitignore <- identical(current_gitignore, c(".Rproj.user", ".Rhistory", ".RData", ".Ruserdata"))
+
     close(fileConn)
   } else {
     new_gitignore <- TRUE
