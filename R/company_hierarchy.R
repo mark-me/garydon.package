@@ -377,7 +377,7 @@ mark_ego_graph <- function(graph, id_company, target_attribute, distance = 1, di
 
   vertx_neighbors <- character()
 
-  if(direction %in% c("all", "in")){
+  if(direction %in% c("in")){
     vertx_neighbors <- c(vertx_neighbors,
                          igraph::ego(graph,
                                      order = distance,
@@ -385,8 +385,7 @@ mark_ego_graph <- function(graph, id_company, target_attribute, distance = 1, di
                                      nodes = igraph::V(graph)[id_company])[[1]]$name)
   }
 
-  if(direction %in% c("all", "out")) {
-
+  if(direction %in% c("out")) {
     vertx_neighbors <- c(vertx_neighbors,
                          igraph::ego(graph,
                                      order = distance,
@@ -394,10 +393,19 @@ mark_ego_graph <- function(graph, id_company, target_attribute, distance = 1, di
                                      nodes = igraph::V(graph)[id_company])[[1]]$name)
   }
 
+  if(direction %in% c("all")) {
+
+    vertx_neighbors <- c(vertx_neighbors,
+                         igraph::ego(graph,
+                                     order = distance,
+                                     mode = "all",
+                                     nodes = igraph::V(graph)[id_company])[[1]]$name)
+  }
   igraph::vertex_attr(graph, target_attribute) <- igraph::V(graph)$name %in% vertx_neighbors
 
   return(graph)
 }
+
 
 #' Add a logical variable to the companies in a hierarchy when one of it's
 #' attributes match one of a set of values
