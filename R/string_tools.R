@@ -16,18 +16,14 @@ str_firstup <- function(x) {
 #'
 #' @param text The text you want to wrap
 #' @param max_length The maximum length a string may have
-#' @param dictionary The dictionary language used for hyphenation
 #' @param html_format Indicate whether you want <br> new lines
 #' @return String wrapped with newline characters
 #' @export
 #' @examples
 #' str_wrap_hyphenate(tbl_SBI$description_SBI, 25)
-str_wrap_hyphenate <- function(text, max_length, dictionary = "nl_NL", html_format = FALSE){
+str_wrap_hyphenate <- function(text, max_length, html_format = FALSE){
 
-  suppressMessages(hyphenatr::switch_dict(dictionary))
-
-  text_hyphenated <- hyphenatr::hyphenate(text, simplify="- ")
-  text_wrapped <- stringr::str_wrap(text_hyphenated, max_length)
+  text_wrapped <- stringr::str_wrap(text, max_length)
   text_cleaned <- stringr::str_remove_all(text_wrapped, "- ")
   text_cleaned <- stringr::str_replace_all(text_cleaned, " -\n", "\n")
 
