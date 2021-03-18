@@ -77,7 +77,6 @@ get_library_names <- function(){
 #' install_graydon_packages()
 install_graydon_packages <- function() {
 
-  devtools::install_github("hrbrmstr/hyphenatr")
   # Installing and loading libraries
   list_of_packages <- get_library_names()
   new_packages <- list_of_packages[!(list_of_packages %in% installed.packages()[,"Package"])]
