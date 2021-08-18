@@ -4,7 +4,7 @@
 \name{sp_nl_postcode}
 \alias{sp_nl_postcode}
 \title{Map outlining the Dutch postal code borders}
-\format{An object of class \code{SpatialPolygonsDataFrame} with 4053 rows and 5 columns.}
+\format{An object of class \code{SpatialPolygonsDataFrame} with 4068 rows and 8 columns.}
 \usage{
 sp_nl_postcode
 }
