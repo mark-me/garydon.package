@@ -101,20 +101,22 @@ open_project <- function(project_name, dir_base = "~/R scripts") {
 
   name_project <- project_name
 
-  # Set working directory
+  # Project directory and working directory
+  dir_project <<- paste0(dir_base, "/", name_project)
+  dir.create(file.path(dir_project), showWarnings = FALSE)
   setwd(dir_project)
 
   # Set upstream directory - for input data
-  dir.create(path = paste0("/up/upstream/", name_project), showWarnings = FALSE)
   dir_upstream <<- paste0("/up/upstream/", name_project)
+  dir.create(path = file.path(dir_upstream), showWarnings = FALSE)
 
   # Set midstream directory - for processed data
-  dir.create(path = paste0("/mid/midstream/", name_project), showWarnings = FALSE)
-  dir_midstream <<- path = paste0("/mid/midstream/", name_project)
+  dir_midstream <<- paste0("/mid/midstream/", name_project)
+  dir.create(path = file.path(dir_midstream), showWarnings = FALSE)
 
   # Set downstream directory - for output files like data and reports
-  dir.create(path = paste0("/down/downstream/", name_project), showWarnings = FALSE)
   dir_downstream <<- paste0("/down/downstream/", name_project)
+  dir.create(path = file.path(dir_downstream), showWarnings = FALSE)
 
   # Create gitignore
   create_gitignore()
