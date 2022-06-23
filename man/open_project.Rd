@@ -2,19 +2,17 @@
 % Please edit documentation in R/uncategorized_tools.R
 \name{open_project}
 \alias{open_project}
-\title{Creates a subdirectory and/or sets the working directory of a project. ----}
+\title{Creates subdirectories and/or sets the working directory of a project. ----}
 \usage{
-open_project(project_name, dir_base = "~/R scripts", is_server = TRUE)
+open_project(project_name, dir_base = "~/R scripts")
 }
 \arguments{
 \item{project_name}{The name of the subdirectory for the project you use/create}
 
 \item{dir_base}{The directory where you want to have the project created in. The default is the current working directory}
-
-\item{is_server}{Indicates whether the project is created on the RServer (default = TRUE)}
 }
 \description{
-Creates a subdirectory and/or sets the working directory of a project. ----
+Creates subdirectory for your project in the upstream, midstream and downstream locations and/or sets the working directory of a project. ----
 }
 \examples{
 open_project("My project" , "~/R scripts")
