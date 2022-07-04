@@ -92,70 +92,40 @@ install_graydon_packages <- function() {
 
 #' Creates a subdirectory and/or sets the working directory of a project. ----
 #'
-#' @param project_name The name of the subdirectory for the project you use/create
+#' @param project_name The name of the sub directory for the project you use/create
 #' @param dir_base The directory where you want to have the project created in. The default is the current working directory
-#' @param is_server Indicates whether the project is created on the RServer (default = TRUE)
 #' @export
 #' @examples
 #' open_project("My project" , "~/R scripts")
-open_project <- function(project_name, dir_base = "~/R scripts", is_server = TRUE) {
+open_project <- function(project_name, dir_base = "~/R scripts") {
 
   name_project <- project_name
 
-  # Project directory
+  # Project directory and working directory
   dir_project <<- paste0(dir_base, "/", name_project)
   dir.create(file.path(dir_project), showWarnings = FALSE)
   setwd(dir_project)
 
-  if(is_server){
-    # Data directory
-    dir_input <<- paste0("/data/", name_project)
-    dir.create(file.path(dir_input), showWarnings = FALSE)
+  # Set upstream directory - for input data
+  dir_upstream <<- paste0("/up/upstream/", name_project)
+  dir.create(path = file.path(dir_upstream), showWarnings = FALSE)
 
-    # Output data directory
-    dir_output_data <<- paste0(dir_input, "/output_data")
-    dir.create(file.path(dir_output_data), showWarnings = FALSE)
+  # Set midstream directory - for processed data
+  dir_midstream <<- paste0("/mid/midstream/", name_project)
+  dir.create(path = file.path(dir_midstream), showWarnings = FALSE)
 
-    # Output plot directory
-    dir_output_plots <<- paste0(dir_input, "/", "output_plots")
-    dir.create(file.path(dir_output_plots), showWarnings = FALSE)
+  # Set downstream directory - for output files like data and reports
+  dir_downstream <<- paste0("/down/downstream/", name_project)
+  dir.create(path = file.path(dir_downstream), showWarnings = FALSE)
 
-  } else {
-    # Data directory
-    dir.create(file.path(dir_project, "Input"), showWarnings = FALSE)
-    dir_input <<- paste0(dir_project, "/", "Input")
-
-    # Output data directory
-    dir.create(file.path(dir_project, "Output data"), showWarnings = FALSE)
-    dir_output_data <<- paste0(dir_project, "/", "Output data")
-
-    # Output plot directory
-    dir.create(file.path(dir_project, "Output plots"), showWarnings = FALSE)
-    dir_output_plots <<- paste0(dir_project, "/", "Output plots")
-
-    # Presentation directory
-    dir.create(file.path(dir_project, "Presentation"), showWarnings = FALSE)
-
-  }
-
-  # Make a copy of the current file
-  #file.copy(this_file_location, dir_project)
-
-  # Create a project file called 'main.r'
-  if (!file.exists("main.r")) {
-    fileConn<-file("main.r")
-    cmd_load_library <- "library(graydon.package)"
-    cmd_open_project <- paste0("open_project(\"",name_project, "\", \"", dir_base, "\")" )
-    writeLines(c(cmd_load_library, cmd_open_project), fileConn)
-    close(fileConn)
-  }
-
+  # Create gitignore
   create_gitignore()
 
   # Load standard libraries
   libs <- get_library_names()
   lapply(libs, library, character.only = TRUE)
   return(NULL)
+
 }
 
 #' Creates standard gitignore file for a project. ----
