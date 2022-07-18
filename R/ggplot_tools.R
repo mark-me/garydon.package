@@ -7,6 +7,21 @@
 #extrafont::loadfonts(device="win", quiet = TRUE)
 #windowsFonts("Roboto" = windowsFont("Roboto"))
 
+
+#' A function for applying a GraydonCreditsafe theme to a ggplot
+#'
+#' This function applies Graydon theme to a ggplot.
+#' The first time it is used it will create a column specification file
+#' allows you to create and or read a file which you can use to control a data file import
+#' @param type The type of grid or background
+#' @keywords ggplot2
+#' @export
+#' @examples
+#' theme_ycs("grid")
+theme_ycs <- function(type = c("grid", "horizontal", "vertical", "blank")) {
+  return(theme_graydon(type))
+}
+
 #' A function for applying a Graydon theme to a ggplot
 #'
 #' This function applies Graydon theme to a ggplot.
@@ -77,11 +92,28 @@ scale_color_graydon <- function(...){
   return(ggplot2::scale_color_manual(values = col_graydon, ...))
 }
 
+
+#' A function to include in a ggplot so the col aesthetics make use of the GraydonCreditsafe color palette
+#'
+#' @keywords ggplot2
+#' @export
+scale_color_ycs <- function(...){
+  return(ggplot2::scale_color_manual(values = col_ycs, ...))
+}
+
 #' A function to include in a ggplot so the fill aesthetics make use of the Graydon color palette
 #'
 #' @keywords ggplot2
 #' @export
 scale_fill_graydon <- function(...){
+  return(ggplot2::scale_fill_manual(values = col_graydon, ...))
+}
+
+#' A function to include in a ggplot so the fill aesthetics make use of the GraydonCreditsafe color palette
+#'
+#' @keywords ggplot2
+#' @export
+scale_fill_ycs <- function(...){
   return(ggplot2::scale_fill_manual(values = col_graydon, ...))
 }
 
@@ -92,6 +124,15 @@ scale_fill_graydon <- function(...){
 scale_gradient_graydon <- function(...){
   return(ggplot2::scale_fill_gradient(low = col_graydon_low, high = col_graydon_high) +
            ggplot2::scale_color_gradient(low = col_graydon_low, high = col_graydon_high), ...)
+}
+
+#' A function to include in a ggplot so color and fill aesthetics make use of the GraydonCreditsafe color palette
+#'
+#' @keywords ggplot2
+#' @export
+scale_gradient_ycs <- function(...){
+  return(ggplot2::scale_fill_gradient(low = col_ycs_low, high = col_ycs_high) +
+           ggplot2::scale_color_gradient(low = col_ycs_low, high = col_ycs_high), ...)
 }
 
 #' A function to create a continuous x-axis for formatted numbers

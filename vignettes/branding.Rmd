@@ -1,0 +1,47 @@
+---
+title: "GraydonCreditsafe branding"
+output: html_document
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+library(tidyverse)
+library(graydon.package)
+library(tidyverse)
+library(ggplot2)
+library(scales)
+
+load("~/R scripts/graydon.package/data/col_graydon.rda")
+col_ycs <- c('#00AFD8', '#EE2E24', '#2C3E50', '#4dba82', '#ffbd00', '#666666', '#52d9cc', '#ff8736', '#87e387')
+save(col_ycs, file =  '../data/col_ycs.rda')
+
+load("~/R scripts/graydon.package/data/col_graydon_high.rda")
+col_ycs_high <- '#EE2E24'
+save(col_ycs_high, file =  '../data/col_ycs_high.rda')
+
+load("~/R scripts/graydon.package/data/col_graydon_low.rda")
+col_ycs_low <- '#00AFD8'
+save(col_ycs_low, file =  '../data/col_ycs_low.rda')
+
+```
+
+## Graydon
+```{r, echo=FALSE}
+show_col(col_graydon)
+```
+
+## GraydonCreditsafe
+```{r, echo=FALSE}
+show_col(col_ycs)
+```
+
+
+```{r cars}
+diamonds %>% 
+  group_by(color, cut) %>% 
+  summarise(median_price = median(price)) %>% 
+  ungroup() %>% 
+ggplot(aes(x=color, y=median_price)) + 
+  geom_col(aes(fill = cut)) +
+  scale_fill_graydon()
+```
