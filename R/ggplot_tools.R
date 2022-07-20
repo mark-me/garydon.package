@@ -114,7 +114,7 @@ scale_fill_graydon <- function(...){
 #' @keywords ggplot2
 #' @export
 scale_fill_ycs <- function(...){
-  return(ggplot2::scale_fill_manual(values = col_graydon, ...))
+  return(ggplot2::scale_fill_manual(values = col_ycs, ...))
 }
 
 #' A function to include in a ggplot so color and fill aesthetics make use of the Graydon color palette
