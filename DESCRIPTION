@@ -17,8 +17,6 @@ Imports:
     igraph,
     magrittr,
     readr,
-    rgdal,
-    rgeos,
     stringr,
     tmap
 Suggests: knitr,
